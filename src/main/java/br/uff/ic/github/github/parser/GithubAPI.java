@@ -9,8 +9,13 @@ import br.uff.ic.github.github.CMD;
 import br.uff.ic.github.github.CMDOutput;
 import br.uff.ic.github.github.data.Language;
 import br.uff.ic.github.github.data.Project;
+import br.uff.ic.github.github.file.WriteFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -240,7 +245,25 @@ public class GithubAPI {
         return result;
     }
 
-    public static void projects(int since) {
+    public static void projects(int since, String reportPath) {
+
+        WriteFile fw;
+        File report = new File(reportPath);
+
+        if (report.isFile()) {
+            fw = new WriteFile(reportPath, false);
+            //TODO: read the file and continue
+        } else {
+            fw = new WriteFile(reportPath, true);
+        }
+
+        try {
+            fw.open();
+        } catch (IOException ex) {
+            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Problem during report generation!");
+            return;
+        }
 
         int cont = 0;
 
@@ -268,7 +291,7 @@ public class GithubAPI {
 
             output = CMD.cmd(base + link);
 
-            System.out.println(base + link);
+//            System.out.println(base + link);
             for (String line : output.getOutput()) {
 
                 if (line.contains(LINK)) {
@@ -283,29 +306,38 @@ public class GithubAPI {
                     cont--;
 
                     if (cont == 0) {
-                        System.out.println("name: " + name);
-                        System.out.println("\tFull name: " + fullName);
-                        System.out.println("\tPrivate: " + priva);
-                        System.out.println("\tHTML URL: " + htmlUrl);
-                        System.out.println("\tURL: " + url);
+                        fw.writeln("name: " + name);
+                        fw.writeln("\tFull name: " + fullName);
+                        fw.writeln("\tPrivate: " + priva);
+                        fw.writeln("\tHTML URL: " + htmlUrl);
+                        fw.writeln("\tURL: " + url);
 
 //                        int commits = GithubAPI.commits(url);
 //                        System.out.println("\tCommits: " + commits);
 //                        int merges = GithubAPI.merges(url);
 //                        System.out.println("\tMerges: " + merges);
                         int contributors = GithubAPI.contributors(url);
-                        System.out.println("\tContributors = " + contributors);
+                        fw.writeln("\tContributors = " + contributors);
 
 //                        int languages = GithubAPI.languages(url);
                         List<Language> languagesList = GithubAPI.languagesList(url);
                         if (languagesList != null) {
-                            System.out.println("\tLanguages = " + languagesList.size());
+                            fw.writeln("\tLanguages = " + languagesList.size());
                             for (Language language : languagesList) {
-                                System.out.println("\t\t" + language.getName() + ":" + language.getPercentage());
+                                fw.writeln("\t\t" + language.getName() + ":" + language.getPercentage());
                             }
                         } else {
-                            System.out.println("\tLanguages = 0");
+                            fw.writeln("\tLanguages = 0");
                         }
+                    }
+
+                    try {
+                        System.out.println(name);
+                        fw.setReplace(false);
+                        fw.close();
+                        fw.open();
+                    } catch (IOException ex) {
+                        Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 if (line.contains(NAME)) {
@@ -330,6 +362,7 @@ public class GithubAPI {
             System.out.println("Next:" + split[split.length - 1]);
         }
 
+        fw.close();
     }
 
     public static Project projectInfo(String url) {
