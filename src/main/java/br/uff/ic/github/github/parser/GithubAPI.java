@@ -329,16 +329,17 @@ public class GithubAPI {
                         } else {
                             fw.writeln("\tLanguages = 0");
                         }
+
+                        try {
+                            System.out.println(name);
+                            fw.setReplace(false);
+                            fw.close();
+                            fw.open();
+                        } catch (IOException ex) {
+                            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
 
-                    try {
-                        System.out.println(name);
-                        fw.setReplace(false);
-                        fw.close();
-                        fw.open();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                 }
                 if (line.contains(NAME)) {
                     name = Parser.getContent(line);
@@ -360,6 +361,7 @@ public class GithubAPI {
             link = Parser.getLink(output.getOutput());
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
+            fw.writeln("Next:" + split[split.length - 1]);
         }
 
         fw.close();
