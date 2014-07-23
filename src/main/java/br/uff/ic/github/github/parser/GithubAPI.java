@@ -23,7 +23,7 @@ public class GithubAPI {
     private static final String END_PARENTS = "]";
 
     public static void init(String login, String password) {
-        base = "curl -i -u \"" + login + ":" + password + "\" ";
+        base = "curl -i -u " + login + ":" + password + " ";
     }
 
     /**
@@ -268,6 +268,7 @@ public class GithubAPI {
 
             output = CMD.cmd(base + link);
 
+            System.out.println(base + link);
             for (String line : output.getOutput()) {
 
                 if (line.contains(LINK)) {

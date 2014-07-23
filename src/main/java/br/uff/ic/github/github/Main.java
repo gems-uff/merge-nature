@@ -5,9 +5,7 @@
  */
 package br.uff.ic.github.github;
 
-import br.uff.ic.github.github.data.Language;
 import br.uff.ic.github.github.parser.GithubAPI;
-import java.util.List;
 
 /**
  *
