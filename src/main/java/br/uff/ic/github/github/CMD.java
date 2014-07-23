@@ -21,33 +21,46 @@ public class CMD {
     public static CMDOutput cmd(String command) {
 
         CMDOutput result = new CMDOutput();
+        boolean okay = false;
 
-        try {
+        while (!okay) {
+            okay = true;
+            
+            try {
 
-            Process exec;
+                Process exec;
 
-            exec = Runtime.getRuntime().exec(command);
+                exec = Runtime.getRuntime().exec(command);
 
-            String s;
+                String s;
 
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+                BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
 
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+                BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
 
-            // read the output from the command
-            while ((s = stdInput.readLine()) != null) {
-                result.addOutput(s);
+                // read the output from the command
+                while ((s = stdInput.readLine()) != null) {
+                    result.addOutput(s);
+                    if(s.contains("X-RateLimit-Remaining: 0")){
+                        okay = false;
+                        try {
+                            Thread.sleep(10000);
+                            System.out.println("Waiting...");
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(CMD.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+
+                // read any errors from the attempted command
+                while ((s = stdError.readLine()) != null) {
+                    result.addErrors(s);
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(Explorer.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            // read any errors from the attempted command
-            while ((s = stdError.readLine()) != null) {
-                result.addErrors(s);
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(Explorer.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return result;
     }
 
