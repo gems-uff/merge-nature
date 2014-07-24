@@ -41,7 +41,7 @@ public class CMD {
                 // read the output from the command
                 while ((s = stdInput.readLine()) != null) {
                     result.addOutput(s);
-                    if(s.contains("X-RateLimit-Remaining: 0")){
+                    if(s.contains("X-RateLimit-Remaining: 0") || s.contains("API rate limit exceeded")){
                         okay = false;
                         try {
                             Thread.sleep(10000);
