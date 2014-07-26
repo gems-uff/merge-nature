@@ -291,7 +291,6 @@ public class GithubAPI {
 
             output = CMD.cmd(base + link);
 
-//            System.out.println(base + link);
             for (String line : output.getOutput()) {
 
                 if (line.contains(LINK)) {
@@ -312,14 +311,9 @@ public class GithubAPI {
                         fw.writeln("\tHTML URL: " + htmlUrl);
                         fw.writeln("\tURL: " + url);
 
-//                        int commits = GithubAPI.commits(url);
-//                        System.out.println("\tCommits: " + commits);
-//                        int merges = GithubAPI.merges(url);
-//                        System.out.println("\tMerges: " + merges);
                         int contributors = GithubAPI.contributors(url);
                         fw.writeln("\tContributors = " + contributors);
 
-//                        int languages = GithubAPI.languages(url);
                         List<Language> languagesList = GithubAPI.languagesList(url);
                         if (languagesList != null) {
                             fw.writeln("\tLanguages = " + languagesList.size());

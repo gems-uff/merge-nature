@@ -6,7 +6,6 @@
 package br.uff.ic.github.github;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
@@ -42,6 +41,7 @@ public class CMD {
                 while ((s = stdInput.readLine()) != null) {
                     result.addOutput(s);
                     if(s.contains("X-RateLimit-Remaining: 0") || s.contains("API rate limit exceeded")){
+                        result = new CMDOutput();
                         okay = false;
                         try {
                             Thread.sleep(10000);
@@ -61,43 +61,6 @@ public class CMD {
                 Logger.getLogger(Explorer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return result;
-    }
-
-    public static CMDOutput cmd(String path, String command) {
-
-        CMDOutput result = new CMDOutput();
-
-        try {
-
-            Process exec;
-
-            if (path != null) {
-                exec = Runtime.getRuntime().exec(command, null, new File(path));
-            } else {
-                exec = Runtime.getRuntime().exec(command);
-            }
-
-            String s;
-
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
-
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
-
-            // read the output from the command
-            while ((s = stdInput.readLine()) != null) {
-                result.addOutput(s);
-            }
-
-            // read any errors from the attempted command
-            while ((s = stdError.readLine()) != null) {
-                result.addErrors(s);
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(Explorer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         return result;
     }
 
