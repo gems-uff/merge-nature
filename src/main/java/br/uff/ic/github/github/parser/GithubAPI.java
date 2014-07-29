@@ -297,11 +297,11 @@ public class GithubAPI {
                     continue;
                 }
 
-                if (line.contains("  {")) {
+                if (line.startsWith("  {") || line.startsWith("    \"owner\": {")) {
                     cont++;
                 }
 
-                if (line.contains("    },")) {
+                if (line.startsWith("    },") || line.startsWith("  },")) {
                     cont--;
 
                     if (cont == 0 && name != null) {
@@ -370,6 +370,7 @@ public class GithubAPI {
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
             fw.writeln("Next:" + split[split.length - 1]);
+            cont = 0;
         }
 
         fw.close();
