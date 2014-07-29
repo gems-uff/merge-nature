@@ -17,14 +17,14 @@ import java.util.logging.Logger;
  */
 public class CMD {
 
-    public static CMDOutput cmd(String command) {
+    public static CMDOutput cmdGithub(String command) {
 
         CMDOutput result = new CMDOutput();
         boolean okay = false;
 
         while (!okay) {
             okay = true;
-            
+
             try {
 
                 Process exec;
@@ -40,7 +40,7 @@ public class CMD {
                 // read the output from the command
                 while ((s = stdInput.readLine()) != null) {
                     result.addOutput(s);
-                    if(s.contains("X-RateLimit-Remaining: 0") || s.contains("API rate limit exceeded")){
+                    if (s.contains("X-RateLimit-Remaining: 0") || s.contains("API rate limit exceeded")) {
                         result = new CMDOutput();
                         okay = false;
                         try {
@@ -49,6 +49,10 @@ public class CMD {
                         } catch (InterruptedException ex) {
                             Logger.getLogger(CMD.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
+
+                    if (s.contains("\"Not Found\"")) {
+                        return new CMDOutput();
                     }
                 }
 

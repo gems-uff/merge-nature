@@ -52,7 +52,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmd(base + link);
+            output = CMD.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains("{")) {
@@ -95,7 +95,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmd(base + link);
+            output = CMD.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains(BEGIN_PARENTS)) {
@@ -133,7 +133,7 @@ public class GithubAPI {
             url += "/languages";
         }
 
-        CMDOutput output = CMD.cmd(base + url);
+        CMDOutput output = CMD.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
 
@@ -152,7 +152,7 @@ public class GithubAPI {
 
     public static void generic(String query) {
 
-        CMDOutput output = CMD.cmd(base + query);
+        CMDOutput output = CMD.cmdGithub(base + query);
 
         for (String line : output.getOutput()) {
             System.out.println(line);
@@ -175,7 +175,7 @@ public class GithubAPI {
             url += "/languages";
         }
 
-        CMDOutput output = CMD.cmd(base + url);
+        CMDOutput output = CMD.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
 
@@ -224,7 +224,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmd(base + link);
+            output = CMD.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains("{")) {
@@ -289,7 +289,7 @@ public class GithubAPI {
         }
         while (link != null) {
 
-            output = CMD.cmd(base + link);
+            output = CMD.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
 
@@ -297,14 +297,14 @@ public class GithubAPI {
                     continue;
                 }
 
-                if (line.contains("{")) {
+                if (line.contains("  {")) {
                     cont++;
                 }
 
-                if (line.contains("}")) {
+                if (line.contains("    },")) {
                     cont--;
 
-                    if (cont == 0) {
+                    if (cont == 0 && name != null) {
                         fw.writeln("name: " + name);
                         fw.writeln("\tFull name: " + fullName);
                         fw.writeln("\tPrivate: " + priva);
@@ -332,9 +332,23 @@ public class GithubAPI {
                         } catch (IOException ex) {
                             Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
                         }
+
+                        name = null;
+                        fullName = null;
+                        priva = null;
+                        htmlUrl = null;
+                        url = null;
+                        contributors = 0;
+                        languagesList = null;
+
                     }
 
                 }
+
+                if (cont > 1) {
+                    continue;
+                }
+
                 if (line.contains(NAME)) {
                     name = Parser.getContent(line);
                 }
@@ -371,7 +385,7 @@ public class GithubAPI {
 
         Project result = new Project();
 
-        CMDOutput output = CMD.cmd(base + url);
+        CMDOutput output = CMD.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
 
