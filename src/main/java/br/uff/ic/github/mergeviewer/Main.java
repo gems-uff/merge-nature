@@ -7,13 +7,11 @@ package br.uff.ic.github.mergeviewer;
 
 import br.uff.ic.gems.merge.utils.KrakenFile;
 import br.uff.ic.gems.merge.utils.MergeUtils;
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
 import br.uff.ic.github.mergeviewer.util.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
-import java.io.File;
 import java.io.Writer;
 import java.util.List;
 import javax.swing.JFileChooser;
@@ -269,8 +267,8 @@ public class Main extends javax.swing.JFrame {
             repositoryPath = initProject.getRepositoryPath();
         }
         Understanding understanding = new Understanding(jProgressBar, cbFiles, repositoryPath);
-        Thread unThread = new Thread(understanding);
-        unThread.run();
+        Thread understand = new Thread(understanding);
+        understand.run();
     }//GEN-LAST:event_btnUnderstandActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -307,7 +305,7 @@ public class Main extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser();
         int result = chooser.showOpenDialog(jMenu1);
 
-        if (result == chooser.APPROVE_OPTION) {
+        if (result == JFileChooser.APPROVE_OPTION) {
             List<String> fileToLines = MergeUtils.fileToLines(chooser.getSelectedFile().getAbsolutePath());
 
             DefaultTableModel model = (DefaultTableModel) jTableCont.getModel();
@@ -379,6 +377,7 @@ public class Main extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Main().setVisible(true);
 
