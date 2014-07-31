@@ -322,7 +322,7 @@ public class Main extends javax.swing.JFrame {
                     continue;
                 }
                 String sha = split[0];
-                String status = split[1].replaceAll(" ", "");
+                String status = split[1].replaceFirst(" ", "");
 
                 model.insertRow(progress++, new Object[]{sha, status});
 
