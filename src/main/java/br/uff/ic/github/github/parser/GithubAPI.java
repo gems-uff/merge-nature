@@ -13,9 +13,13 @@ import br.uff.ic.github.github.file.WriteFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -169,12 +173,11 @@ public class GithubAPI {
 
         boolean area = false;
 
-        if (url.endsWith("/")) {
-            url += "languages";
-        } else {
-            url += "/languages";
-        }
-
+//        if (url.endsWith("/")) {
+//            url += "languages";
+//        } else {
+//            url += "/languages";
+//        }
         CMDOutput output = CMD.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
@@ -213,12 +216,11 @@ public class GithubAPI {
         int result = 0;
         int controller = 0;
 
-        if (url.endsWith("/")) {
-            url += "contributors";
-        } else {
-            url += "/contributors";
-        }
-
+//        if (url.endsWith("/")) {
+//            url += "contributors";
+//        } else {
+//            url += "/contributors";
+//        }
         CMDOutput output = null;
         String link = url;
 
@@ -267,19 +269,7 @@ public class GithubAPI {
 
         int cont = 0;
 
-        String NAME = "\"name\":";
-        String FULL_NAME = "\"full_name\":";
-        String PRIVATE = "\"private\":";
-        String HTML_URL = "\"html_url\":";
-        String URL = "\"url\":";
         String LINK = "Link:";
-
-        String name, fullName, priva, htmlUrl, url;
-        name = null;
-        fullName = null;
-        priva = null;
-        htmlUrl = null;
-        url = null;
 
         CMDOutput output = null;
         String link = "https://api.github.com/repositories";
@@ -287,83 +277,78 @@ public class GithubAPI {
         if (since > 0) {
             link = "https://api.github.com/repositories?since=" + since;
         }
+
+        JSONParser parser = new JSONParser();
+
         while (link != null) {
 
             output = CMD.cmdGithub(base + link);
 
+            String content = "";
+            boolean begin = false;
+            int count = 0;
+
             for (String line : output.getOutput()) {
 
-                if (line.contains(LINK)) {
-                    continue;
+                if (line.equals("[")) {
+                    begin = true;
                 }
 
-                if (line.startsWith("  {") || line.startsWith("    \"owner\": {")) {
-                    cont++;
+                if (line.endsWith("},")) {
+                    count++;
                 }
 
-                if (line.startsWith("    },") || line.startsWith("  },")) {
-                    cont--;
+                if (begin && !line.equals("[") && !line.equals("]")) {
 
-                    if (cont == 0 && name != null) {
-                        fw.writeln("name: " + name);
-                        fw.writeln("\tFull name: " + fullName);
-                        fw.writeln("\tPrivate: " + priva);
-                        fw.writeln("\tHTML URL: " + htmlUrl);
-                        fw.writeln("\tURL: " + url);
-
-                        int contributors = GithubAPI.contributors(url);
-                        fw.writeln("\tContributors = " + contributors);
-
-                        List<Language> languagesList = GithubAPI.languagesList(url);
-                        if (languagesList != null) {
-                            fw.writeln("\tLanguages = " + languagesList.size());
-                            for (Language language : languagesList) {
-                                fw.writeln("\t\t" + language.getName() + ":" + language.getPercentage());
-                            }
-                        } else {
-                            fw.writeln("\tLanguages = 0");
-                        }
-
-                        try {
-                            System.out.println(name);
-                            fw.setReplace(false);
-                            fw.close();
-                            fw.open();
-                        } catch (IOException ex) {
-                            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-
-                        name = null;
-                        fullName = null;
-                        priva = null;
-                        htmlUrl = null;
-                        url = null;
-                        contributors = 0;
-                        languagesList = null;
-
+                    if (line.endsWith("},")/* && count == 2*/) {
+                        content += line.replace("},", "}");
+                    } else {
+                        content += line;
                     }
-
                 }
 
-                if (cont > 1) {
-                    continue;
+                if (count == 2) {
+
+                    try {
+                        Object parse = parser.parse(content);
+                        JSONObject jsono = (JSONObject) parse;
+
+                        String name = jsono.get("name").toString();
+                        String fullName = jsono.get("full_name").toString();
+                        String url = jsono.get("url").toString();
+                        String htmlUrl = jsono.get("html_url").toString();
+                        String contributorsUrl = jsono.get("contributors_url").toString();
+                        String languagesUrl = jsono.get("languages_url").toString();
+                        int contributors = GithubAPI.contributors(contributorsUrl);
+                        List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+
+                        System.out.println(name);
+//                        System.out.println("\tFullName: "+fullName);
+//                        System.out.println("\tURL: "+url);
+//                        System.out.println("\tHtmlURL: "+htmlUrl);
+//                        System.out.println("\tContributors: " + contributors);
+//                        System.out.println("\tLanguages: " + languagesList.size());
+//                        for (Language language : languagesList) {
+//                            System.out.println("\t\t"+language.getName()+": "+language.getPercentage());
+//                        }
+
+                        fw.writeln("Name: " + name);
+                        fw.writeln("\tFullName: " + fullName);
+                        fw.writeln("\tURL: " + url);
+                        fw.writeln("\tHtmlURL: " + htmlUrl);
+                        fw.writeln("\tContributors: " + contributors);
+                        fw.writeln("\tLanguages: " + languagesList.size());
+                        for (Language language : languagesList) {
+                            fw.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
+                        }
+
+                        content = "";
+                        count = 0;
+                    } catch (ParseException ex) {
+                        Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
-                if (line.contains(NAME)) {
-                    name = Parser.getContent(line);
-                }
-                if (line.contains(FULL_NAME)) {
-                    fullName = Parser.getContent(line);
-                }
-                if (line.contains(PRIVATE)) {
-                    priva = Parser.getContent(line);
-                }
-                if (line.contains(HTML_URL)) {
-                    htmlUrl = Parser.getContent(line);
-                }
-                if (line.contains(URL)) {
-                    url = Parser.getContent(line);
-                }
             }
 
             link = Parser.getLink(output.getOutput());
