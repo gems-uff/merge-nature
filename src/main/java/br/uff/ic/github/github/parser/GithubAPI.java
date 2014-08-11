@@ -13,7 +13,6 @@ import br.uff.ic.github.github.file.WriteFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -314,6 +313,7 @@ public class GithubAPI {
                         JSONObject jsono = (JSONObject) parse;
 
                         String name = jsono.get("name").toString();
+                        String id = jsono.get("id").toString();
                         String fullName = jsono.get("full_name").toString();
                         String url = jsono.get("url").toString();
                         String htmlUrl = jsono.get("html_url").toString();
@@ -333,6 +333,7 @@ public class GithubAPI {
 //                        }
 
                         fw.writeln("Name: " + name);
+                        fw.writeln("\tId: " + id);
                         fw.writeln("\tFullName: " + fullName);
                         fw.writeln("\tURL: " + url);
                         fw.writeln("\tHtmlURL: " + htmlUrl);
