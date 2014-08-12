@@ -24,11 +24,10 @@ public class Main {
         String reportPath = null;
         int since = 0;
 
-        if(args.length == 1){
-            reportPath = args[0];
+        if(args.length == 2){
             
             try {
-                ReportReader.getJavaProjects(reportPath);
+                ReportReader.getJavaProjects(args[0], args[1]);
             } catch (IOException ex) {
                 System.out.println("Verify the path!");
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

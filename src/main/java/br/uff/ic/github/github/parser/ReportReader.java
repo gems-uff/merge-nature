@@ -6,6 +6,7 @@
 package br.uff.ic.github.github.parser;
 
 import br.uff.ic.github.github.data.Project;
+import br.uff.ic.github.github.file.WriteFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -17,13 +18,13 @@ import org.apache.commons.io.FileUtils;
  */
 public class ReportReader {
 
-    public static void getJavaProjects(String reportPath) throws IOException {
+    public static void getJavaProjects(String reportPath, String outputPath) throws IOException {
 
-        String name = "Name:";
-        String fullName = "FullName:";
+//        String name = "Name:";
+//        String fullName = "FullName:";
         String url = "URL:";
         String htmlUrl = "HtmlURL:";
-        String contributors = "Contributors:";
+//        String contributors = "Contributors:";
         String java = "JAVA:";
 
         List<String> readLines = FileUtils.readLines(new File(reportPath));
@@ -31,6 +32,9 @@ public class ReportReader {
         String urlApi = null;
         double percentage = 0;
 
+        WriteFile writeFile = new WriteFile(outputPath, false);
+        writeFile.open();
+        
         for (String line : readLines) {
 
             if (line.contains(url) && !line.contains(htmlUrl)) {
@@ -40,6 +44,10 @@ public class ReportReader {
                     Project project = GithubAPI.project(urlApi);
                     System.out.println(project.toString());
                     System.out.println("\t" + percentage);
+                    
+                    writeFile.writeln(project.getName()+", "+project.getCreatedAt()
+                            +", "+project.getUpdatedAt()+", "+project.getUrl()
+                            +", "+project.getHtmlUrl()+", "+project.isPriva()+", "+percentage);
                 }
 
                 urlApi = getContent(line);
@@ -50,7 +58,7 @@ public class ReportReader {
             }
 
         }
-
+        writeFile.close();
     }
 
     public static String getContent(String line) {
