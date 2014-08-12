@@ -323,14 +323,6 @@ public class GithubAPI {
                         List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
 
                         System.out.println(name);
-//                        System.out.println("\tFullName: "+fullName);
-//                        System.out.println("\tURL: "+url);
-//                        System.out.println("\tHtmlURL: "+htmlUrl);
-//                        System.out.println("\tContributors: " + contributors);
-//                        System.out.println("\tLanguages: " + languagesList.size());
-//                        for (Language language : languagesList) {
-//                            System.out.println("\t\t"+language.getName()+": "+language.getPercentage());
-//                        }
 
                         fw.writeln("Name: " + name);
                         fw.writeln("\tId: " + id);
@@ -362,6 +354,59 @@ public class GithubAPI {
         fw.close();
     }
 
+    public static Project project(String link) {
+        Project project = new Project();
+
+        CMDOutput output = null;
+
+        output = CMD.cmdGithub(base + link);
+
+        String content = "";
+        boolean begin = false;
+        int count = 0;
+
+        for (String line : output.getOutput()) {
+
+            if (line.equals("{")) {
+                begin = true;
+            }
+
+            if (line.endsWith("},")) {
+                count++;
+            }
+
+            if (begin && !line.equals("[") && !line.equals("]")) {
+
+                if (line.endsWith("},")/* && count == 2*/) {
+                    content += line.replace("},", "}");
+                } else {
+                    content += line;
+                }
+            }
+
+        }
+
+        JSONParser parser = new JSONParser();
+        Object parse;
+
+        try {
+            parse = parser.parse(content);
+            JSONObject jsono = (JSONObject) parse;
+
+            project.setCreatedAt(jsono.get("created_at").toString());
+            project.setHtmlUrl(jsono.get("html_url").toString());
+            project.setName(jsono.get("name").toString());
+            project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
+            project.setUpdatedAt(jsono.get("updated_at").toString());
+            project.setUrl(jsono.get("url").toString());
+
+        } catch (ParseException ex) {
+            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return project;
+    }
+
     public static Project projectInfo(String url) {
 
         String CREATED_AT = "\"created_at\":";
@@ -391,5 +436,5 @@ public class GithubAPI {
 
         return result;
     }
-
+    
 }

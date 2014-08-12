@@ -120,7 +120,7 @@ public class Project {
         result += "\t" + this.updatedAt + "\n";
         result += "\t" + this.url + "\n";
         result += "\t" + this.htmlUrl + "\n";
-        result += "\tprivate: " + this.priva + "\n";
+        result += "\tprivate: " + this.priva;
 
         return result;
     }

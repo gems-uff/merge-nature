@@ -6,6 +6,10 @@
 package br.uff.ic.github.github;
 
 import br.uff.ic.github.github.parser.GithubAPI;
+import br.uff.ic.github.github.parser.ReportReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +24,17 @@ public class Main {
         String reportPath = null;
         int since = 0;
 
+        if(args.length == 1){
+            reportPath = args[0];
+            
+            try {
+                ReportReader.getJavaProjects(reportPath);
+            } catch (IOException ex) {
+                System.out.println("Verify the path!");
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         if (args.length < 3) {
             System.out.println("At least 3 parameters are expected! (1) username, (2) password, (3) path to save the report, and (4) last page");
         }
