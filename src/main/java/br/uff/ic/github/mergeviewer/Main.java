@@ -7,25 +7,32 @@ package br.uff.ic.github.mergeviewer;
 
 import br.uff.ic.gems.merge.utils.KrakenFile;
 import br.uff.ic.gems.merge.utils.MergeUtils;
+import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
+import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
+import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import br.uff.ic.github.mergeviewer.util.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
+import java.io.File;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 /**
- *
  * @author Gleiph
  */
 public class Main extends javax.swing.JFrame {
 
     private String repositoryPath;
     private InitProject initProject;
+
+    private List<ConflictingChunk> conflicts;
 
     /**
      * Creates new form Main
@@ -57,12 +64,15 @@ public class Main extends javax.swing.JFrame {
         cbFiles = new javax.swing.JComboBox();
         btnNextConflict = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jCbxConflicts = new javax.swing.JComboBox();
+        jButton2 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Project");
@@ -79,7 +89,7 @@ public class Main extends javax.swing.JFrame {
             jPanelProgressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelProgressLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE))
+                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 15, Short.MAX_VALUE))
         );
 
         jProgressBar.getAccessibleContext().setAccessibleName("progress");
@@ -103,6 +113,11 @@ public class Main extends javax.swing.JFrame {
         });
 
         cbFiles.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbFiles.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbFilesItemStateChanged(evt);
+            }
+        });
 
         btnNextConflict.setText("Next conflict");
         btnNextConflict.addActionListener(new java.awt.event.ActionListener() {
@@ -118,6 +133,15 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jCbxConflicts.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jButton2.setText("Show");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelContentLayout = new javax.swing.GroupLayout(jPanelContent);
         jPanelContent.setLayout(jPanelContentLayout);
         jPanelContentLayout.setHorizontalGroup(
@@ -125,30 +149,34 @@ public class Main extends javax.swing.JFrame {
             .addGroup(jPanelContentLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelContentLayout.createSequentialGroup()
-                        .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbFiles, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanelContentLayout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(btnNextConflict)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton1)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(33, 33, 33)
+                        .addComponent(btnNextConflict)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanelContentLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnUnderstand)
-                        .addContainerGap())
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)))
+                        .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelContentLayout.createSequentialGroup()
+                                .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jCbxConflicts, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cbFiles, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnUnderstand)
+                                    .addGroup(jPanelContentLayout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jButton2)))
+                                .addContainerGap())))))
         );
         jPanelContentLayout.setVerticalGroup(
             jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelContentLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelContentLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2)
-                        .addContainerGap())
                     .addGroup(jPanelContentLayout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -157,9 +185,14 @@ public class Main extends javax.swing.JFrame {
                             .addComponent(btnUnderstand))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jCbxConflicts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                        .addGroup(jPanelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnNextConflict)
-                            .addComponent(jButton1))
-                        .addGap(0, 9, Short.MAX_VALUE))))
+                            .addComponent(jButton1)))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
 
         jMenu1.setText("File");
@@ -196,7 +229,16 @@ public class Main extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Show");
+
+        jMenuItem4.setText("Statistics");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem4);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -268,7 +310,7 @@ public class Main extends javax.swing.JFrame {
         }
         Understanding understanding = new Understanding(jProgressBar, cbFiles, repositoryPath);
         Thread understand = new Thread(understanding);
-        understand.run();
+        understand.start();
     }//GEN-LAST:event_btnUnderstandActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -288,7 +330,13 @@ public class Main extends javax.swing.JFrame {
         if (result == chooser.APPROVE_OPTION) {
             Writer writer = KrakenFile.createWriter(chooser.getSelectedFile().getAbsolutePath());
             for (int i = 0; i < rowCount; i++) {
-                KrakenFile.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1) + "\n", writer);
+                if (model.getValueAt(i, 2) != null) {
+                    KrakenFile.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
+                            + ", " + model.getValueAt(i, 2) + ", " + model.getValueAt(i, 3) + "\n", writer);
+                } else {
+                    KrakenFile.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
+                            + ", " + ", " + "\n", writer);
+                }
             }
 
             if (initProject != null) {
@@ -312,6 +360,8 @@ public class Main extends javax.swing.JFrame {
 
             model.addColumn("SHA");
             model.addColumn("Status");
+            model.addColumn("Files");
+            model.addColumn("Percentage");
 
             int progress = 0;
             for (String line : fileToLines) {
@@ -323,8 +373,10 @@ public class Main extends javax.swing.JFrame {
                 }
                 String sha = split[0];
                 String status = split[1].replaceFirst(" ", "");
+                String files = split[2].replaceFirst(" ", "");
+                String percentage = split[3].replaceFirst(" ", "");
 
-                model.insertRow(progress++, new Object[]{sha, status});
+                model.insertRow(progress++, new Object[]{sha, status, files, percentage});
 
             }
             repositoryPath = fileToLines.get(fileToLines.size() - 1);
@@ -342,11 +394,145 @@ public class Main extends javax.swing.JFrame {
 
         for (int i = selectedRow + 1; i < jTableCont.getRowCount(); i++) {
             if (jTableCont.getModel().getValueAt(i, 1).toString().equals(Variables.CONFLICT)) {
-
+                jTableCont.setEditingRow(i);
+                System.out.println(i);
                 break;
             }
         }
     }//GEN-LAST:event_btnNextConflictActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        if (initProject != null) {
+            repositoryPath = initProject.getRepositoryPath();
+        }
+
+        List<String> allRevisions = GitCMD.getAllRevisions(repositoryPath);
+        String date = GitCMD.getDate(repositoryPath, allRevisions.get(0));
+        String date1 = GitCMD.getDate(repositoryPath, allRevisions.get(allRevisions.size() - 1));
+        List<String> mergeRevisions = GitCMD.getMergeRevisions(repositoryPath);
+
+        TableModel model = jTableCont.getModel();
+        int rowCount = model.getRowCount();
+        int conflicts = 0;
+
+        for (int i = 0; i < rowCount; i++) {
+            if (model.getValueAt(i, 1).equals(Variables.CONFLICT)) {
+                conflicts++;
+            }
+        }
+
+        String information = "Created: " + date1 + "\n"
+                + "Updated: " + date + "\n"
+                + "Commits: " + allRevisions.size() + "\n"
+                + "Contributers: ? \n"
+                + "Merges: " + mergeRevisions.size() + "\n"
+                + "Conflicts: " + conflicts;
+
+        JOptionPane.showMessageDialog(jPanelContent, information);
+
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    String currentFile = "";
+
+    private void cbFilesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbFilesItemStateChanged
+        // TODO add your handling code here:
+
+        if (cbFiles.getSelectedItem() != null && !currentFile.equals(cbFiles.getSelectedItem().toString())) {
+
+            conflicts = new ArrayList<>();
+            ConflictingChunk conflictingChunk = null;
+
+            System.out.println(cbFiles.getSelectedItem().toString());
+            currentFile = cbFiles.getSelectedItem().toString();
+
+            if (initProject != null) {
+                repositoryPath = initProject.getRepositoryPath();
+            }
+
+            String currentFile = cbFiles.getSelectedItem().toString();
+            List<String> file = MergeUtils.fileToLines(currentFile);
+
+            int lineNumber = 0;
+
+            int id = 1;
+
+            for (String line : file) {
+                if (line.contains("<<<<<<<")) {
+                    conflictingChunk = new ConflictingChunk();
+                    conflictingChunk.setBegin(lineNumber);
+                } else if (line.contains(">>>>>>>")) {
+                    conflictingChunk.setEnd(lineNumber + 1);//Why?
+                    conflictingChunk.setId("Case " + id++);
+
+                    conflicts.add(conflictingChunk);
+                }
+                lineNumber++;
+            }
+            jCbxConflicts.removeAllItems();
+
+            for (ConflictingChunk conflict : conflicts) {
+                jCbxConflicts.addItem(conflict.getId());
+            }
+        }
+
+        //TODO: 1) Identify the conflicting areas 
+        //      2) Calc diffs
+        //      3) Show Original version, diffs and final revision
+    }//GEN-LAST:event_cbFilesItemStateChanged
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        int selectedIndex = jCbxConflicts.getSelectedIndex();
+        int context = 3;
+        ConflictingChunk conflictArea = conflicts.get(selectedIndex);
+
+        if (initProject != null) {
+            repositoryPath = initProject.getRepositoryPath();
+        }
+
+        String relativePath = cbFiles.getSelectedItem().toString().replace(repositoryPath, "");
+        String repositorySolutionPath = repositoryPath + "clone" + File.pathSeparator + "OK";
+
+        if (!new File(repositorySolutionPath).isDirectory()) {
+            System.out.println("Cloning Merge");
+            GitCMD.clone(repositoryPath, repositoryPath, repositorySolutionPath);
+        }
+
+        GitCMD.checkout(repositorySolutionPath, Information.DEVELOPER_MERGE_REVISION);
+
+        List<String> fileConflict = MergeUtils.fileToLines(cbFiles.getSelectedItem().toString());
+        List<String> fileSolution = MergeUtils.fileToLines(repositorySolutionPath + relativePath);
+
+        int conflictLowerBound, conflictingUpperBound;
+        conflictLowerBound = conflictArea.getBegin() - context;
+        conflictingUpperBound = conflictArea.getEnd() + context;
+
+        if (conflictLowerBound < 0) {
+            conflictLowerBound = 0;
+        }
+
+        if (conflictingUpperBound > fileConflict.size()) {
+            conflictingUpperBound = fileConflict.size();
+        }
+
+        List<String> conflictingArea = fileConflict.subList(conflictLowerBound, conflictingUpperBound);
+
+        List<String> patternBegin = fileConflict.subList(conflictLowerBound, conflictArea.getBegin());
+        List<String> patternEnd;
+        if (conflictArea.getEnd() <= conflictingUpperBound) {
+            patternEnd = fileConflict.subList(conflictArea.getEnd(), conflictingUpperBound);
+        } else {
+            patternEnd = null;
+        }
+
+        List<String> solvingArea = ContextFinder.getSolution(patternBegin, patternEnd, fileSolution);
+        //End
+
+        ShowCase showCase = new ShowCase(conflictingArea, solvingArea);
+        showCase.setVisible(true);
+
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -390,12 +576,15 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton btnUnderstand;
     private javax.swing.JComboBox cbFiles;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox jCbxConflicts;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanelContent;
     private javax.swing.JPanel jPanelProgress;
     private javax.swing.JProgressBar jProgressBar;

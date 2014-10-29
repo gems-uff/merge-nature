@@ -6,13 +6,10 @@
 package br.uff.ic.github.mergeviewer.processing;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.Main;
 import br.uff.ic.github.mergeviewer.util.OutputParser;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JProgressBar;
@@ -49,6 +46,8 @@ public class InitProject implements Runnable {
         jTable.setModel(model);
         model.addColumn("SHA");
         model.addColumn("Status");
+        model.addColumn("Files");
+        model.addColumn("Percentage");
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -56,7 +55,7 @@ public class InitProject implements Runnable {
         File absoluteFile = fileChooser.getSelectedFile().getAbsoluteFile();
 
         jTable.setVisible(false);
-        
+
         setRepositoryPath(absoluteFile.toString());
         List<String> mergeRevisions = GitCMD.getMergeRevisions(getRepositoryPath());
         jProgressBar.setMinimum(1);
@@ -65,36 +64,55 @@ public class InitProject implements Runnable {
 
         jProgressBar.setIndeterminate(false);
 
+        int count = 0;
+
         for (String revision : mergeRevisions) {
 
-            List<String> parents = GitCMD.getParents(getRepositoryPath(), revision);
-            GitCMD.reset(getRepositoryPath());
+            System.out.println((++count) + " Current revision: " + revision);
+            List<String> parents = GitCMD.getParents(repositoryPath, revision);
+            GitCMD.reset(repositoryPath);
 
+            double javaPercentage = 0;
+            double files = 0;
             if (parents.size() == 2) {
                 GitCMD.checkout(getRepositoryPath(), parents.get(0));
                 List<String> merge = GitCMD.merge(repositoryPath, parents.get(1), false, true);
 
                 if (OutputParser.isConflict(merge)) {
                     status = Variables.CONFLICT;
+                    List<String> conflictedFiles = GitCMD.conflictedFiles(repositoryPath);
+
+                    double javaFiles = 0;
+
+                    files = conflictedFiles.size();
+
+                    for (String file : conflictedFiles) {
+                        if (file.toUpperCase().contains(".JAVA")) {
+                            javaFiles++;
+                        }
+                    }
+
+                    javaPercentage = javaFiles / files;
+
                 } else if (OutputParser.isFastForward(merge)) {
                     status = Variables.FAST_FORWARD;
                 } else {
                     status = Variables.NO_CONFLICT;
                 }
-            }
 
-            model.insertRow(progress, new Object[]{revision, status});
-            jProgressBar.setValue(++progress);
+                if (status.equals(Variables.CONFLICT)) {
+                    model.insertRow(progress, new Object[]{revision, status, files, javaPercentage});
+                } else {
+                    model.insertRow(progress, new Object[]{revision, status});
+                }
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                jProgressBar.setValue(++progress);
+            } else {
+                System.out.println("Not implemented! Implement more than two parents!");
             }
 
         }
 
-//        jProgressBar.setVisible(false);
         jTable.setVisible(true);
 
     }

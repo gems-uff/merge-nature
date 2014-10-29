@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package br.uff.ic.github.mergeviewer;
 
-import br.uff.ic.gems.merge.utils.KrakenFile;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -21,6 +22,9 @@ import org.apache.commons.io.FileUtils;
 public class ShowFile extends javax.swing.JFrame {
 
     String filePath;
+
+    private int pos = 0;
+
     /**
      * Creates new form ShowFile
      */
@@ -31,17 +35,18 @@ public class ShowFile extends javax.swing.JFrame {
     public ShowFile(String filePath) {
         this.filePath = filePath;
         initComponents();
-        
+
         try {
             String readFileToString = FileUtils.readFileToString(new File(filePath));
-        jText.setText(readFileToString);
+            jText.setText(readFileToString);
+            jText.setEditable(false);
         } catch (IOException ex) {
+            jText.setText("The file " + filePath + " does not exist!");
             Logger.getLogger(ShowFile.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -58,6 +63,11 @@ public class ShowFile extends javax.swing.JFrame {
 
         jText.setColumns(20);
         jText.setRows(5);
+        jText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jText);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -73,6 +83,54 @@ public class ShowFile extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextKeyPressed
+        // TODO add your handling code here:
+
+        String text = "";
+        if (evt.getKeyChar() == 'f') {
+            text = JOptionPane.showInputDialog(rootPane, "Find?");
+        } else if (evt.getKeyChar() == 'n') {
+            text = "<<<<<<<";
+        }
+
+        jText.requestFocusInWindow();
+
+        if (text != null && text.length() > 0) {
+            Document document = jText.getDocument();
+            int length = text.length();
+
+            try {
+
+                boolean found = false;
+                if (pos + length > document.getLength()) {
+                    pos = 0;
+                }
+
+                while (pos + length <= document.getLength()) {
+                    String match = document.getText(pos, length);
+
+                    if (match.equals(text)) {
+                        found = true;
+                        break;
+                    }
+                    pos++;
+                }
+
+                if (found) {
+                    Rectangle viewRect = jText.modelToView(pos);
+                    jText.scrollRectToVisible(viewRect);
+                    jText.setCaretPosition(pos + length);
+                    jText.moveCaretPosition(pos);
+                    pos += length;
+                }
+            } catch (BadLocationException ex) {
+                Logger.getLogger(ShowFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+
+    }//GEN-LAST:event_jTextKeyPressed
 
     /**
      * @param args the command line arguments
