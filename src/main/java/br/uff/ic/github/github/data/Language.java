@@ -6,15 +6,29 @@
 
 package br.uff.ic.github.github.data;
 
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  *
  * @author Gleiph
  */
-public class Language {
+
+@Entity
+public class Language implements Serializable{
  
+    @Id
+    @GeneratedValue
+    Long id;
+    
     private String name;
     private int size;
     private double percentage;
+
+    public Language() {
+    }
 
     /**
      * @return the name

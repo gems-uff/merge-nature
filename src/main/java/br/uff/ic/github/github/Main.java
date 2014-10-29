@@ -24,6 +24,7 @@ public class Main {
         String reportPath = null;
         int since = 0;
 
+        //Java projects
         if(args.length == 2){
             
             try {
@@ -34,7 +35,7 @@ public class Main {
             }
         }
         
-        if (args.length < 3) {
+        else if (args.length < 3) {
             System.out.println("At least 3 parameters are expected! (1) username, (2) password, (3) path to save the report, and (4) last page");
         }
 
@@ -47,9 +48,9 @@ public class Main {
                 since = Integer.parseInt(args[3]);
             }
             
+            GithubAPI.init(username, password);
+            GithubAPI.projects(since, reportPath);
         }
 
-        GithubAPI.init(username, password);
-        GithubAPI.projects(since, reportPath);
     }
 }

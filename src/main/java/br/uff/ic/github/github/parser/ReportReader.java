@@ -6,7 +6,7 @@
 package br.uff.ic.github.github.parser;
 
 import br.uff.ic.github.github.data.Project;
-import br.uff.ic.github.github.file.WriteFile;
+import br.uff.ic.github.github.file.FileManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -20,11 +20,8 @@ public class ReportReader {
 
     public static void getJavaProjects(String reportPath, String outputPath) throws IOException {
 
-//        String name = "Name:";
-//        String fullName = "FullName:";
         String url = "URL:";
         String htmlUrl = "HtmlURL:";
-//        String contributors = "Contributors:";
         String java = "JAVA:";
 
         List<String> readLines = FileUtils.readLines(new File(reportPath));
@@ -32,7 +29,7 @@ public class ReportReader {
         String urlApi = null;
         double percentage = 0;
 
-        WriteFile writeFile = new WriteFile(outputPath, false);
+        FileManager writeFile = new FileManager(outputPath, false);
         writeFile.open();
         
         for (String line : readLines) {
@@ -46,7 +43,7 @@ public class ReportReader {
                     System.out.println("\t" + percentage);
                     
                     writeFile.writeln(project.getName()+", "+project.getCreatedAt()
-                            +", "+project.getUpdatedAt()+", "+project.getUrl()
+                            +", "+project.getUpdatedAt()+", "+project.getSearchUrl()
                             +", "+project.getHtmlUrl()+", "+project.isPriva()+", "+percentage);
                 }
 

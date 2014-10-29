@@ -9,7 +9,7 @@ import br.uff.ic.github.github.CMD;
 import br.uff.ic.github.github.CMDOutput;
 import br.uff.ic.github.github.data.Language;
 import br.uff.ic.github.github.data.Project;
-import br.uff.ic.github.github.file.WriteFile;
+import br.uff.ic.github.github.file.FileManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -248,18 +248,33 @@ public class GithubAPI {
 
     public static void projects(int since, String reportPath) {
 
-        WriteFile fw;
+        FileManager fm;
         File report = new File(reportPath);
+        int lowerRange = 0;
 
         if (report.isFile()) {
-            fw = new WriteFile(reportPath, false);
+            fm = new FileManager(reportPath, false);
             //TODO: read the file and continue
+            List<String> file = fm.readFile();
+
+            if (file.size() > 20) {
+                lowerRange = file.size() - 200;
+            }
+
+            for (int i = lowerRange; i < file.size(); i++) {
+                String line = file.get(i);
+
+                if (line.contains("URL") && !line.contains("HtmlURL")) {
+                    
+                }
+            }
+
         } else {
-            fw = new WriteFile(reportPath, true);
+            fm = new FileManager(reportPath, true);
         }
 
         try {
-            fw.open();
+            fm.open();
         } catch (IOException ex) {
             Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Problem during report generation!");
@@ -324,15 +339,15 @@ public class GithubAPI {
 
                         System.out.println(name);
 
-                        fw.writeln("Name: " + name);
-                        fw.writeln("\tId: " + id);
-                        fw.writeln("\tFullName: " + fullName);
-                        fw.writeln("\tURL: " + url);
-                        fw.writeln("\tHtmlURL: " + htmlUrl);
-                        fw.writeln("\tContributors: " + contributors);
-                        fw.writeln("\tLanguages: " + languagesList.size());
+                        fm.writeln("Name: " + name);
+                        fm.writeln("\tId: " + id);
+                        fm.writeln("\tFullName: " + fullName);
+                        fm.writeln("\tURL: " + url);
+                        fm.writeln("\tHtmlURL: " + htmlUrl);
+                        fm.writeln("\tContributors: " + contributors);
+                        fm.writeln("\tLanguages: " + languagesList.size());
                         for (Language language : languagesList) {
-                            fw.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
+                            fm.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
                         }
 
                         content = "";
@@ -347,11 +362,11 @@ public class GithubAPI {
             link = Parser.getLink(output.getOutput());
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
-            fw.writeln("Next:" + split[split.length - 1]);
+            fm.writeln("Next:" + split[split.length - 1]);
             cont = 0;
         }
 
-        fw.close();
+        fm.close();
     }
 
     public static Project project(String link) {
@@ -398,7 +413,7 @@ public class GithubAPI {
             project.setName(jsono.get("name").toString());
             project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
             project.setUpdatedAt(jsono.get("updated_at").toString());
-            project.setUrl(jsono.get("url").toString());
+            project.setSearchUrl(jsono.get("url").toString());
 
         } catch (ParseException ex) {
             Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
@@ -428,7 +443,7 @@ public class GithubAPI {
             } else if (line.contains(NAME)) {
                 result.setName(Parser.getContent(line));
             } else if (line.contains(URL)) {
-                result.setUrl(Parser.getContent(line));
+                result.setSearchUrl(Parser.getContent(line));
             } else if (line.contains(HTML_URL)) {
                 result.setHtmlUrl(Parser.getContent(line));
             }
@@ -436,5 +451,5 @@ public class GithubAPI {
 
         return result;
     }
-    
+
 }

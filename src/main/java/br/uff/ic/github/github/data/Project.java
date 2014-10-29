@@ -5,26 +5,42 @@
  */
 package br.uff.ic.github.github.data;
 
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 /**
  *
  * @author Gleiph
  */
-public class Project {
+@Entity
+public class Project implements Serializable {
 
+    @Id
+    private Long id;
+    
     private String name;
     private String createdAt;
     private String updatedAt;
     private boolean priva;
     private String htmlUrl;
-    private String url;
+    private String searchUrl;
+    private int developers;
+    
+    @OneToMany
+    private List<Language> languages;
 
     public Project() {
+        this.id = 0l;
         this.name = null;
         this.createdAt = null;
         this.updatedAt = null;
         this.priva = false;
         this.htmlUrl = null;
-        this.url = null;
+        this.searchUrl = null;
+        this.developers = 0;
     }
 
     /**
@@ -97,19 +113,7 @@ public class Project {
         this.htmlUrl = htmlUrl;
     }
 
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @param url the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    
 
     @Override
     public String toString() {
@@ -118,10 +122,67 @@ public class Project {
         result = this.name + "\n";
         result += "\t" + this.createdAt + "\n";
         result += "\t" + this.updatedAt + "\n";
-        result += "\t" + this.url + "\n";
+        result += "\t" + this.getSearchUrl() + "\n";
         result += "\t" + this.htmlUrl + "\n";
+        result += "\t" + this.developers + "\n";
         result += "\tprivate: " + this.priva;
 
         return result;
+    }
+
+    /**
+     * @return the searchUrl
+     */
+    public String getSearchUrl() {
+        return searchUrl;
+    }
+
+    /**
+     * @param searchUrl the searchUrl to set
+     */
+    public void setSearchUrl(String searchUrl) {
+        this.searchUrl = searchUrl;
+    }
+
+    /**
+     * @return the developers
+     */
+    public int getDevelopers() {
+        return developers;
+    }
+
+    /**
+     * @param developers the developers to set
+     */
+    public void setDevelopers(int developers) {
+        this.developers = developers;
+    }
+
+    /**
+     * @return the languages
+     */
+    public List<Language> getLanguages() {
+        return languages;
+    }
+
+    /**
+     * @param languages the languages to set
+     */
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 }
