@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -248,39 +251,41 @@ public class GithubAPI {
 
     public static void projects(int since, String reportPath) {
 
-        FileManager fm;
-        File report = new File(reportPath);
-        int lowerRange = 0;
+        //Jpa manager
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("pGithub");
+        EntityManager manager = factory.createEntityManager();
 
-        if (report.isFile()) {
-            fm = new FileManager(reportPath, false);
-            //TODO: read the file and continue
-            List<String> file = fm.readFile();
-
-            if (file.size() > 20) {
-                lowerRange = file.size() - 200;
-            }
-
-            for (int i = lowerRange; i < file.size(); i++) {
-                String line = file.get(i);
-
-                if (line.contains("URL") && !line.contains("HtmlURL")) {
-                    
-                }
-            }
-
-        } else {
-            fm = new FileManager(reportPath, true);
-        }
-
-        try {
-            fm.open();
-        } catch (IOException ex) {
-            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Problem during report generation!");
-            return;
-        }
-
+//        FileManager fm;
+//        File report = new File(reportPath);
+//        int lowerRange = 0;
+//        if (report.isFile()) {
+//            fm = new FileManager(reportPath, false);
+//            //TODO: read the file and continue
+//            List<String> file = fm.readFile();
+//
+//            if (file.size() > 200) {
+//                lowerRange = file.size() - 200;
+//            }
+//
+//            for (int i = lowerRange; i < file.size(); i++) {
+//                String line = file.get(i);
+//
+//                if (line.contains("URL") && !line.contains("HtmlURL")) {
+//                    
+//                }
+//            }
+//
+//        } else {
+//            fm = new FileManager(reportPath, true);
+//        }
+//
+//        try {
+//            fm.open();
+//        } catch (IOException ex) {
+//            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
+//            System.out.println("Problem during report generation!");
+//            return;
+//        }
         int cont = 0;
 
         String LINK = "Link:";
@@ -327,27 +332,49 @@ public class GithubAPI {
                         Object parse = parser.parse(content);
                         JSONObject jsono = (JSONObject) parse;
 
-                        String name = jsono.get("name").toString();
+//                        String name = jsono.get("name").toString();
                         String id = jsono.get("id").toString();
-                        String fullName = jsono.get("full_name").toString();
-                        String url = jsono.get("url").toString();
-                        String htmlUrl = jsono.get("html_url").toString();
-                        String contributorsUrl = jsono.get("contributors_url").toString();
-                        String languagesUrl = jsono.get("languages_url").toString();
-                        int contributors = GithubAPI.contributors(contributorsUrl);
-                        List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+                        String searchUrl = jsono.get("url").toString();
+//                        String htmlUrl = jsono.get("html_url").toString();
+//                        String contributorsUrl = jsono.get("contributors_url").toString();
+//                        String languagesUrl = jsono.get("languages_url").toString();
+//                        int contributors = GithubAPI.contributors(contributorsUrl);
+//                        List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+//                        String isPrivate = jsono.get("private").toString();
+//                        System.out.println(name);
+//                        Project project = new Project();
+//                        project.setDevelopers(contributors);
+//                        project.setHtmlUrl(htmlUrl);
+//                        project.setId(Long.parseLong(id));
+//                        project.setLanguages(languagesList);
+//                        project.setName(name);
+//                        project.setPriva(Boolean.parseBoolean(isPrivate));
+//                        project.setSearchUrl(searchUrl);
+//                        project.setUpdatedAt("TODO");//TODO
+//                        project.setCreatedAt("");//TODO
+//                        fm.writeln("Name: " + name);
+//                        fm.writeln("\tId: " + id);
+//                        fm.writeln("\tFullName: " + fullName);
+//                        fm.writeln("\tURL: " + url);
+//                        fm.writeln("\tHtmlURL: " + htmlUrl);
+//                        fm.writeln("\tContributors: " + contributors);
+//                        fm.writeln("\tLanguages: " + languagesList.size());
+//                        for (Language language : languagesList) {
+//                            fm.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
+//                        }
 
-                        System.out.println(name);
+                        Project project = new Project();
+                        project = project.getProject(Long.parseLong(id), manager);
 
-                        fm.writeln("Name: " + name);
-                        fm.writeln("\tId: " + id);
-                        fm.writeln("\tFullName: " + fullName);
-                        fm.writeln("\tURL: " + url);
-                        fm.writeln("\tHtmlURL: " + htmlUrl);
-                        fm.writeln("\tContributors: " + contributors);
-                        fm.writeln("\tLanguages: " + languagesList.size());
-                        for (Language language : languagesList) {
-                            fm.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
+                        if (project == null) {
+
+                            project = project(searchUrl);
+                            manager.getTransaction().begin();
+                            manager.persist(project);
+                            manager.getTransaction().commit();
+                        } else {
+                            System.out.println("Skip: " + project.getName());
+                           
                         }
 
                         content = "";
@@ -362,11 +389,11 @@ public class GithubAPI {
             link = Parser.getLink(output.getOutput());
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
-            fm.writeln("Next:" + split[split.length - 1]);
+//            fm.writeln("Next:" + split[split.length - 1]);
             cont = 0;
         }
 
-        fm.close();
+//        fm.close();
     }
 
     public static Project project(String link) {
@@ -410,10 +437,23 @@ public class GithubAPI {
 
             project.setCreatedAt(jsono.get("created_at").toString());
             project.setHtmlUrl(jsono.get("html_url").toString());
+            project.setId(Long.parseLong(jsono.get("id").toString()));
             project.setName(jsono.get("name").toString());
             project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
-            project.setUpdatedAt(jsono.get("updated_at").toString());
             project.setSearchUrl(jsono.get("url").toString());
+            project.setUpdatedAt(jsono.get("updated_at").toString());
+
+            //Contributors
+            String developersUrl = jsono.get("contributors_url").toString();
+            int developers = GithubAPI.contributors(developersUrl);
+            project.setDevelopers(developers);
+
+            //Languages
+            String languagesUrl = jsono.get("languages_url").toString();
+            List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+            project.setLanguages(languagesList);
+
+            System.out.println(project.getName());
 
         } catch (ParseException ex) {
             Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
@@ -422,6 +462,10 @@ public class GithubAPI {
         return project;
     }
 
+    /**
+     * @deprecated @param url
+     * @return
+     */
     public static Project projectInfo(String url) {
 
         String CREATED_AT = "\"created_at\":";

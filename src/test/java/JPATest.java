@@ -5,7 +5,6 @@
  */
 import br.uff.ic.github.github.data.Language;
 import br.uff.ic.github.github.data.Project;
-import com.sun.corba.se.impl.orb.ORBVersionImpl;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -44,12 +43,13 @@ public class JPATest {
 
     @Test
     public void createPersist() {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Github");
+//        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Github");
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("testeDoido");
+
         EntityManager manager = factory.createEntityManager();
 
         Project project = new Project();
 
-        project.setId(0l);
         project.setCreatedAt("ini");
         project.setHtmlUrl("www...");
         project.setName("projectTest");
@@ -65,12 +65,23 @@ public class JPATest {
         language.setSize(1098);
 
         languages.add(language);
-        
-        project.setLanguages(languages);
 
-        
+        project.setLanguages(languages);
+        manager.getTransaction().begin();
         manager.persist(language);
         manager.persist(project);
+        manager.getTransaction().commit();
+
+        Project find = manager.find(Project.class, 1l);
+        Project find1 = manager.find(Project.class, 2l);
+
+        if (find != null) {
+            System.out.println(find.getName());
+        }
+
+        if (find1 != null) {
+            System.out.println(find1.getName());
+        }
 
     }
 }

@@ -7,7 +7,10 @@ package br.uff.ic.github.github.data;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -19,8 +22,9 @@ import javax.persistence.OneToMany;
 public class Project implements Serializable {
 
     @Id
+    @GeneratedValue
     private Long id;
-    
+
     private String name;
     private String createdAt;
     private String updatedAt;
@@ -28,8 +32,8 @@ public class Project implements Serializable {
     private String htmlUrl;
     private String searchUrl;
     private int developers;
-    
-    @OneToMany
+
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
     public Project() {
@@ -113,19 +117,17 @@ public class Project implements Serializable {
         this.htmlUrl = htmlUrl;
     }
 
-    
-
     @Override
     public String toString() {
         String result = "";
 
-        result = this.name + "\n";
-        result += "\t" + this.createdAt + "\n";
-        result += "\t" + this.updatedAt + "\n";
+        result = this.getName() + "\n";
+        result += "\t" + this.getCreatedAt() + "\n";
+        result += "\t" + this.getUpdatedAt() + "\n";
         result += "\t" + this.getSearchUrl() + "\n";
-        result += "\t" + this.htmlUrl + "\n";
-        result += "\t" + this.developers + "\n";
-        result += "\tprivate: " + this.priva;
+        result += "\t" + this.getHtmlUrl() + "\n";
+        result += "\t" + this.getDevelopers() + "\n";
+        result += "\tprivate: " + this.isPriva();
 
         return result;
     }
@@ -184,5 +186,9 @@ public class Project implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+    
+    public Project getProject(Long id, EntityManager manager){
+        return manager.find(Project.class, id);
     }
 }
