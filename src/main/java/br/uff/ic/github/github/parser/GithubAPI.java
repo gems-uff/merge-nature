@@ -5,13 +5,11 @@
  */
 package br.uff.ic.github.github.parser;
 
+import br.uff.ic.github.github.data.User;
 import br.uff.ic.github.github.CMD;
 import br.uff.ic.github.github.CMDOutput;
 import br.uff.ic.github.github.data.Language;
 import br.uff.ic.github.github.data.Project;
-import br.uff.ic.github.github.file.FileManager;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,9 +30,20 @@ public class GithubAPI {
     private static String base = null;
     private static final String BEGIN_PARENTS = "\"parents\": [";
     private static final String END_PARENTS = "]";
+    private static User user;
 
-    public static void init(String login, String password) {
-        base = "curl -i -u " + login + ":" + password + " ";
+    static {
+        User.init();
+    }
+
+    public static User nextUser() {
+        return init();
+    }
+
+    public static User init(/*String login, String password*/) {
+        user = User.nextUser();
+        base = "curl -i -u " + user.getLogin() + ":" + user.getPassword() + " ";
+        return user;
     }
 
     /**
@@ -168,18 +177,13 @@ public class GithubAPI {
 
     public static List<Language> languagesList(String url) {
 
-        List<Language> result = new ArrayList<Language>();
+        List<Language> result = new ArrayList<>();
         String name = null;
         int size = 0;
         double total = 0;
 
         boolean area = false;
 
-//        if (url.endsWith("/")) {
-//            url += "languages";
-//        } else {
-//            url += "/languages";
-//        }
         CMDOutput output = CMD.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
@@ -218,11 +222,6 @@ public class GithubAPI {
         int result = 0;
         int controller = 0;
 
-//        if (url.endsWith("/")) {
-//            url += "contributors";
-//        } else {
-//            url += "/contributors";
-//        }
         CMDOutput output = null;
         String link = url;
 
@@ -249,53 +248,18 @@ public class GithubAPI {
         return result;
     }
 
-    public static void projects(int since, String reportPath) {
+    public static void projects(/*int since, String reportPath*/) {
 
         //Jpa manager
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("pGithub");
         EntityManager manager = factory.createEntityManager();
 
-//        FileManager fm;
-//        File report = new File(reportPath);
-//        int lowerRange = 0;
-//        if (report.isFile()) {
-//            fm = new FileManager(reportPath, false);
-//            //TODO: read the file and continue
-//            List<String> file = fm.readFile();
-//
-//            if (file.size() > 200) {
-//                lowerRange = file.size() - 200;
-//            }
-//
-//            for (int i = lowerRange; i < file.size(); i++) {
-//                String line = file.get(i);
-//
-//                if (line.contains("URL") && !line.contains("HtmlURL")) {
-//                    
-//                }
-//            }
-//
-//        } else {
-//            fm = new FileManager(reportPath, true);
-//        }
-//
-//        try {
-//            fm.open();
-//        } catch (IOException ex) {
-//            Logger.getLogger(GithubAPI.class.getName()).log(Level.SEVERE, null, ex);
-//            System.out.println("Problem during report generation!");
-//            return;
-//        }
         int cont = 0;
 
         String LINK = "Link:";
 
         CMDOutput output = null;
         String link = "https://api.github.com/repositories";
-
-        if (since > 0) {
-            link = "https://api.github.com/repositories?since=" + since;
-        }
 
         JSONParser parser = new JSONParser();
 
@@ -332,49 +296,66 @@ public class GithubAPI {
                         Object parse = parser.parse(content);
                         JSONObject jsono = (JSONObject) parse;
 
-//                        String name = jsono.get("name").toString();
                         String id = jsono.get("id").toString();
                         String searchUrl = jsono.get("url").toString();
-//                        String htmlUrl = jsono.get("html_url").toString();
-//                        String contributorsUrl = jsono.get("contributors_url").toString();
-//                        String languagesUrl = jsono.get("languages_url").toString();
-//                        int contributors = GithubAPI.contributors(contributorsUrl);
-//                        List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
-//                        String isPrivate = jsono.get("private").toString();
-//                        System.out.println(name);
-//                        Project project = new Project();
-//                        project.setDevelopers(contributors);
-//                        project.setHtmlUrl(htmlUrl);
-//                        project.setId(Long.parseLong(id));
-//                        project.setLanguages(languagesList);
-//                        project.setName(name);
-//                        project.setPriva(Boolean.parseBoolean(isPrivate));
-//                        project.setSearchUrl(searchUrl);
-//                        project.setUpdatedAt("TODO");//TODO
-//                        project.setCreatedAt("");//TODO
-//                        fm.writeln("Name: " + name);
-//                        fm.writeln("\tId: " + id);
-//                        fm.writeln("\tFullName: " + fullName);
-//                        fm.writeln("\tURL: " + url);
-//                        fm.writeln("\tHtmlURL: " + htmlUrl);
-//                        fm.writeln("\tContributors: " + contributors);
-//                        fm.writeln("\tLanguages: " + languagesList.size());
-//                        for (Language language : languagesList) {
-//                            fm.writeln("\t\t" + language.getName() + ": " + language.getPercentage());
-//                        }
 
-                        Project project = new Project();
-                        project = project.getProject(Long.parseLong(id), manager);
+                        Project project = Project.getProject(Long.parseLong(id), manager);
 
+                        //Project is not in the database
                         if (project == null) {
 
                             project = project(searchUrl);
-                            manager.getTransaction().begin();
-                            manager.persist(project);
-                            manager.getTransaction().commit();
+
+                            if (project.getName() == null) {
+                                String priva = jsono.get("private").toString();
+                                String name = jsono.get("name").toString();
+                                String htmlUrl = jsono.get("html_url").toString();
+
+                                project.setCreatedAt(null);
+                                project.setHtmlUrl(htmlUrl);
+                                project.setId(Long.parseLong(id));
+                                project.setMessage(null);
+                                project.setName(name);
+                                project.setPriva(Boolean.parseBoolean(priva));
+                                project.setSearchUrl(searchUrl);
+                                project.setUpdatedAt(null);
+
+                                //Contributors
+                                String developersUrl = jsono.get("contributors_url").toString();
+                                int developers = GithubAPI.contributors(developersUrl);
+                                project.setDevelopers(developers);
+
+                                //Languages
+                                String languagesUrl = jsono.get("languages_url").toString();
+                                List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+                                project.setLanguages(languagesList);
+
+                                try {
+                                    if (!manager.getTransaction().isActive()) {
+                                        manager.getTransaction().begin();
+                                    }
+                                    manager.persist(project);
+                                    manager.getTransaction().commit();
+                                } catch (Exception e) {
+//                                    e.printStackTrace();
+                                    //TODO: investigate the cause 
+                                }
+                            } else {
+                                try {
+                                    if (!manager.getTransaction().isActive()) {
+                                        manager.getTransaction().begin();
+                                    }
+                                    manager.persist(project);
+                                    manager.getTransaction().commit();
+
+                                } catch (Exception e) {
+//                                    e.printStackTrace();
+                                }
+                            }
+
                         } else {
                             System.out.println("Skip: " + project.getName());
-                           
+
                         }
 
                         content = "";
@@ -389,11 +370,9 @@ public class GithubAPI {
             link = Parser.getLink(output.getOutput());
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
-//            fm.writeln("Next:" + split[split.length - 1]);
             cont = 0;
         }
 
-//        fm.close();
     }
 
     public static Project project(String link) {
@@ -435,24 +414,31 @@ public class GithubAPI {
             parse = parser.parse(content);
             JSONObject jsono = (JSONObject) parse;
 
-            project.setCreatedAt(jsono.get("created_at").toString());
-            project.setHtmlUrl(jsono.get("html_url").toString());
-            project.setId(Long.parseLong(jsono.get("id").toString()));
-            project.setName(jsono.get("name").toString());
-            project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
-            project.setSearchUrl(jsono.get("url").toString());
-            project.setUpdatedAt(jsono.get("updated_at").toString());
+            if (!jsono.containsKey("message")) {
 
-            //Contributors
-            String developersUrl = jsono.get("contributors_url").toString();
-            int developers = GithubAPI.contributors(developersUrl);
-            project.setDevelopers(developers);
+                project.setCreatedAt(jsono.get("created_at").toString());
+                project.setHtmlUrl(jsono.get("html_url").toString());
+                project.setId(Long.parseLong(jsono.get("id").toString()));
+                project.setName(jsono.get("name").toString());
+                project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
+                project.setSearchUrl(jsono.get("url").toString());
+                project.setUpdatedAt(jsono.get("updated_at").toString());
 
-            //Languages
-            String languagesUrl = jsono.get("languages_url").toString();
-            List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
-            project.setLanguages(languagesList);
+                //Contributors
+                String developersUrl = jsono.get("contributors_url").toString();
+                int developers = GithubAPI.contributors(developersUrl);
+                project.setDevelopers(developers);
 
+                //Languages
+                String languagesUrl = jsono.get("languages_url").toString();
+                List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+                project.setLanguages(languagesList);
+
+            } else {
+
+                project.setMessage(jsono.get("message").toString());
+
+            }
             System.out.println(project.getName());
 
         } catch (ParseException ex) {
@@ -461,39 +447,4 @@ public class GithubAPI {
 
         return project;
     }
-
-    /**
-     * @deprecated @param url
-     * @return
-     */
-    public static Project projectInfo(String url) {
-
-        String CREATED_AT = "\"created_at\":";
-        String UPDATED_AT = "\"updated_at\":";
-        String NAME = "\"name\":";
-        String URL = "\"url\":";
-        String HTML_URL = "\"html_url\":";
-
-        Project result = new Project();
-
-        CMDOutput output = CMD.cmdGithub(base + url);
-
-        for (String line : output.getOutput()) {
-
-            if (line.contains(CREATED_AT)) {
-                result.setCreatedAt(Parser.getContent(line));
-            } else if (line.contains(UPDATED_AT)) {
-                result.setUpdatedAt(Parser.getContent(line));
-            } else if (line.contains(NAME)) {
-                result.setName(Parser.getContent(line));
-            } else if (line.contains(URL)) {
-                result.setSearchUrl(Parser.getContent(line));
-            } else if (line.contains(HTML_URL)) {
-                result.setHtmlUrl(Parser.getContent(line));
-            }
-        }
-
-        return result;
-    }
-
 }

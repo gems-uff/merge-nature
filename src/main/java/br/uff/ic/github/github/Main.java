@@ -35,21 +35,21 @@ public class Main {
             }
         }
         
-        else if (args.length < 3) {
-            System.out.println("At least 3 parameters are expected! (1) username, (2) password, (3) path to save the report, and (4) last page");
+        else if (args.length < 2) {
+            System.out.println("At least 2 parameters are expected! (1) username, and (2) password");
         }
 
-        if (args.length >= 3) {
+        if (args.length >= 2) {
             username = args[0];
             password = args[1];
-            reportPath = args[2];
-
-            if (args.length == 4) {
-                since = Integer.parseInt(args[3]);
-            }
+//            reportPath = args[2];
+//
+//            if (args.length == 4) {
+//                since = Integer.parseInt(args[3]);
+//            }
             
-            GithubAPI.init(username, password);
-            GithubAPI.projects(since, reportPath);
+            GithubAPI.init(/*username, password*/);
+            GithubAPI.projects(/*since, reportPath*/);
         }
 
     }

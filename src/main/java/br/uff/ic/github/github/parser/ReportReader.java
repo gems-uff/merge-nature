@@ -37,7 +37,7 @@ public class ReportReader {
             if (line.contains(url) && !line.contains(htmlUrl)) {
                 if (urlApi != null && percentage > 50.0) {
 
-                    GithubAPI.init("maparao", "fake1234");
+                    GithubAPI.init(/*"maparao", "fake1234"*/);
                     Project project = GithubAPI.project(urlApi);
                     System.out.println(project.toString());
                     System.out.println("\t" + percentage);

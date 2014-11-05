@@ -32,6 +32,7 @@ public class Project implements Serializable {
     private String htmlUrl;
     private String searchUrl;
     private int developers;
+    private String message;
 
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
@@ -45,6 +46,7 @@ public class Project implements Serializable {
         this.htmlUrl = null;
         this.searchUrl = null;
         this.developers = 0;
+        this.message = null;
     }
 
     /**
@@ -188,7 +190,21 @@ public class Project implements Serializable {
         this.id = id;
     }
     
-    public Project getProject(Long id, EntityManager manager){
+    public static Project getProject(Long id, EntityManager manager){
         return manager.find(Project.class, id);
+    }
+
+    /**
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

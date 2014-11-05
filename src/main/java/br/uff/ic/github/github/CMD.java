@@ -5,6 +5,8 @@
  */
 package br.uff.ic.github.github;
 
+import br.uff.ic.github.github.data.User;
+import br.uff.ic.github.github.parser.GithubAPI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,6 +48,24 @@ public class CMD {
                         try {
                             Thread.sleep(10000);
                             System.out.println("Waiting...");
+                            
+                            //curl -i -u maparao:fake1234 https://api.github.com/repositories?since=5532
+                            String[] split = command.split(" ");
+                            User nextUser = GithubAPI.nextUser();
+                            
+                            if(split.length > 3){
+                                split[3] = nextUser.getLogin()+":"+nextUser.getPassword();
+                            }
+                            
+                            command = "";
+                            
+                            for (String piece : split) {
+                                command += piece+" ";
+                            }
+                            
+                            
+                            
+                            
                         } catch (InterruptedException ex) {
                             Logger.getLogger(CMD.class.getName()).log(Level.SEVERE, null, ex);
                         }
