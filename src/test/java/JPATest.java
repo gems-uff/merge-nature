@@ -43,8 +43,7 @@ public class JPATest {
 
     @Test
     public void createPersist() {
-//        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Github");
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("testeDoido");
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
 
         EntityManager manager = factory.createEntityManager();
 

@@ -251,7 +251,7 @@ public class GithubAPI {
     public static void projects(/*int since, String reportPath*/) {
 
         //Jpa manager
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("pGithub");
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
         EntityManager manager = factory.createEntityManager();
 
         int cont = 0;
