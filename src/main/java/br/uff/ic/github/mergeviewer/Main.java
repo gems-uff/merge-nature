@@ -529,7 +529,9 @@ public class Main extends javax.swing.JFrame {
         List<String> solvingArea = ContextFinder.getSolution(patternBegin, patternEnd, fileSolution);
         //End
 
-        ShowCase showCase = new ShowCase(conflictingArea, solvingArea);
+        
+        
+        ShowCase showCase = new ShowCase(conflictingArea, solvingArea, "", "");
         showCase.setVisible(true);
 
     }//GEN-LAST:event_jButton2ActionPerformed
