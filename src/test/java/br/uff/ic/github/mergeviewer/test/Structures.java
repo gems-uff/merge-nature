@@ -5,6 +5,8 @@
  */
 package br.uff.ic.github.mergeviewer.test;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -14,6 +16,11 @@ package br.uff.ic.github.mergeviewer.test;
 
 
 public class Structures {
+    
+    
+    String name;
+    private int age;
+    public double grade;
     
     public void forStatement() {
         for (int i = 0; i < 10; i++) {
@@ -38,5 +45,30 @@ public class Structures {
             i++;
         }
     }
+
+    public static int returnStatement() {
+        return 5;
+    }
     
+    public static int variableDeclarationStatement() {
+        int j;
+        j = 8;
+        int k = 0;
+        int v = returnStatement();
+        
+        return j +k + v;
+    }
+    
+    public void throwStatement() throws Exception{
+        throw new Exception("Testing AST");
+    }
+    
+    public void enhancedForStatement(){
+        List list = new ArrayList();
+        list.add("a");
+        
+        for (Object l : list) {
+            System.out.println(l);
+        }
+    }
 }
