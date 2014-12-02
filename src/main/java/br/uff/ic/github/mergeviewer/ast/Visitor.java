@@ -9,9 +9,19 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
+import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BlockComment;
+import org.eclipse.jdt.core.dom.BreakStatement;
+import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
+import org.eclipse.jdt.core.dom.ConstructorInvocation;
+import org.eclipse.jdt.core.dom.ContinueStatement;
+import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.EmptyStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
@@ -23,12 +33,16 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.Javadoc;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -51,39 +65,137 @@ public class Visitor extends ASTVisitor {
     private static void print(IExtendedModifier node) {
     }
 
-    /*-----------------------------------------------------------------------
+    /*=========================================================================
+     ***************************************************************************
      |                                  Tested                                |
-     -------------------------------------------------------------------------*/
+     ***************************************************************************
+     =========================================================================*/
     
+    /*>>>>>>>>>>>>>>>>>                   Annotation                          */
+    //MarkerAnnotation (Annotation)
+    //AnnotationTypeDeclaration
+    @Override
+    public boolean visit(AnnotationTypeDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("AnnotationTypeDeclaration (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    //AnnotationTypeMemberDeclaration
+    @Override
+    public boolean visit(AnnotationTypeMemberDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("AnnotationTypeMemberDeclaration (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    @Override
+    public boolean visit(MarkerAnnotation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("MarkerAnnotation (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>                     Assignment
+    @Override
+    public boolean visit(Assignment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+//        System.out.println("Assignment(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    /*>>>>>>>>>>>>>>>>>>>>>>>>>>>           Comment                          */
     //Block comment
     @Override
     public boolean visit(BlockComment node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
-        System.out.println("BlockComment (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("BlockComment (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    //Field - Attribute
-    //String name;
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           BreakStatement
+    @Override
+    public boolean visit(BreakStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+//        System.out.println("BreakStatement (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           CatchClause
+    @Override
+    public boolean visit(CatchClause node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("CatchClause (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ContinueStatement
+    @Override
+    public boolean visit(ContinueStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("ContinueStatement (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    ////>>>>>>>>>>>>>>>>>>>>>>>>>>>           DoStatement
+    @Override
+    public boolean visit(DoStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("DoStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Field - Attribute
     @Override
     public boolean visit(FieldDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("FieldDeclaration (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("FieldDeclaration (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    /*
+        FieldAccess
+        this.name
+    */
+    @Override
+    public boolean visit(FieldAccess node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("FieldAccess");
+//        System.out.println(node.toString());
         return true;
     }
     
-    //ForStatement
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ForStatement
     @Override
     public boolean visit(ForStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("ForStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("ForStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
@@ -91,102 +203,144 @@ public class Visitor extends ASTVisitor {
     public boolean visit(EnhancedForStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("EnhancedForStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("EnhancedForStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
-    
-    //If statement
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           If statement
     @Override
     public boolean visit(IfStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("IfStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("IfStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    //Import
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Import
     @Override
     public boolean visit(ImportDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("ImportDeclaration(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("ImportDeclaration(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Instanciation
+    @Override
+    public boolean visit(ClassInstanceCreation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("ClassInstanceCreation (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    //Javadoc
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Javadoc
     @Override
     public boolean visit(Javadoc node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        System.out.println("Javadoc (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("Javadoc (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    //Method declaration
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Method declaration
     @Override
     public boolean visit(MethodDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("MethodDeclaration(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("MethodDeclaration(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
 
         return true;
     }
 
-    //Method invocation
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Method invocation
     @Override
     public boolean visit(MethodInvocation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("MethodInvocation(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("MethodInvocation(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
 
         return true;
     }
 
-    //Return statement
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Package 
+    @Override
+    public boolean visit(PackageDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("PackageDeclaration(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Return statement
     @Override
     public boolean visit(ReturnStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("ReturnStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("ReturnStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    //Throw statement
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Switch case statement
+    @Override
+    public boolean visit(SwitchCase node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SwitchCase (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    @Override
+    public boolean visit(SwitchStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SwitchStatement (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Throw statement
     @Override
     public boolean visit(ThrowStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("ThrowStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
-        return true;
-    }
-    
-    //While statement
-    @Override
-    public boolean visit(WhileStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("WhileStatement(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("ThrowStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Try statement
+    @Override
+    public boolean visit(TryStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("TryStatement (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    /*
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>           Variable
+    */
+    
     //VariableDeclarationExpression
     //int i=0 (inside the for)
     @Override
     public boolean visit(VariableDeclarationExpression node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("VariableDeclarationExpression (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("VariableDeclarationExpression (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
@@ -198,14 +352,30 @@ public class Visitor extends ASTVisitor {
     public boolean visit(VariableDeclarationStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("VariableDeclarationStatement (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+//        System.out.println("VariableDeclarationStatement (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
         return true;
     }
 
-    /*--------------------------------------------------------------------------
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           While statement
+    @Override
+    public boolean visit(WhileStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("WhileStatement(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    /*=========================================================================
+     ***************************************************************************
      |                                  Untested                                |
-     --------------------------------------------------------------------------*/
+     ***************************************************************************
+     =========================================================================*/
+    
+    
+    
+    
     //Annotation
     public boolean visit(Annotation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -216,32 +386,12 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //
     @Override
-    public boolean visit(AnnotationTypeDeclaration node) {
+    public boolean visit(NormalAnnotation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("AnnotationTypeDeclaration");
-        System.out.println(node.toString());
-        return true;
-    }
-
-    @Override
-    public boolean visit(AnnotationTypeMemberDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("AnnotationTypeMemberDeclaration");
-        System.out.println(node.toString());
-        return true;
-    }
-
-    //Annotation element
-    
-
-    @Override
-    public boolean visit(FieldAccess node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("FieldAccess");
+        System.out.println("NormalAnnotation");
         System.out.println(node.toString());
         return true;
     }
@@ -250,14 +400,25 @@ public class Visitor extends ASTVisitor {
     //Class declaration
     //Class signature
     //Comment
-    public boolean visit(Comment node) {
+    @Override
+    public boolean visit(ConstructorInvocation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("Comment");
+        System.out.println("ConditionalExpression");
         System.out.println(node.toString());
         return true;
     }
 
+    @Override
+    public boolean visit(EmptyStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        System.out.println("EmptyStatement (" + begin + ", " + end + ")");
+        System.out.println(node.toString());
+        return true;
+    }
+    
+    
     //Enum
     @Override
     public boolean visit(EnumConstantDeclaration node) {
@@ -285,8 +446,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    
-
     //Instance initializer
     @Override
     public boolean visit(Initializer node) {
@@ -307,25 +466,6 @@ public class Visitor extends ASTVisitor {
 //        return true;
 //    }
     //Static initialization block
-    //Switch case statement
-    @Override
-    public boolean visit(SwitchCase node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("SwitchCase");
-        System.out.println(node.toString());
-        return true;
-    }
-
-    @Override
-    public boolean visit(SwitchStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("SwitchStatement");
-        System.out.println(node.toString());
-        return true;
-    }
-
     //Try statement 
     //Variable 
     public boolean visit(VariableDeclaration node) {

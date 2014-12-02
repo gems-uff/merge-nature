@@ -46,9 +46,8 @@ public class Quickstart {
                 int begin = cu.getLineNumber(comment.getStartPosition());
                 int end = cu.getLineNumber(comment.getStartPosition() + comment.getLength());
 
-                System.out.println("Comment(" + begin + ", " + end + ")");
-                System.out.println(comment.toString());
-
+//                System.out.println("Comment(" + begin + ", " + end + ")");
+//                System.out.println(comment.toString());
             }
 
         } catch (IOException ex) {
