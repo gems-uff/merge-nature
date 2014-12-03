@@ -5,6 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.ast;
 
+import com.sun.webkit.dom.NodeFilterImpl;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
@@ -33,20 +34,32 @@ import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.Javadoc;
+import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
+import org.eclipse.jdt.core.dom.SuperFieldAccess;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 
 /**
@@ -228,6 +241,18 @@ public class Visitor extends ASTVisitor {
         return true;
     }
     
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Instance initializer
+    @Override
+    public boolean visit(Initializer node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("Initializer(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        //Put here the diference between the diferent kinds of initialization 
+        return true;
+    }
+    
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Instanciation
     @Override
     public boolean visit(ClassInstanceCreation node) {
@@ -270,6 +295,18 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
+    @Override
+    public boolean visit(Modifier node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("Modifier(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        //Put here the diference between the diferent kinds of initialization 
+        return true;
+    }
+    
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Package 
     @Override
     public boolean visit(PackageDeclaration node) {
@@ -290,6 +327,45 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperConstructorInvocation 
+    @Override
+    public boolean visit(SuperConstructorInvocation node) {
+        
+        
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SuperConstructorInvocation (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperFieldAccess 
+    @Override
+    public boolean visit(SuperFieldAccess node) {
+        
+        
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SuperFieldAccess (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperMethodInvocation 
+    @Override
+    public boolean visit(SuperMethodInvocation node) {
+        
+        
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SuperMethodInvocation (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        return true;
+    }
+    
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Switch case statement
     @Override
     public boolean visit(SwitchCase node) {
@@ -319,6 +395,26 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ThisExpression
+    @Override
+    public boolean visit(ThisExpression node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("ThisExpression (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           TypeDeclaration (Closest from class)
+    @Override
+    public boolean visit(TypeDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("TypeDeclaration (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+ 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Try statement
     @Override
     public boolean visit(TryStatement node) {
@@ -354,6 +450,19 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 //        System.out.println("VariableDeclarationStatement (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
+        return true;
+    }
+
+    //SingleVariableDeclaration 
+    //String name
+    @Override
+    public boolean visit(SingleVariableDeclaration node) {
+        
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("SingleVariableDeclaration (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
         return true;
     }
 
@@ -418,6 +527,14 @@ public class Visitor extends ASTVisitor {
         return true;
     }
     
+    @Override
+    public boolean visit(SingleMemberAnnotation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        System.out.println("SingleMemberAnnotation (" + begin + ", " + end + ")");
+        System.out.println(node.toString());
+        return true;
+    }
     
     //Enum
     @Override
@@ -446,18 +563,34 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //Instance initializer
+    
+    
+    //LineComment 
     @Override
-    public boolean visit(Initializer node) {
+    public boolean visit(LineComment node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("Initializer(" + begin + ", " + end + ")");
+        System.out.println("LineComment(" + begin + ", " + end + ")");
         System.out.println(node.toString());
 
-        //Put here the diference between the diferent kinds of initialization 
         return true;
     }
 
+    //QualifiedName 
+    @Override
+    public boolean visit(QualifiedName node) {
+        
+        
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        System.out.println("QualifiedName (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+
+        return true;
+    }
+
+    
+    
     //Method interface
     //Method signature
 //    public boolean visit(MethodSignature node) {
@@ -465,8 +598,22 @@ public class Visitor extends ASTVisitor {
 //        System.out.println(node.toString());
 //        return true;
 //    }
+    
+    
     //Static initialization block
-    //Try statement 
+    //Try statement
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           TypeDeclarationStatement
+    @Override
+    public boolean visit(TypeDeclarationStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        System.out.println("TypeDeclarationStatement (" + begin + ", " + end + ")");
+        System.out.println(node.toString());
+        return true;
+    }
+    
+    
     //Variable 
     public boolean visit(VariableDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -487,4 +634,15 @@ public class Visitor extends ASTVisitor {
 //        System.out.println(node.toString());
 //        return true;
 //    }
+    
+    //Variable 
+    @Override
+    public boolean visit(WildcardType node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        System.out.println("WildcardType");
+        System.out.println(node.toString());
+        return true;
+    }
+    
 }

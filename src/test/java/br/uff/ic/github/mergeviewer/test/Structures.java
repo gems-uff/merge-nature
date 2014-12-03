@@ -8,6 +8,8 @@ package br.uff.ic.github.mergeviewer.test;
 import java.nio.file.FileVisitResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +22,7 @@ public class Structures {
     public double grade;
 
     public Structures() {
+        super();
     }
 
     public Structures(String name, int age, double grade) {
@@ -122,5 +125,21 @@ public class Structures {
         do {
             System.out.println("test");
         } while (true);
+    }
+    
+    public enum testEnum{
+        TESTED, UNTESTED
+    }
+    
+    public void enumTest(){
+        testEnum t = testEnum.UNTESTED;
+    }
+    
+    public void superTest(){
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Structures.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

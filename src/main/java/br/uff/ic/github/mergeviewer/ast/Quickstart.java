@@ -39,16 +39,16 @@ public class Quickstart {
 
             List<Comment> commentList = cu.getCommentList();
 
-            for (Comment comment : commentList) {
-
-                comment.accept(new Visitor(cu));
-
-                int begin = cu.getLineNumber(comment.getStartPosition());
-                int end = cu.getLineNumber(comment.getStartPosition() + comment.getLength());
-
+//            for (Comment comment : commentList) {
+//
+//                comment.accept(new Visitor(cu));
+//
+//                int begin = cu.getLineNumber(comment.getStartPosition());
+//                int end = cu.getLineNumber(comment.getStartPosition() + comment.getLength());
+//
 //                System.out.println("Comment(" + begin + ", " + end + ")");
 //                System.out.println(comment.toString());
-            }
+//            }
 
         } catch (IOException ex) {
             Logger.getLogger(Quickstart.class.getName()).log(Level.SEVERE, null, ex);
