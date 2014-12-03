@@ -35,5 +35,17 @@ public class SourceCodeFile {
         this.areas.add(sca);
     }
     
+    public List<String>  getKindConflict(int begin, int end) {
+        List<String> result = new ArrayList<>();
+        
+        for (SourceCodeArea area : this.areas) {
+            String structure = area.getStructure();
+            if(area.getBegin() >= begin && area.getBegin() <= end && !result.contains(structure))
+                result.add(structure);
+        }
+        
+        return result;
+    }
+    
     
 }
