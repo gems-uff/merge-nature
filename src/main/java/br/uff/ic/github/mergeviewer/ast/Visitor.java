@@ -82,15 +82,13 @@ public class Visitor extends ASTVisitor {
      ***************************************************************************
      =========================================================================*/
     /*>>>>>>>>>>>>>>>>>                   Annotation                          */
-    //MarkerAnnotation (Annotation)
     //AnnotationTypeDeclaration
     @Override
     public boolean visit(AnnotationTypeDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        sourceCode.add("AnnotationTypeDeclaration", begin, end);
 
-//        System.out.println("AnnotationTypeDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -99,21 +97,18 @@ public class Visitor extends ASTVisitor {
     public boolean visit(AnnotationTypeMemberDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("AnnotationTypeMemberDeclaration", begin, end);
+        sourceCode.add("AnnotationElement", begin, end);
 
-//        System.out.println("AnnotationTypeMemberDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
+    //MarkerAnnotation (Annotation)
     @Override
     public boolean visit(MarkerAnnotation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("MarkerAnnotation", begin, end);
+        sourceCode.add("Annotation", begin, end);
 
-//        System.out.println("MarkerAnnotation (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -195,10 +190,8 @@ public class Visitor extends ASTVisitor {
     public boolean visit(FieldDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("FieldDeclaration", begin, end);
+        sourceCode.add("Attribute", begin, end);
 
-//        System.out.println("FieldDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -233,7 +226,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(EnhancedForStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("EnhancedForStatement", begin, end);
+        sourceCode.add("ForStatement", begin, end);
 
 //        System.out.println("EnhancedForStatement(" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
@@ -309,8 +302,6 @@ public class Visitor extends ASTVisitor {
 
         sourceCode.add("MethodDeclaration", begin, end);
 
-//        System.out.println("MethodDeclaration(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -321,8 +312,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("MethodInvocation", begin, end);
 
-//        System.out.println("MethodInvocation(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -358,8 +347,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("ReturnStatement", begin, end);
 
-//        System.out.println("ReturnStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -407,10 +394,8 @@ public class Visitor extends ASTVisitor {
     public boolean visit(SwitchCase node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("SwitchCase", begin, end);
+        sourceCode.add("CaseStatement", begin, end);
 
-//        System.out.println("SwitchCase (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -419,9 +404,7 @@ public class Visitor extends ASTVisitor {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("SwitchStatement", begin, end);
-
-//        System.out.println("SwitchStatement (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
+        
         return true;
     }
 
@@ -432,8 +415,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("ThrowStatement", begin, end);
 
-//        System.out.println("ThrowStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -468,8 +449,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("TryStatement", begin, end);
 
-//        System.out.println("TryStatement (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -482,7 +461,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(VariableDeclarationExpression node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("VariableDeclarationExpression", begin, end);
+        sourceCode.add("Variable", begin, end);
 
 //        System.out.println("VariableDeclarationExpression (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
@@ -497,7 +476,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(VariableDeclarationStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("VariableDeclarationStatement", begin, end);
+        sourceCode.add("Variable", begin, end);
 
 //        System.out.println("VariableDeclarationStatement (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
@@ -511,11 +490,10 @@ public class Visitor extends ASTVisitor {
 
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-                sourceCode.add("SingleVariableDeclaration", begin, end);
+        sourceCode.add("Variable", begin, end);
 
 //        System.out.println("SingleVariableDeclaration (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
-
         return true;
     }
 
@@ -524,10 +502,8 @@ public class Visitor extends ASTVisitor {
     public boolean visit(WhileStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-                        sourceCode.add("WhileStatement", begin, end);
+        sourceCode.add("WhileStatement", begin, end);
 
-//        System.out.println("WhileStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
