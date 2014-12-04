@@ -161,6 +161,17 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           LineComment 
+    @Override
+    public boolean visit(LineComment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        System.out.println("LineComment(" + begin + ", " + end + ")");
+        System.out.println(node.toString());
+
+        return true;
+    }
+
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ContinueStatement
     @Override
     public boolean visit(ContinueStatement node) {
@@ -185,7 +196,31 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    //Enum
+    @Override
+    public boolean visit(EnumConstantDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        sourceCode.add("EnumConstantDeclaration", begin, end);
+
+//        System.out.println("EnumConstantDeclaration");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnumDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        sourceCode.add("EnumConstantDeclaration", begin, end);
+
+//        System.out.println("EnumDeclaration");
+//        System.out.println(node.toString());
+        return true;
+    }
+
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Field - Attribute
+
     @Override
     public boolean visit(FieldDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -404,7 +439,7 @@ public class Visitor extends ASTVisitor {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("SwitchStatement", begin, end);
-        
+
         return true;
     }
 
@@ -437,8 +472,9 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("TypeDeclaration", begin, end);
 
-//        System.out.println("TypeDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
+        System.out.println("TypeDeclaration (" + begin + ", " + end + ")");
+        System.out.println(node.toString());
+
         return true;
     }
 
@@ -563,41 +599,11 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //Enum
-    @Override
-    public boolean visit(EnumConstantDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("EnumConstantDeclaration");
-        System.out.println(node.toString());
-        return true;
-    }
-
-    @Override
-    public boolean visit(EnumDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("EnumDeclaration");
-        System.out.println(node.toString());
-        return true;
-    }
-
     public boolean visit(ForeachStatement node) {
         int begin = cu.getLineNumber(node.sourceStart());
         int end = cu.getLineNumber(node.sourceEnd());
         System.out.println("ForeachStatement");
         System.out.println(node.toString());
-        return true;
-    }
-
-    //LineComment 
-    @Override
-    public boolean visit(LineComment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("LineComment(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
-
         return true;
     }
 

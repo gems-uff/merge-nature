@@ -8,6 +8,7 @@ package br.uff.ic.github.mergeviewer;
 import br.uff.ic.gems.merge.utils.KrakenFile;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
+import br.uff.ic.github.mergeviewer.ast.ASTExtractor;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
@@ -16,9 +17,12 @@ import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import br.uff.ic.github.mergeviewer.util.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -482,7 +486,8 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_cbFilesItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        //Dealing with AST
+
         int selectedIndex = jCbxConflicts.getSelectedIndex();
         int context = 3;
         ConflictingChunk conflictArea = conflicts.get(selectedIndex);
@@ -491,16 +496,33 @@ public class Main extends javax.swing.JFrame {
             repositoryPath = initProject.getRepositoryPath();
         }
 
+        //Creating repositories if they don't exist
         String relativePath = cbFiles.getSelectedItem().toString().replace(repositoryPath, "");
         String repositorySolutionPath = repositoryPath + "clone" + File.pathSeparator + "OK";
+        String head1Repository = repositoryPath + "clone" + File.separator + "1";
+        String head2Repository = repositoryPath + "clone" + File.separator + "2";
 
         if (!new File(repositorySolutionPath).isDirectory()) {
             System.out.println("Cloning Merge");
             GitCMD.clone(repositoryPath, repositoryPath, repositorySolutionPath);
         }
 
-        GitCMD.checkout(repositorySolutionPath, Information.DEVELOPER_MERGE_REVISION);
+        if (!new File(head1Repository).isDirectory()) {
+            System.out.println("Cloning 1");
+            GitCMD.clone(repositoryPath, repositoryPath, head1Repository);
+        }
+        if (!new File(head2Repository).isDirectory()) {
+            System.out.println("Cloning 2");
+            GitCMD.clone(repositoryPath, repositoryPath, head2Repository);
+        }
 
+        //Checking out revisions
+        GitCMD.checkout(repositorySolutionPath, Information.DEVELOPER_MERGE_REVISION);
+        GitCMD.checkout(head1Repository, Information.HEAD1_REVISION);
+        GitCMD.checkout(head2Repository, Information.HEAD2_REVISION);
+
+        //Dealing with files that show the conflict scenario and the solution
+        //Goal: obtain areas of the files to show
         List<String> fileConflict = MergeUtils.fileToLines(cbFiles.getSelectedItem().toString());
         List<String> fileSolution = MergeUtils.fileToLines(repositorySolutionPath + relativePath);
 
@@ -518,7 +540,9 @@ public class Main extends javax.swing.JFrame {
 
         List<String> conflictingArea = fileConflict.subList(conflictLowerBound, conflictingUpperBound);
 
+        //Getting patterns
         List<String> patternBegin = fileConflict.subList(conflictLowerBound, conflictArea.getBegin());
+
         List<String> patternEnd;
         if (conflictArea.getEnd() <= conflictingUpperBound) {
             patternEnd = fileConflict.subList(conflictArea.getEnd(), conflictingUpperBound);
@@ -527,10 +551,65 @@ public class Main extends javax.swing.JFrame {
         }
 
         List<String> solvingArea = ContextFinder.getSolution(patternBegin, patternEnd, fileSolution);
-        //End
+        //End dealing with files that show the conflict scenario and the solution
 
-        
-        
+        //  AST begin
+        try {
+
+            int beginArea = conflictArea.getBegin() + 1;
+            if (beginArea >= fileConflict.size()) {
+                beginArea = fileConflict.size() - 1;
+            }
+
+            int endArea = conflictArea.getEnd() - 1;
+            if (endArea < 0) {
+                endArea = 0;
+            }
+
+            List<String> area = fileConflict.subList(beginArea, endArea);
+
+            int division = 0;
+
+            for (int i = 0; i < area.size(); i++) {
+                String line = area.get(i);
+
+                if (line.contains("=======")) {
+                    division = i;
+                }
+            }
+
+            List<String> conflictLeft = area.subList(0, division);
+            String leftFile = head1Repository + relativePath;
+            List<String> leftFileList = MergeUtils.fileToLines(leftFile);
+            List<Integer> beginList = ContextFinder.getBegin(conflictLeft, leftFileList);
+            
+            int begin = 0;
+            if(beginList.size() == 1)
+                begin = beginList.get(0) + 1;//transforme in the real line (begining from 1)
+            
+            int end = begin + conflictLeft.size() - 1;
+
+            ASTExtractor astLeft = new ASTExtractor(leftFile);
+            astLeft.parser();
+            List<String> kindConflict = astLeft.getStructures(begin, end);
+            astLeft.print(kindConflict);
+                    
+            
+            
+            List<String> conflictRight = area.subList(division + 1, area.size());
+            String rightFile = head2Repository + relativePath;
+            List<String> rightFileList = MergeUtils.fileToLines(rightFile);
+
+            
+
+            ASTExtractor astRight = new ASTExtractor(rightFile);
+            astRight.parser();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //  AST end
+
         ShowCase showCase = new ShowCase(conflictingArea, solvingArea, "", "");
         showCase.setVisible(true);
 

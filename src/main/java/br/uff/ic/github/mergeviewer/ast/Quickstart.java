@@ -18,8 +18,6 @@ public class Quickstart {
 
     public static void main(String args[]) {
 //        try {
-
-//            ASTParser parser = ASTParser.newParser(AST.JLS3);
 //            String file = "/Users/gleiph/Dropbox/UCI/MergeViewer/src/main/java/br/uff/ic/github/mergeviewer/util/ContextFinder.java";
 //            String file = "/Users/gleiph/Dropbox/UCI/MergeViewer/src/main/java/br/uff/ic/github/mergeviewer/processing/Understanding.java";
         String file = "/Users/gleiph/Dropbox/UCI/MergeViewer/src/test/java/br/uff/ic/github/mergeviewer/test/Structures.java";
@@ -35,7 +33,6 @@ public class Quickstart {
         } catch (IOException ex) {
             Logger.getLogger(Quickstart.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
 }

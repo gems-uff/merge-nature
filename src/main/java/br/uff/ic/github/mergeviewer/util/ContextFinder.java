@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ContextFinder {
 
-    private static List<Integer> getBegin(List<String> pattern, List<String> text) {
+    public static List<Integer> getBegin(List<String> pattern, List<String> text) {
         List<Integer> result = new ArrayList<>();
         List<String> p = pattern.subList(0, pattern.size());
 
