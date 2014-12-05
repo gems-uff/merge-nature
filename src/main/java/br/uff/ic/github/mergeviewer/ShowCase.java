@@ -23,7 +23,7 @@ public class ShowCase extends javax.swing.JFrame {
         initComponents();
     }
 
-    public ShowCase(List<String> conflict, List<String> solution, String dd, String ss) {
+    public ShowCase(List<String> conflict, List<String> solution, String dd, String ssLeft, String ssRight) {
         initComponents();
 
         String conflicText = "";
@@ -41,8 +41,8 @@ public class ShowCase extends javax.swing.JFrame {
         jtSolution.setText(solutionText);
         
         jlDeveloperDecision.setText(dd);
-        jlSyncaticStructures.setText(ss);
-        
+        jlSyncaticStructureLeft.setText(ssLeft);
+        jlSyntacticStructureRight.setText(ssRight);
         DeveloperChioce developerDecision = DeveloperDecision.getDeveloperDecision(conflict, solution);
         jlDeveloperDecision.setText(developerDecision.toString());
         
@@ -65,7 +65,9 @@ public class ShowCase extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jlDeveloperDecision = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jlSyncaticStructures = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jlSyncaticStructureLeft = new javax.swing.JLabel();
+        jlSyntacticStructureRight = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addHierarchyBoundsListener(new java.awt.event.HierarchyBoundsListener() {
@@ -93,9 +95,13 @@ public class ShowCase extends javax.swing.JFrame {
 
         jlDeveloperDecision.setText("jLabel2");
 
-        jLabel2.setText("Syntactic structures:");
+        jLabel2.setText("Syntactic structures Left:");
 
-        jlSyncaticStructures.setText("jLabel3");
+        jLabel3.setText("Syntactic structures Right:");
+
+        jlSyncaticStructureLeft.setText("jLabel3");
+
+        jlSyntacticStructureRight.setText("jLabel4");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -107,10 +113,16 @@ public class ShowCase extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jlDeveloperDecision, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jlSyncaticStructures, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jlSyntacticStructureRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jlSyncaticStructureLeft, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,8 +132,11 @@ public class ShowCase extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jlDeveloperDecision)
                     .addComponent(jLabel2)
-                    .addComponent(jlSyncaticStructures))
-                .addGap(14, 14, 14))
+                    .addComponent(jlSyncaticStructureLeft))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3)
+                    .addComponent(jlSyntacticStructureRight, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -129,9 +144,9 @@ public class ShowCase extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+                .addComponent(jScrollPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                .addComponent(jScrollPane2))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -141,8 +156,8 @@ public class ShowCase extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -190,11 +205,13 @@ public class ShowCase extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel jlDeveloperDecision;
-    private javax.swing.JLabel jlSyncaticStructures;
+    private javax.swing.JLabel jlSyncaticStructureLeft;
+    private javax.swing.JLabel jlSyntacticStructureRight;
     private javax.swing.JTextArea jtConflict;
     private javax.swing.JTextArea jtSolution;
     // End of variables declaration//GEN-END:variables

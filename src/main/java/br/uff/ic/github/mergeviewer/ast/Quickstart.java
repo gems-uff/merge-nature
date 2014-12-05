@@ -28,7 +28,7 @@ public class Quickstart {
             aSTExtractor.parser();
             List<String> extractor = aSTExtractor.getStructures(91, 98);
 
-            aSTExtractor.print(extractor);
+            aSTExtractor.toString(extractor);
 
         } catch (IOException ex) {
             Logger.getLogger(Quickstart.class.getName()).log(Level.SEVERE, null, ex);

@@ -67,6 +67,7 @@ public class Visitor extends ASTVisitor {
 
     private SourceCodeFile sourceCode = new SourceCodeFile();
     private final CompilationUnit cu;
+    private boolean isInterface;
 
     public Visitor(CompilationUnit cuArg) {
         this.cu = cuArg;
@@ -144,8 +145,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("BreakStatement", begin, end);
 
-//        System.out.println("BreakStatement (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -166,8 +165,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(LineComment node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("LineComment(" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+        sourceCode.add("Comment", begin, end);
 
         return true;
     }
@@ -191,19 +189,23 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("DoStatement", begin, end);
 
-//        System.out.println("DoStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
-    //Enum
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Enum
     @Override
     public boolean visit(EnumConstantDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("EnumConstantDeclaration", begin, end);
 
-//        System.out.println("EnumConstantDeclaration");
+        Javadoc javadoc = node.getJavadoc();
+
+        int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
+        int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
+
+        sourceCode.add("EnumConstantDeclaration", endJavadoc + 1, end);
+
+//        System.out.println("EnumConstantDeclaration (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
         return true;
     }
@@ -214,13 +216,12 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("EnumConstantDeclaration", begin, end);
 
-//        System.out.println("EnumDeclaration");
+//        System.out.println("EnumConstantDeclaration (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
         return true;
     }
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Field - Attribute
-
     @Override
     public boolean visit(FieldDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -470,10 +471,14 @@ public class Visitor extends ASTVisitor {
     public boolean visit(TypeDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("TypeDeclaration", begin, end);
 
-        System.out.println("TypeDeclaration (" + begin + ", " + end + ")");
-        System.out.println(node.toString());
+        isInterface = node.isInterface();
+
+        if (isInterface) {
+            sourceCode.add("Interface declaraton", begin, end);
+        } else {
+            sourceCode.add("Class declaration", begin, end);
+        }
 
         return true;
     }
@@ -499,8 +504,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("Variable", begin, end);
 
-//        System.out.println("VariableDeclarationExpression (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -514,8 +517,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("Variable", begin, end);
 
-//        System.out.println("VariableDeclarationStatement (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -528,8 +529,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("Variable", begin, end);
 
-//        System.out.println("SingleVariableDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
         return true;
     }
 
@@ -633,6 +632,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(TypeDeclarationStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
         System.out.println("TypeDeclarationStatement (" + begin + ", " + end + ")");
         System.out.println(node.toString());
         return true;
@@ -642,6 +642,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(VariableDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
         System.out.println("VariableDeclaration");
         System.out.println(node.toString());
         return true;
@@ -658,16 +659,6 @@ public class Visitor extends ASTVisitor {
 //        System.out.println(node.toString());
 //        return true;
 //    }
-    //Variable 
-    @Override
-    public boolean visit(WildcardType node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        System.out.println("WildcardType");
-        System.out.println(node.toString());
-        return true;
-    }
-
     /**
      * @return the sourceCode
      */
@@ -680,6 +671,22 @@ public class Visitor extends ASTVisitor {
      */
     public void setSourceCode(SourceCodeFile sourceCode) {
         this.sourceCode = sourceCode;
+    }
+
+    /*=========================================================================
+     ***************************************************************************
+     |                                  Unused                                |
+     ***************************************************************************
+     =========================================================================*/
+    //WildcardType  
+    @Override
+    public boolean visit(WildcardType node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+//        System.out.println("WildcardType (" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
     }
 
 }

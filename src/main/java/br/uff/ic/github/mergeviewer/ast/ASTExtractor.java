@@ -72,16 +72,19 @@ public class ASTExtractor {
         return kindConflic;
     }
 
-    public void print(List<String> input) {
+    public String toString(List<String> input) {
 
+        String result = "";
+        
         if(input.isEmpty())
-            return;
+            return null;
         
         for (int i = 0; i < input.size() - 1; i++) {
-            System.out.print(input.get(i) + ", ");
+            result += input.get(i) + ", ";
         }
 
-        System.out.println(input.get(input.size() - 1));
+        result += input.get(input.size() - 1);
 
+        return result;
     }
 }
