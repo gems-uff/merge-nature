@@ -9,7 +9,7 @@ package br.uff.ic.github.mergeviewer.util;
  *
  * @author gleiph
  */
-public enum DeveloperChioce {
+public enum DeveloperChoice {
 
     VERSION1, VERSION2, CONCATENATION, COMBINATION, MANUAL;
 

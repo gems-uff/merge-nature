@@ -5,7 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer;
 
-import br.uff.ic.github.mergeviewer.util.DeveloperChioce;
+import br.uff.ic.github.mergeviewer.util.DeveloperChoice;
 import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
 import java.awt.Dimension;
 import java.util.List;
@@ -43,7 +43,7 @@ public class ShowCase extends javax.swing.JFrame {
         jlDeveloperDecision.setText(dd);
         jlSyncaticStructureLeft.setText(ssLeft);
         jlSyntacticStructureRight.setText(ssRight);
-        DeveloperChioce developerDecision = DeveloperDecision.getDeveloperDecision(conflict, solution);
+        DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(conflict, solution);
         jlDeveloperDecision.setText(developerDecision.toString());
         
     }

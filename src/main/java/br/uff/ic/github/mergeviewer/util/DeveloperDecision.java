@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class DeveloperDecision {
 
-    public static DeveloperChioce getDeveloperDecision(List<String> conflict, List<String> solution) {
+    public static DeveloperChoice getDeveloperDecision(List<String> conflict, List<String> solution) {
 
         List<String> context1, context2, version1, version2;
         int begin = 0, end = 0, separator = 0;
@@ -52,15 +52,15 @@ public class DeveloperDecision {
         List<String> solutionClean = solution.subList(beginSolution + 1, endSolution);
 
         if (solutionClean.equals(version1)) {
-            return DeveloperChioce.VERSION1;
+            return DeveloperChoice.VERSION1;
         } else if (solutionClean.equals(version2)) {
-            return DeveloperChioce.VERSION2;
+            return DeveloperChoice.VERSION2;
         } else if (isConcatenation(version1, version2, solutionClean, context2)) {
-            return DeveloperChioce.CONCATENATION;
+            return DeveloperChoice.CONCATENATION;
         } else if (isCombination(version1, version2, solution)) {
-            return DeveloperChioce.COMBINATION;
+            return DeveloperChoice.COMBINATION;
         } else {
-            return DeveloperChioce.MANUAL;
+            return DeveloperChoice.MANUAL;
         }
     }
 
