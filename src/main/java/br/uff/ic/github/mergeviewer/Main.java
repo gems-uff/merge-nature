@@ -492,7 +492,6 @@ public class Main extends javax.swing.JFrame {
 
         try {
 
-            //Dealing with AST
             int selectedIndex = jCbxConflicts.getSelectedIndex();
             int context = 3;
             ConflictingChunk conflictArea = conflicts.get(selectedIndex);
@@ -534,68 +533,12 @@ public class Main extends javax.swing.JFrame {
 
             List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution);
 
-//            //AST begin
-//            int beginArea = conflictArea.getBegin() + 1;
-//            if (beginArea >= fileConflict.size()) {
-//                beginArea = fileConflict.size() - 1;
-//            }
-//
-//            int endArea = conflictArea.getEnd() - 1;
-//            if (endArea < 0) {
-//                endArea = 0;
-//            }
-//
-//            List<String> area = fileConflict.subList(beginArea, endArea);
-//
-//            int division = 0;
-//
-//            for (int i = 0; i < area.size(); i++) {
-//                String line = area.get(i);
-//
-//                if (line.contains("=======")) {
-//                    division = i;
-//                }
-//            }
-            //Left side
-//            List<String> conflictLeft = area.subList(0, division);
-            List<String> conflictLeft = cpe.getLeftConflict();
+            String leftSS = StructureAnalyses.getSyntacticStructures(cpe.getLeftConflict(), head1Repository, relativePath);
 
-            String leftFile = head1Repository + relativePath;
-            List<String> leftFileList = MergeUtils.fileToLines(leftFile);
-            List<Integer> beginList = ContextFinder.getBegin(conflictLeft, leftFileList);
-
-            int begin = 0;
-            if (beginList.size() == 1) {
-                begin = beginList.get(0) + 1;//transforme in the real line (begining from 1)
-            }
-            int end = begin + conflictLeft.size() - 1;
-
-            ASTExtractor astLeft = new ASTExtractor(leftFile);
-            astLeft.parser();
-            List<String> kindConflict = astLeft.getStructures(begin, end);
-            String leftSS = astLeft.toString(kindConflict);
-
-            //Right side
-//            List<String> conflictRight = area.subList(division + 1, area.size());
-            List<String> conflictRight = cpe.getRightConflict();
-
-            String rightFile = head2Repository + relativePath;
-            List<String> rightFileList = MergeUtils.fileToLines(rightFile);
-            beginList = ContextFinder.getBegin(conflictRight, rightFileList);
-
-            begin = 0;
-            if (beginList.size() == 1) {
-                begin = beginList.get(0) + 1;//transforme in the real line (begining from 1)
-            }
-            end = begin + conflictRight.size() - 1;
-
-            ASTExtractor astRight = new ASTExtractor(rightFile);
-            astRight.parser();
-            kindConflict = astRight.getStructures(begin, end);
-            String rightSS = astRight.toString(kindConflict);
-
-            String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
+            String rightSS = StructureAnalyses.getSyntacticStructures(cpe.getRightConflict(), head2Repository, relativePath);
             
+            String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
+
             ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);
             showCase.setVisible(true);
         } catch (IOException ex) {

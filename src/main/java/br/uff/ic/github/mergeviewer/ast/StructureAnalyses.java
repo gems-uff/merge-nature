@@ -5,9 +5,12 @@
  */
 package br.uff.ic.github.mergeviewer.ast;
 
+import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
+import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -48,6 +51,25 @@ public class StructureAnalyses {
             conflictLowerBound = 0;
         }
         return conflictLowerBound;
+    }
+    
+    public static String getSyntacticStructures(List<String> conflictArea, String head1Repository, String relativePath) throws IOException {
+        //Left side
+        List<String> conflictLeft = conflictArea;
+        String file = head1Repository + relativePath;
+        List<String> leftFileList = MergeUtils.fileToLines(file);
+        List<Integer> beginList = ContextFinder.getBegin(conflictLeft, leftFileList);
+        int begin = 0;
+        if (beginList.size() == 1) {
+            begin = beginList.get(0) + 1;//transform in the real line (begining from 1)
+        }
+        int end = begin + conflictLeft.size() - 1;
+        //Dealing with AST
+        ASTExtractor ats = new ASTExtractor(file);
+        ats.parser();
+        List<String> kindConflict = ats.getStructures(begin, end);
+        String leftSS = ats.toString(kindConflict);
+        return leftSS;
     }
 
 }
