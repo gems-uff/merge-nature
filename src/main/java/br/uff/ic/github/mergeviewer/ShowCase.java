@@ -23,7 +23,7 @@ public class ShowCase extends javax.swing.JFrame {
         initComponents();
     }
 
-    public ShowCase(List<String> conflict, List<String> solution, String dd, String ssLeft, String ssRight) {
+    public ShowCase(List<String> conflict, List<String> solution, String ssLeft, String ssRight, String dd) {
         initComponents();
 
         String conflicText = "";
@@ -40,11 +40,10 @@ public class ShowCase extends javax.swing.JFrame {
         jtConflict.setText(conflicText);
         jtSolution.setText(solutionText);
         
-        jlDeveloperDecision.setText(dd);
         jlSyncaticStructureLeft.setText(ssLeft);
         jlSyntacticStructureRight.setText(ssRight);
-        DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(conflict, solution);
-        jlDeveloperDecision.setText(developerDecision.toString());
+//        DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(conflict, solution);
+        jlDeveloperDecision.setText(dd);
         
     }
 

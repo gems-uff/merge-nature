@@ -113,18 +113,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //>>>>>>>>>>>>>>>>                     Assignment
-    @Override
-    public boolean visit(Assignment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("Assignment", begin, end);
-
-//        System.out.println("Assignment(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
     /*>>>>>>>>>>>>>>>>>>>>>>>>>>>           Comment                          */
     //Block comment
     @Override
@@ -348,19 +336,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         sourceCode.add("MethodInvocation", begin, end);
 
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
-    @Override
-    public boolean visit(Modifier node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        sourceCode.add("Modifier", begin, end);
-
-//        System.out.println("Modifier(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        //Put here the diference between the diferent kinds of initialization 
         return true;
     }
 
@@ -678,6 +653,32 @@ public class Visitor extends ASTVisitor {
      |                                  Unused                                |
      ***************************************************************************
      =========================================================================*/
+
+    //>>>>>>>>>>>>>>>>                     Assignment
+    @Override
+    public boolean visit(Assignment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        sourceCode.add("Assignment", begin, end);
+
+//        System.out.println("Assignment(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        return true;
+    }
+
+        //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
+    @Override
+    public boolean visit(Modifier node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+//        sourceCode.add("Modifier", begin, end);
+
+//        System.out.println("Modifier(" + begin + ", " + end + ")");
+//        System.out.println(node.toString());
+        //Put here the diference between the diferent kinds of initialization 
+        return true;
+    }
+    
     //WildcardType  
     @Override
     public boolean visit(WildcardType node) {

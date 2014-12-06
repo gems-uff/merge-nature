@@ -5,6 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.util;
 
+import br.uff.ic.github.mergeviewer.processing.ConflictPartsExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,10 +64,58 @@ public class DeveloperDecision {
             return DeveloperChoice.MANUAL;
         }
     }
+    
+    public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution) {
+
+        List<String> beginContext, endContext, leftConflict, rightConflict;
+        int begin = 0, end = 0, separator = 0;
+
+        
+        beginContext = cpe.getBeginContext();
+        leftConflict = cpe.getLeftConflict();
+        rightConflict = cpe.getRightConflict();
+        endContext = cpe.getEndContext();
+
+        int beginSolution = 0, endSolution = 0;
+        if (beginContext != null) {
+            beginSolution = getIndexFromBegin(solution, beginContext.get(beginContext.size() - 1));
+        } else {
+            beginSolution = 0;
+        }
+
+        if (endContext != null) {
+            endSolution = getIndexFromEnd(solution, endContext.get(0));
+        } else {
+            endSolution = solution.size();
+        }
+
+        List<String> solutionClean = solution.subList(beginSolution + 1, endSolution);
+
+        if (solutionClean.equals(leftConflict)) {
+            return DeveloperChoice.VERSION1;
+        } else if (solutionClean.equals(rightConflict)) {
+            return DeveloperChoice.VERSION2;
+        } else if (isConcatenation(leftConflict, rightConflict, solutionClean, endContext)) {
+            return DeveloperChoice.CONCATENATION;
+        } else if (isCombination(leftConflict, rightConflict, solutionClean)) {
+            return DeveloperChoice.COMBINATION;
+        } else {
+            return DeveloperChoice.MANUAL;
+        }
+    }
 
     private static boolean isCombination(List<String> version1, List<String> version2, List<String> solution) {
         //TODO implement
-        return false;
+
+        for (String line : solution) {
+
+            if (!version1.contains(line) && !version2.contains(line)) {
+                return false;
+            }
+
+        }
+
+        return true;
     }
 
     private static boolean isConcatenation(List<String> version1, List<String> version2, List<String> solution, List<String> end) {
