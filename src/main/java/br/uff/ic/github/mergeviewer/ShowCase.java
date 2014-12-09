@@ -5,8 +5,6 @@
  */
 package br.uff.ic.github.mergeviewer;
 
-import br.uff.ic.github.mergeviewer.util.DeveloperChoice;
-import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
 import java.awt.Dimension;
 import java.util.List;
 

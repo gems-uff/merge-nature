@@ -14,9 +14,8 @@ public class Information {
     public static String BASE_REVISION = null;
     public static String HEAD1_REVISION = null;
     public static String HEAD2_REVISION = null;
-//    public static String CONFLICTING_MERGE_REVISION = null;
     public static String DEVELOPER_MERGE_REVISION = null;
-//    
+
     public static String STATUS = null;
     
 }

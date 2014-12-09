@@ -5,7 +5,6 @@
  */
 package br.uff.ic.github.mergeviewer.test;
 
-import java.nio.file.FileVisitResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

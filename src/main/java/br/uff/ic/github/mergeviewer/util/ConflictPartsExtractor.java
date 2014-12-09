@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.github.mergeviewer.processing;
+package br.uff.ic.github.mergeviewer.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author gleiph
  */
-public class ConflictPartsExtractor {
+public class ConflictPartsExtractor{
 
     //Input
     private List<String> conflictRegion;
@@ -123,7 +123,5 @@ public class ConflictPartsExtractor {
     private void setRightConflict(List<String> rightConflict) {
         this.rightConflict = rightConflict;
     }
-    
-    
-    
+
 }

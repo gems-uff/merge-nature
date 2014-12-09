@@ -8,24 +8,17 @@ package br.uff.ic.github.mergeviewer;
 import br.uff.ic.gems.merge.utils.KrakenFile;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.ast.ASTExtractor;
-import br.uff.ic.github.mergeviewer.ast.StructureAnalyses;
-import br.uff.ic.github.mergeviewer.processing.ConflictPartsExtractor;
+import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
 import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
-import br.uff.ic.github.mergeviewer.util.ContextFinder;
-import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
 import br.uff.ic.github.mergeviewer.util.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -36,7 +29,7 @@ import javax.swing.table.TableModel;
  */
 public class Main extends javax.swing.JFrame {
 
-    private String repositoryPath;
+    private String baseRepositoryPath;
     private InitProject initProject;
 
     private List<ConflictingChunk> conflicts;
@@ -296,10 +289,10 @@ public class Main extends javax.swing.JFrame {
         Information.DEVELOPER_MERGE_REVISION = revision;
 
         if (initProject != null) {
-            repositoryPath = initProject.getRepositoryPath();
+            baseRepositoryPath = initProject.getRepositoryPath();
         }
 
-        ProcessRevision processRevision = new ProcessRevision(jtaInformation, jProgressBar, cbFiles, revision, repositoryPath, status);
+        ProcessRevision processRevision = new ProcessRevision(jtaInformation, jProgressBar, cbFiles, revision, baseRepositoryPath, status);
 
         Thread process = new Thread(processRevision);
         process.run();
@@ -313,9 +306,9 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         if (initProject != null) {
-            repositoryPath = initProject.getRepositoryPath();
+            baseRepositoryPath = initProject.getRepositoryPath();
         }
-        Understanding understanding = new Understanding(jProgressBar, cbFiles, repositoryPath);
+        Understanding understanding = new Understanding(jProgressBar, cbFiles, baseRepositoryPath);
         Thread understand = new Thread(understanding);
         understand.start();
     }//GEN-LAST:event_btnUnderstandActionPerformed
@@ -386,7 +379,7 @@ public class Main extends javax.swing.JFrame {
                 model.insertRow(progress++, new Object[]{sha, status, files, percentage});
 
             }
-            repositoryPath = fileToLines.get(fileToLines.size() - 1);
+            baseRepositoryPath = fileToLines.get(fileToLines.size() - 1);
 
             jPanelContent.setVisible(true);
             jScrollPane1.setVisible(true);
@@ -411,13 +404,13 @@ public class Main extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
         if (initProject != null) {
-            repositoryPath = initProject.getRepositoryPath();
+            baseRepositoryPath = initProject.getRepositoryPath();
         }
 
-        List<String> allRevisions = GitCMD.getAllRevisions(repositoryPath);
-        String date = GitCMD.getDate(repositoryPath, allRevisions.get(0));
-        String date1 = GitCMD.getDate(repositoryPath, allRevisions.get(allRevisions.size() - 1));
-        List<String> mergeRevisions = GitCMD.getMergeRevisions(repositoryPath);
+        List<String> allRevisions = GitCMD.getAllRevisions(baseRepositoryPath);
+        String date = GitCMD.getDate(baseRepositoryPath, allRevisions.get(0));
+        String date1 = GitCMD.getDate(baseRepositoryPath, allRevisions.get(allRevisions.size() - 1));
+        List<String> mergeRevisions = GitCMD.getMergeRevisions(baseRepositoryPath);
 
         TableModel model = jTableCont.getModel();
         int rowCount = model.getRowCount();
@@ -454,7 +447,7 @@ public class Main extends javax.swing.JFrame {
             currentFile = cbFiles.getSelectedItem().toString();
 
             if (initProject != null) {
-                repositoryPath = initProject.getRepositoryPath();
+                baseRepositoryPath = initProject.getRepositoryPath();
             }
 
             String currentFile = cbFiles.getSelectedItem().toString();
@@ -490,63 +483,30 @@ public class Main extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
-        try {
+//        try {
 
             int selectedIndex = jCbxConflicts.getSelectedIndex();
             int context = 3;
-            ConflictingChunk conflictArea = conflicts.get(selectedIndex);
+            ConflictingChunk conflictChunk = conflicts.get(selectedIndex);
 
             if (initProject != null) {
-                repositoryPath = initProject.getRepositoryPath();
+                baseRepositoryPath = initProject.getRepositoryPath();
             }
 
             //Creating repositories if they don't exist
-            String relativePath = cbFiles.getSelectedItem().toString().replace(repositoryPath, "");
-            String repositorySolutionPath = repositoryPath + "clone" + File.pathSeparator + "OK";
-            String head1Repository = repositoryPath + "clone" + File.separator + "1";
-            String head2Repository = repositoryPath + "clone" + File.separator + "2";
-
-            StructureAnalyses.cloneRepositories(repositoryPath, repositorySolutionPath, head1Repository, head2Repository);
-
-            //Checking out revisions
-            GitCMD.checkout(repositorySolutionPath, Information.DEVELOPER_MERGE_REVISION);
-            GitCMD.checkout(head1Repository, Information.HEAD1_REVISION);
-            GitCMD.checkout(head2Repository, Information.HEAD2_REVISION);
-
-            //Getting conflicting file
-            List<String> fileConflict = MergeUtils.fileToLines(cbFiles.getSelectedItem().toString());
-            //Getting solution file
-            List<String> fileSolution = MergeUtils.fileToLines(repositorySolutionPath + relativePath);
-
-            //Getting conflict area
-            int beginConflict, endCcnflict;
-            beginConflict = StructureAnalyses.getConflictLowerBound(conflictArea, context);
-            endCcnflict = StructureAnalyses.getConflictUpperBound(conflictArea, context, fileConflict);
-            List<String> conflictingArea = fileConflict.subList(beginConflict, endCcnflict);
-
-            //Getting parts of conflict area
-            ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
-            cpe.extract();
-
-            List<String> beginContext = cpe.getBeginContext();
-            List<String> endContext = cpe.getEndContext();
-
-            List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution);
-
-            String leftSS = StructureAnalyses.getSyntacticStructures(cpe.getLeftConflict(), head1Repository, relativePath);
-
-            String rightSS = StructureAnalyses.getSyntacticStructures(cpe.getRightConflict(), head2Repository, relativePath);
+            String pathRelativeFile = cbFiles.getSelectedItem().toString().replace(baseRepositoryPath, "");
+            String pathDeveloperMergeSolution = baseRepositoryPath + "clone" + File.separator + "OK";
+            String pathLeftRepository = baseRepositoryPath + "clone" + File.separator + "1";
+            String pathRightRepository = baseRepositoryPath + "clone" + File.separator + "2";
+            String pathMergedRepository = baseRepositoryPath;
             
-            String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
-
-            ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);
-            showCase.setVisible(true);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //  AST end
-
-
+            ConflictingChunkInformation cci = new ConflictingChunkInformation(pathLeftRepository, pathRightRepository, 
+                    pathMergedRepository, pathDeveloperMergeSolution, pathRelativeFile, conflictChunk, context);
+            
+            Thread exacute = new Thread(cci);
+           
+            exacute.start();
+            
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

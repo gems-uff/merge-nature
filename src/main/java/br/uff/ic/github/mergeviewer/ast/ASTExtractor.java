@@ -9,7 +9,6 @@ import br.uff.ic.github.mergeviewer.ast.data.SourceCodeFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;

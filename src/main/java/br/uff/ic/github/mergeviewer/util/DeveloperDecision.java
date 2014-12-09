@@ -5,7 +5,6 @@
  */
 package br.uff.ic.github.mergeviewer.util;
 
-import br.uff.ic.github.mergeviewer.processing.ConflictPartsExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,13 +76,13 @@ public class DeveloperDecision {
         endContext = cpe.getEndContext();
 
         int beginSolution = 0, endSolution = 0;
-        if (beginContext != null) {
+        if (beginContext != null && !beginContext.isEmpty()) {
             beginSolution = getIndexFromBegin(solution, beginContext.get(beginContext.size() - 1));
         } else {
             beginSolution = 0;
         }
 
-        if (endContext != null) {
+        if (endContext != null && !endContext.isEmpty()) {
             endSolution = getIndexFromEnd(solution, endContext.get(0));
         } else {
             endSolution = solution.size();

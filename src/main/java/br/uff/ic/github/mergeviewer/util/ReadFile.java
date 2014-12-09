@@ -21,7 +21,7 @@ public class ReadFile {
     
     public static List<String> read(String path) throws FileNotFoundException, IOException {
         
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         
         BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String line = null;
