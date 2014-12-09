@@ -39,9 +39,6 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
-//        jScrollPane2.setVisible(false);
-//        cbFiles.setVisible(false);
-//        btnUnderstand.setVisible(false);
     }
 
     /**
@@ -269,7 +266,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1MouseClicked
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
 
         initProject = new InitProject(jProgressBar, jTableCont, jMenu1);
 
@@ -280,7 +276,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jTableContMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableContMouseClicked
-        // TODO add your handling code here:
+
         TableModel model = jTableCont.getModel();
         String revision = model.getValueAt(jTableCont.getSelectedRow(), 0).toString();
         String status = model.getValueAt(jTableCont.getSelectedRow(), 1).toString();
@@ -297,13 +293,9 @@ public class Main extends javax.swing.JFrame {
         Thread process = new Thread(processRevision);
         process.run();
 
-//        cbFiles.setVisible(true);
-//        btnUnderstand.setVisible(true);
-
     }//GEN-LAST:event_jTableContMouseClicked
 
     private void btnUnderstandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnderstandActionPerformed
-        // TODO add your handling code here:
 
         if (initProject != null) {
             baseRepositoryPath = initProject.getRepositoryPath();
@@ -318,7 +310,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
 
         JFileChooser chooser = new JFileChooser();
         int result = chooser.showSaveDialog(jMenu1);
@@ -327,7 +318,7 @@ public class Main extends javax.swing.JFrame {
         int columnCount = model.getColumnCount();
         int rowCount = model.getRowCount();
 
-        if (result == chooser.APPROVE_OPTION) {
+        if (result == JFileChooser.APPROVE_OPTION) {
             Writer writer = KrakenFile.createWriter(chooser.getSelectedFile().getAbsolutePath());
             for (int i = 0; i < rowCount; i++) {
                 if (model.getValueAt(i, 2) != null) {
@@ -436,7 +427,6 @@ public class Main extends javax.swing.JFrame {
     String currentFile = "";
 
     private void cbFilesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbFilesItemStateChanged
-        // TODO add your handling code here:
 
         if (cbFiles.getSelectedItem() != null && !currentFile.equals(cbFiles.getSelectedItem().toString())) {
 
@@ -482,8 +472,6 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_cbFilesItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
-//        try {
 
             int selectedIndex = jCbxConflicts.getSelectedIndex();
             int context = 3;
