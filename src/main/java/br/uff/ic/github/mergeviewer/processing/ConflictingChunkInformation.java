@@ -8,7 +8,7 @@ package br.uff.ic.github.mergeviewer.processing;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowCase;
-import br.uff.ic.github.mergeviewer.ast.StructureAnalyses;
+import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
 import br.uff.ic.github.mergeviewer.util.ConflictPartsExtractor;
 import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.ContextFinder;
@@ -47,12 +47,12 @@ public class ConflictingChunkInformation implements Runnable {
     @Override
     public void run() {
 
-        StructureAnalyses.cloneRepositories(pathMergedRepository, pathDeveloperMergedRepository, pathLeftRepository, pathRightRepository);
+        ASTAuxiliar.cloneRepositories(pathMergedRepository, pathDeveloperMergedRepository, pathLeftRepository, pathRightRepository);
 
         //Checking out revisions
         GitCMD.checkout(pathDeveloperMergedRepository, Information.DEVELOPER_MERGE_REVISION);
-        GitCMD.checkout(pathLeftRepository, Information.HEAD1_REVISION);
-        GitCMD.checkout(pathRightRepository, Information.HEAD2_REVISION);
+        GitCMD.checkout(pathLeftRepository, Information.LEFT_REVISION);
+        GitCMD.checkout(pathRightRepository, Information.RIGHT_REVISION);
 
         //Getting conflicting file
         List<String> fileConflict = MergeUtils.fileToLines(
@@ -63,8 +63,8 @@ public class ConflictingChunkInformation implements Runnable {
 
         //Getting conflict area
         int beginConflict, endConflict;
-        beginConflict = StructureAnalyses.getConflictLowerBound(getConflictChunk(), context);
-        endConflict = StructureAnalyses.getConflictUpperBound(getConflictChunk(), context, fileConflict);
+        beginConflict = ASTAuxiliar.getConflictLowerBound(getConflictChunk(), context);
+        endConflict = ASTAuxiliar.getConflictUpperBound(getConflictChunk(), context, fileConflict);
         List<String> conflictingArea = fileConflict.subList(beginConflict, endConflict);
 
         //Getting parts of conflict area
@@ -74,7 +74,7 @@ public class ConflictingChunkInformation implements Runnable {
         List<String> beginContext = cpe.getBeginContext();
         List<String> endContext = cpe.getEndContext();
 
-        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution);
+        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
 
         String leftSS = null;
 
@@ -82,8 +82,8 @@ public class ConflictingChunkInformation implements Runnable {
 
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftSS = StructureAnalyses.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
-                rightSS = StructureAnalyses.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
+                leftSS = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
+                rightSS = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -188,10 +188,15 @@ public class Visitor extends ASTVisitor {
 
         Javadoc javadoc = node.getJavadoc();
 
-        int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
-        int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
+        if (javadoc != null) {
 
-        sourceCode.add("EnumConstantDeclaration", endJavadoc + 1, end);
+            int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
+            int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
+
+            sourceCode.add("EnumConstantDeclaration", endJavadoc + 1, end);
+        } else {
+            sourceCode.add("EnumConstantDeclaration", begin, end);
+        }
 
 //        System.out.println("EnumConstantDeclaration (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
@@ -653,7 +658,6 @@ public class Visitor extends ASTVisitor {
      |                                  Unused                                |
      ***************************************************************************
      =========================================================================*/
-
     //>>>>>>>>>>>>>>>>                     Assignment
     @Override
     public boolean visit(Assignment node) {
@@ -666,7 +670,7 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-        //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
     @Override
     public boolean visit(Modifier node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -678,7 +682,7 @@ public class Visitor extends ASTVisitor {
         //Put here the diference between the diferent kinds of initialization 
         return true;
     }
-    
+
     //WildcardType  
     @Override
     public boolean visit(WildcardType node) {

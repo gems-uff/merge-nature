@@ -291,7 +291,7 @@ public class Main extends javax.swing.JFrame {
         ProcessRevision processRevision = new ProcessRevision(jtaInformation, jProgressBar, cbFiles, revision, baseRepositoryPath, status);
 
         Thread process = new Thread(processRevision);
-        process.run();
+        process.start();
 
     }//GEN-LAST:event_jTableContMouseClicked
 
@@ -405,11 +405,11 @@ public class Main extends javax.swing.JFrame {
 
         TableModel model = jTableCont.getModel();
         int rowCount = model.getRowCount();
-        int conflicts = 0;
+        int conflictsCounter = 0;
 
         for (int i = 0; i < rowCount; i++) {
             if (model.getValueAt(i, 1).equals(Variables.CONFLICT)) {
-                conflicts++;
+                conflictsCounter++;
             }
         }
 
@@ -418,7 +418,7 @@ public class Main extends javax.swing.JFrame {
                 + "Commits: " + allRevisions.size() + "\n"
                 + "Contributers: ? \n"
                 + "Merges: " + mergeRevisions.size() + "\n"
-                + "Conflicts: " + conflicts;
+                + "Conflicts: " + conflictsCounter;
 
         JOptionPane.showMessageDialog(jPanelContent, information);
 
@@ -440,8 +440,8 @@ public class Main extends javax.swing.JFrame {
                 baseRepositoryPath = initProject.getRepositoryPath();
             }
 
-            String currentFile = cbFiles.getSelectedItem().toString();
-            List<String> file = MergeUtils.fileToLines(currentFile);
+            String currentLocalFile = cbFiles.getSelectedItem().toString();
+            List<String> file = MergeUtils.fileToLines(currentLocalFile);
 
             int lineNumber = 0;
 
@@ -501,11 +501,7 @@ public class Main extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -513,16 +509,9 @@ public class Main extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

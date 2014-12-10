@@ -68,8 +68,8 @@ public class Understanding implements Runnable {
         String revision = Information.DEVELOPER_MERGE_REVISION;
 
         String mergeBase = Information.BASE_REVISION;
-        String head1 = Information.HEAD1_REVISION;
-        String head2 = Information.HEAD2_REVISION;
+        String head1 = Information.LEFT_REVISION;
+        String head2 = Information.RIGHT_REVISION;
         String developerMerge = Information.DEVELOPER_MERGE_REVISION;
 
         GitCMD.checkout(originalRepository, mergeBase);

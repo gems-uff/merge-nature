@@ -63,13 +63,12 @@ public class DeveloperDecision {
             return DeveloperChoice.MANUAL;
         }
     }
-    
+
     public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution) {
 
         List<String> beginContext, endContext, leftConflict, rightConflict;
         int begin = 0, end = 0, separator = 0;
 
-        
         beginContext = cpe.getBeginContext();
         leftConflict = cpe.getLeftConflict();
         rightConflict = cpe.getRightConflict();
@@ -174,7 +173,11 @@ public class DeveloperDecision {
 
         }
 
-        return i;
+        if (i >= text.size()) {
+            return 0;
+        } else {
+            return i;
+        }
     }
 
     private static int getIndexFromEnd(List<String> text, String line) {
@@ -188,6 +191,10 @@ public class DeveloperDecision {
 
         }
 
-        return i;
+        if (i <= 0) {
+            return text.size() - 1;
+        } else {
+            return i;
+        }
     }
 }

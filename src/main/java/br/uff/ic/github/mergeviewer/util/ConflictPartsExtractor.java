@@ -12,17 +12,18 @@ import java.util.List;
  *
  * @author gleiph
  */
-public class ConflictPartsExtractor{
+public class ConflictPartsExtractor {
 
     //Input
     private List<String> conflictRegion;
-    
-    
+
     //Output
     private List<String> beginContext;
     private List<String> endContext;
     private List<String> leftConflict;
     private List<String> rightConflict;
+    private String leftFile;
+    private String rightFile;
 
     public ConflictPartsExtractor(List<String> conflictRegion) {
         this.conflictRegion = conflictRegion;
@@ -30,24 +31,34 @@ public class ConflictPartsExtractor{
         this.endContext = new ArrayList<>();
         this.leftConflict = new ArrayList<>();
         this.rightConflict = new ArrayList<>();
+        this.leftFile = null;
+        this.rightFile = null;
     }
 
-    public void extract(){
+    public void extract() {
         int begin = 0, separator = 0, end = 0;
-        
-        
-        
+
         for (int i = 0; i < getConflictRegion().size(); i++) {
             String line = getConflictRegion().get(i);
-            
-            if(line.contains("<<<<<<<"))
+
+            if (line.contains("<<<<<<<")) {
+                if (line.contains(":")) {
+                    String[] split = line.split(":");
+                    setLeftFile(split[split.length - 1]);
+                }
                 begin = i;
-            else if(line.contains("======"))
+
+            } else if (line.contains("======")) {
                 separator = i;
-            else if(line.contains(">>>>>>>"))
+            } else if (line.contains(">>>>>>>")) {
                 end = i;
+                if (line.contains(":")) {
+                    String[] split = line.split(":");
+                    setRightFile(split[split.length - 1]);
+                }
+            }
         }
-        
+
         setBeginContext(getConflictRegion().subList(0, begin));
         setLeftConflict(getConflictRegion().subList(begin + 1, separator));
         setRightConflict(getConflictRegion().subList(separator + 1, end));
@@ -122,6 +133,34 @@ public class ConflictPartsExtractor{
      */
     private void setRightConflict(List<String> rightConflict) {
         this.rightConflict = rightConflict;
+    }
+
+    /**
+     * @return the leftFile
+     */
+    public String getLeftFile() {
+        return leftFile;
+    }
+
+    /**
+     * @param leftFile the leftFile to set
+     */
+    public void setLeftFile(String leftFile) {
+        this.leftFile = leftFile;
+    }
+
+    /**
+     * @return the rightFile
+     */
+    public String getRightFile() {
+        return rightFile;
+    }
+
+    /**
+     * @param rightFile the rightFile to set
+     */
+    public void setRightFile(String rightFile) {
+        this.rightFile = rightFile;
     }
 
 }

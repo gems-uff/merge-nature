@@ -55,8 +55,8 @@ public class ProcessRevision implements Runnable {
 
         if (status.equals(Variables.CONFLICT) && parents.size() == 2) {
 
-            Information.HEAD1_REVISION = parents.get(0);
-            Information.HEAD2_REVISION = parents.get(1);
+            Information.LEFT_REVISION = parents.get(0);
+            Information.RIGHT_REVISION = parents.get(1);
             //Merge base
             String mergeBase = GitCMD.getMergeBase(repositoryPath, parents.get(0), parents.get(1));
             output.append("Merge base:").append("\n");

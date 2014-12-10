@@ -69,7 +69,7 @@ public class ContextFinder {
         return result;
     }
 
-    public static List<String> getSolution(List<String> patternBegin, List<String> patternEnd, List<String> file) {
+    public static List<String> getSolution(List<String> patternBegin, List<String> patternEnd, List<String> file, int conflictCkunkBegin, int conflictCkunkEnd) {
 
         List<Integer> begin = getBegin(patternBegin, file);
 
@@ -96,7 +96,27 @@ public class ContextFinder {
 
                 }
             } else {
-                System.out.println("Not implemented");
+                int difference = Integer.MAX_VALUE;
+                for (Integer b : begin) {
+                    int d = Math.abs(conflictCkunkBegin - b);
+                    if(d < difference) {
+                        difference = d;
+                        lower = b;
+                    } 
+                }
+                
+                
+                difference = Integer.MAX_VALUE;
+                
+                for (Integer e : end) {
+                    int d = Math.abs(conflictCkunkEnd - e);
+                    if(d < difference) {
+                        difference = d;
+                        upper = e;
+                    } 
+                }
+                
+//                System.out.println("Not implemented");
             }
         }
 
