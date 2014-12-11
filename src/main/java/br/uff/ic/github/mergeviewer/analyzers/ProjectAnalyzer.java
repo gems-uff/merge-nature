@@ -17,11 +17,12 @@ import java.util.List;
  * @author gleiph
  */
 public class ProjectAnalyzer {
-    
+
     public static void main(String[] args) {
         ProjectAnalyzer pa = new ProjectAnalyzer();
-        pa.analyze("/Users/gleiph/Repositories/antlr4");
-        
+//        pa.analyze("/Users/gleiph/Repositories/antlr4");
+        pa.analyze("/Users/gleiph/Repositories/voldemort");
+
     }
 
     public Project analyze(String repositoryPath) {
@@ -40,21 +41,22 @@ public class ProjectAnalyzer {
 
         int conflictingMerges = 0;
         int progress = 1;
-        
+
         for (String rev : allRevisions) {
-        
-            System.out.println((progress++)+"//"+allRevisions.size()+": "+rev);
+
+            System.out.println((progress++) + "//" + allRevisions.size() + ": " + rev);
             Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
-            
-            if(revision.isConflict())
+
+            if (revision.isConflict()) {
                 conflictingMerges++;
-            
+            }
+
             revisions.add(revision);
         }
-        
+
         project.setRevisions(revisions);
         project.setNumberConflictingMerges(conflictingMerges);
-        
+
         return project;
     }
 

@@ -66,6 +66,9 @@ public class DeveloperDecision {
 
     public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution) {
 
+        if(solution == null)
+            return DeveloperChoice.MANUAL;
+        
         List<String> beginContext, endContext, leftConflict, rightConflict;
         int begin = 0, end = 0, separator = 0;
 
@@ -87,7 +90,12 @@ public class DeveloperDecision {
             endSolution = solution.size();
         }
 
-        List<String> solutionClean = solution.subList(beginSolution + 1, endSolution);
+        List<String> solutionClean;
+        if (beginSolution + 1 <= endSolution) {
+            solutionClean = solution.subList(beginSolution + 1, endSolution);
+        } else {
+            return DeveloperChoice.MANUAL;
+        }
 
         if (solutionClean.equals(leftConflict)) {
             return DeveloperChoice.VERSION1;

@@ -74,10 +74,7 @@ public class ConflictingChunkInformation implements Runnable {
         List<String> beginContext = cpe.getBeginContext();
         List<String> endContext = cpe.getEndContext();
 
-        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
-
         String leftSS = null;
-
         String rightSS = null;
 
         if (pathRelativeFile.contains(".java")) {
@@ -88,6 +85,8 @@ public class ConflictingChunkInformation implements Runnable {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
 

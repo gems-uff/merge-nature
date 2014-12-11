@@ -35,6 +35,7 @@ public class ConflictingFileAnalyzer {
 
         int context = 3;
 
+        System.out.println("\t"+conflictingFilePath);
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
         List<String> conflictingFileList;
@@ -62,6 +63,7 @@ public class ConflictingFileAnalyzer {
 
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
+            System.out.println(conflictingChunk.getIdentifier());
             int conflictLowerBound = ASTAuxiliar.getConflictLowerBound(conflictingChunk, context);
             int conflictUpperBound = ASTAuxiliar.getConflictUpperBound(conflictingChunk, context, conflictingFileList);
             List<String> conflictingArea = ConflictingFile.subList(conflictLowerBound, conflictUpperBound);

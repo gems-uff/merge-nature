@@ -5,12 +5,13 @@
  */
 package br.uff.ic.github.mergeviewer.ast;
 
-import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
+import br.uff.ic.github.mergeviewer.util.Context;
 import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 
@@ -77,7 +78,12 @@ public class ASTAuxiliar {
         List<String> conflict = conflictArea;
         String file = repository + relativePath;
         List<String> fileList = FileUtils.readLines(new File(file));
-        List<Integer> beginList = ContextFinder.getBegin(conflict, fileList);
+        List<Integer> beginList = new ArrayList<>();
+        
+        for (Context b : ContextFinder.getBegin(conflict, fileList)) {
+            beginList.add(b.getLineNumber());
+        }
+        
         int begin = 0;
         if (beginList.size() == 1) {
             begin = beginList.get(0) + 1;//transform in the real line (begining from 1)
