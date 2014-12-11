@@ -34,8 +34,9 @@ public class ConflictingFileAnalyzer {
     public static ConflictingFile analyze(String conflictingFilePath, String repositoryPath, String leftSHA, String rightSHA, String developerSolutionSHA) throws IOException {
 
         int context = 3;
+        boolean hasSolution = true;
 
-        System.out.println("\t"+conflictingFilePath);
+        System.out.println("\t" + conflictingFilePath);
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
         List<String> conflictingFileList;
@@ -56,11 +57,17 @@ public class ConflictingFileAnalyzer {
         GitCMD.checkout(rightRepository, rightSHA);
         GitCMD.checkout(developerMergedRepository, developerSolutionSHA);
 
-        List<String> solutionFile = FileUtils.readLines(new File(developerMergedRepository + relativePath));
         List<String> ConflictingFile = FileUtils.readLines(new File(repositoryPath + relativePath));
 //        List<String> leftConflictingFile = FileUtils.readLines(new File(leftRepository + relativePath));
 //        List<String> rightConflictingFile = FileUtils.readLines(new File(rightRepository + relativePath));
 
+        List<String> solutionFile = null;
+
+        try {
+            solutionFile = FileUtils.readLines(new File(developerMergedRepository + relativePath));
+        } catch (IOException e) {
+            hasSolution = false;
+        }
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
             System.out.println(conflictingChunk.getIdentifier());
@@ -73,9 +80,6 @@ public class ConflictingFileAnalyzer {
 
             List<String> beginContext = cpe.getBeginContext();
             List<String> endContext = cpe.getEndContext();
-
-            List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, solutionFile, 
-                    conflictingChunk.getBegin(), conflictingChunk.getEnd());
 
             String leftSS = null;
             String rightSS = null;
@@ -99,8 +103,15 @@ public class ConflictingFileAnalyzer {
                 }
             }
 
-            DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea);
-            conflictingChunk.setDeveloperChoice(developerDecision);
+            List<String> solutionArea = null;
+            if (hasSolution) {
+                solutionArea = ContextFinder.getSolution(beginContext, endContext, solutionFile,
+                        conflictingChunk.getBegin(), conflictingChunk.getEnd());
+                DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea);
+                conflictingChunk.setDeveloperChoice(developerDecision);
+            } else {
+                conflictingChunk.setDeveloperChoice(DeveloperChoice.MANUAL);
+            }
 
         }
         //TODO: Continue

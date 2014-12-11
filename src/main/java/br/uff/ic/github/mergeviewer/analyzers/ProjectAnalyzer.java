@@ -10,6 +10,7 @@ import br.uff.ic.github.mergeviewer.kinds.Project;
 import br.uff.ic.github.mergeviewer.kinds.Revision;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,10 +20,19 @@ import java.util.List;
 public class ProjectAnalyzer {
 
     public static void main(String[] args) {
+        Date begin, end;
+        begin = new Date();
         ProjectAnalyzer pa = new ProjectAnalyzer();
-//        pa.analyze("/Users/gleiph/Repositories/antlr4");
+        pa.analyze("/Users/gleiph/Repositories/antlr4");
         pa.analyze("/Users/gleiph/Repositories/voldemort");
+        pa.analyze("/Users/gleiph/Repositories/mct");
+        pa.analyze("/Users/gleiph/Repositories/lombok");
+        pa.analyze("/Users/gleiph/Repositories/twitter4j");
 
+        end = new Date();
+        
+        System.out.println("Begin: "+ begin);
+        System.out.println("End: "+end);
     }
 
     public Project analyze(String repositoryPath) {

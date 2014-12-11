@@ -37,24 +37,38 @@ public class ConflictPartsExtractor {
 
     public void extract() {
         int begin = 0, separator = 0, end = 0;
+        boolean takeBegin = false, takeSeparator = false, takeEnd = false;
 
+        List<Integer> remove = new ArrayList<>();
+        
         for (int i = 0; i < getConflictRegion().size(); i++) {
             String line = getConflictRegion().get(i);
 
             if (line.contains("<<<<<<<")) {
-                if (line.contains(":")) {
-                    String[] split = line.split(":");
-                    setLeftFile(split[split.length - 1]);
+                if (!takeBegin) {
+                    if (line.contains(":")) {
+                        String[] split = line.split(":");
+                        setLeftFile(split[split.length - 1]);
+                    }
+                    begin = i;
+                    takeBegin = true;
+                    takeSeparator = false;
+                    takeEnd = false;
                 }
-                begin = i;
 
             } else if (line.contains("======")) {
-                separator = i;
+                if (!takeSeparator) {
+                    separator = i;
+                    takeSeparator = true;
+                }
             } else if (line.contains(">>>>>>>")) {
-                end = i;
-                if (line.contains(":")) {
-                    String[] split = line.split(":");
-                    setRightFile(split[split.length - 1]);
+                if (!takeEnd) {
+                    end = i;
+                    if (line.contains(":")) {
+                        String[] split = line.split(":");
+                        setRightFile(split[split.length - 1]);
+                    }
+                    takeEnd = true;
                 }
             }
         }
