@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uff.ic.github.github.parser;
 
 import br.uff.ic.github.github.data.User;
@@ -40,7 +35,7 @@ public class GithubAPI {
         return init();
     }
 
-    public static User init(/*String login, String password*/) {
+    public static User init() {
         user = User.nextUser();
         base = "curl -i -u " + user.getLogin() + ":" + user.getPassword() + " ";
         return user;
@@ -248,13 +243,11 @@ public class GithubAPI {
         return result;
     }
 
-    public static void projects(/*int since, String reportPath*/) {
+    public static void projects() {
 
         //Jpa manager
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
         EntityManager manager = factory.createEntityManager();
-
-        int cont = 0;
 
         String LINK = "Link:";
 
@@ -337,8 +330,6 @@ public class GithubAPI {
                                     manager.persist(project);
                                     manager.getTransaction().commit();
                                 } catch (Exception e) {
-//                                    e.printStackTrace();
-                                    //TODO: investigate the cause 
                                 }
                             } else {
                                 try {
@@ -349,7 +340,6 @@ public class GithubAPI {
                                     manager.getTransaction().commit();
 
                                 } catch (Exception e) {
-//                                    e.printStackTrace();
                                 }
                             }
 
@@ -370,7 +360,6 @@ public class GithubAPI {
             link = Parser.getLink(output.getOutput());
             String[] split = link.split("=");
             System.out.println("Next:" + split[split.length - 1]);
-            cont = 0;
         }
 
     }
