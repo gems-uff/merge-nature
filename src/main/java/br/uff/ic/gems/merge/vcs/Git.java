@@ -21,13 +21,18 @@ public class Git {
     }
 
     
-    public List<String> fileDiff(String initialVersion, String finalVersion, String file){
-        List<String> result = new ArrayList<>();
+    public String fileDiff(String initialVersion, String finalVersion, String file){
+        StringBuilder result = new StringBuilder();
         String command = "git diff " + initialVersion+ " "+ finalVersion+ " "+ file;
         
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
         if (cmdOutput.getErrors().isEmpty()) {
-            return cmdOutput.getOutput();
+            
+            for (String line : cmdOutput.getOutput()) {
+                result.append(line).append("\n");
+            }
+            
+            return result.toString();
         } else {
             return null;
         }
