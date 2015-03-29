@@ -9,6 +9,7 @@ import br.uff.ic.gems.merge.diff.translator.GitTranslator;
 import br.uff.ic.gems.merge.operation.Add;
 import br.uff.ic.gems.merge.operation.Operation;
 import br.uff.ic.gems.merge.operation.Remove;
+import br.uff.ic.gems.merge.repositioning.Repositioning;
 import br.uff.ic.gems.merge.vcs.Git;
 import java.util.List;
 
@@ -41,6 +42,11 @@ public class Main {
         System.out.println("-------------------Clustered--------------");
         List<Operation> clusteredOperations = gitTranslator.cluster(operations);
         printOperations(clusteredOperations);
+        
+        Repositioning repositioning = new Repositioning(repositoryPath);
+        int newLine = repositioning.repositioning(initialVersion, finalVersion, filePath, 246);
+        
+        System.out.println(newLine);
     }
 
     public static void printOperations(List<Operation> operations) {
