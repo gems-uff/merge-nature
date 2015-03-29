@@ -87,6 +87,43 @@ public class GitTranslator {
         return result;
     }
 
+    public List<Operation> cluster(List<Operation> operations) {
+        List<Operation> result = new ArrayList<>();
+
+        for (int i = 0; i < operations.size(); i++) {
+
+            Operation currentOperation = operations.get(i);
+            int currentLine = currentOperation.getLine();
+            int currentSize = currentOperation.getSize();
+
+            for (int j = i + 1; j < operations.size(); j++) {
+                Operation operation = operations.get(j);
+
+                if (currentOperation.getType() == operation.getType()
+                        && operation.getLine() == ++currentLine) {
+                    currentSize++;
+                    i++;
+                }
+
+            }
+
+            if (currentOperation.getType() == OperationType.ADD) {
+                Add add = new Add();
+                add.setLine(currentOperation.getLine());
+                add.setSize(currentSize);
+                result.add(add);
+            } else if (currentOperation.getType() == OperationType.REMOVE) {
+                Remove remove = new Remove();
+                remove.setLine(currentOperation.getLine());
+                remove.setSize(currentSize);
+                result.add(remove);
+            }
+
+        }
+
+        return result;
+    }
+
     private String getFilename(String line) {
         line = line.replaceFirst(DELTABEGIN, "");
         String[] words = line.split(" ");
@@ -121,15 +158,17 @@ public class GitTranslator {
     private Operation getOperation(String line, OperationType kind, int iterator) {
 
         Operation result = null;
-        String content = null;
 
         if (kind == OperationType.ADD) {
             result = new Add();
             result.setLine(iterator);
+            result.setSize(1);
 
         } else if (kind == OperationType.REMOVE) {
             result = new Remove();
             result.setLine(iterator);
+            result.setSize(1);
+
         }
 
         return result;
