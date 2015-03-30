@@ -25,10 +25,16 @@ public class Main {
 //        String finalVersion = "e3fc04bd";
 //        String filePath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4/tool/src/org/antlr/v4/tool/ErrorType.java";
 //        String repositoryPath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4";
-        String initialVersion = "ca213689";
-        String finalVersion = "84324f1dad";
-        String filePath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4/runtime/Java/src/org/antlr/v4/runtime/atn/LL1Analyzer.java";
+//        String initialVersion = "ca213689";
+//        String finalVersion = "84324f1dad";
+//        String filePath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4/runtime/Java/src/org/antlr/v4/runtime/atn/LL1Analyzer.java";
+//        String repositoryPath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4";
+        
+        String initialVersion = "4c45a4bc66";
+        String finalVersion = "84324f1";
+        String filePath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4/runtime/Java/src/org/antlr/v4/runtime/atn/PredictionContext.java";
         String repositoryPath = "/Users/gleiph/Dropbox/UCI/Repositories/antlr4";
+        
 
         Git git = new Git(repositoryPath);
         String output = git.fileDiff(initialVersion, finalVersion, filePath);
@@ -44,7 +50,7 @@ public class Main {
         printOperations(clusteredOperations);
         
         Repositioning repositioning = new Repositioning(repositoryPath);
-        int newLine = repositioning.repositioning(initialVersion, finalVersion, filePath, 246);
+        int newLine = repositioning.repositioning(initialVersion, finalVersion, filePath, 554);
         
         System.out.println(newLine);
     }
