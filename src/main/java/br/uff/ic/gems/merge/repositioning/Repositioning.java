@@ -61,4 +61,41 @@ public class Repositioning {
         return result;
     }
 
+    public int repositioning(String initialFile, String finalFile, int line) {
+        int result = line;
+
+        Git git = new Git(repositoryPath);
+        String diff = git.fileDiff(initialFile, finalFile);
+
+        GitTranslator gitTranslator = new GitTranslator();
+        List<Operation> operations = gitTranslator.translateDelta(diff);
+
+        List<Operation> clusteredOperations = gitTranslator.cluster(operations);
+
+        int displacement = 0;
+
+        for (Operation clusteredOperation : clusteredOperations) {
+
+            int initialLine = clusteredOperation.getLine() + displacement;
+            int finalLine = initialLine + clusteredOperation.getSize() - 1;
+            
+            if (clusteredOperation.getType() == OperationType.ADD) {
+                if (initialLine <= result) {
+                    result += clusteredOperation.getSize();
+                    displacement += clusteredOperation.getSize();
+                }
+            } else if (clusteredOperation.getType() == OperationType.REMOVE) {
+                if (finalLine < result) {
+                    result -= clusteredOperation.getSize();
+                    displacement -= clusteredOperation.getSize();
+
+                } else if (initialLine <= result
+                        && result <= finalLine) {
+                    return -1;
+                }
+            }
+        }
+
+        return result;
+    }
 }
