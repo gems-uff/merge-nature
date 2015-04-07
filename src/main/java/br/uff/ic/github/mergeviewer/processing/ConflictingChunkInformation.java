@@ -5,6 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
+import br.uff.ic.gems.merge.repositioning.Repositioning;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowCase;
@@ -55,11 +56,12 @@ public class ConflictingChunkInformation implements Runnable {
         GitCMD.checkout(pathRightRepository, Information.RIGHT_REVISION);
 
         //Getting conflicting file
-        List<String> fileConflict = MergeUtils.fileToLines(
-                pathMergedRepository + pathRelativeFile);
+        String pathConflict = pathMergedRepository + pathRelativeFile;
+        String pathSolution = pathDeveloperMergedRepository + pathRelativeFile;
+
+        List<String> fileConflict = MergeUtils.fileToLines(pathConflict);
         //Getting solution file
-        List<String> fileSolution = MergeUtils.fileToLines(
-                pathDeveloperMergedRepository + pathRelativeFile);
+        List<String> fileSolution = MergeUtils.fileToLines(pathSolution);
 
         //Getting conflict area
         int beginConflict, endConflict;
@@ -86,8 +88,80 @@ public class ConflictingChunkInformation implements Runnable {
             }
         }
 
-        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
+        //Get the following data from the conflict:
+        //- beginContext and endContext
+        //- beginConflict and endConflict
+        //- separator (?)
+        //- initialVersion and finalVersion
+        int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
+        String initialFile, finalFile;
 
+        context1bOriginal = beginConflict + 1;
+        context1eOriginal = getConflictChunk().getBegin();
+        context2bOriginal = getConflictChunk().getEnd() + 1;
+        context2eOriginal = endConflict;
+
+        initialFile = pathConflict;
+        finalFile = pathSolution;
+
+        Repositioning repositioning = new Repositioning(pathMergedRepository);
+        int context1b = repositioning.repositioning(initialFile, finalFile, context1bOriginal);
+        int context1e = repositioning.repositioning(initialFile, finalFile, context1eOriginal);
+        int context2b = repositioning.repositioning(initialFile, finalFile, context2bOriginal);
+        int context2e = repositioning.repositioning(initialFile, finalFile, context2eOriginal);
+
+        if (context1b < 1) {
+            context1b = 1;
+        }
+        if (context2b < 1) {
+            context2b = 1;
+        }
+        if (context2e > fileSolution.size()) {
+            context2e = fileSolution.size();
+        }
+        if (context1e > fileSolution.size()) {
+            context2e = fileSolution.size();
+        }
+
+//        System.out.println(context1bOriginal + " => " + context1b);
+//        System.out.println("\t" + fileConflict.get(context1bOriginal - 1));
+//        if (context1b != -1) {
+//            System.out.println("\t" + fileSolution.get(context1b - 1));
+//        } else {
+//            System.out.println("\t" + "Deleted");
+//        }
+//
+//        System.out.println(context2bOriginal + " => " + context2b);
+//        System.out.println("\t" + fileConflict.get(context2bOriginal - 1));
+//        if (context2b != -1) {
+//            System.out.println("\t" + fileSolution.get(context2b - 1));
+//        } else {
+//            System.out.println("\t" + "Deleted");
+//        }
+//
+//        System.out.println(context2eOriginal + " => " + context2e);
+//        System.out.println("\t" + fileConflict.get(context2eOriginal - 1));
+//        if (context2e != -1) {
+//            System.out.println("\t" + fileSolution.get(context2e - 1));
+//        } else {
+//            System.out.println("\t" + "Deleted");
+//        }
+//
+//        System.out.println(context1eOriginal + " => " + context1e);
+//        System.out.println("\t" + fileConflict.get(context1eOriginal - 1));
+//        if (context1e != -1) {
+//            System.out.println("\t" + fileSolution.get(context1e - 1));
+//        } else {
+//            System.out.println("\t" + "Deleted");
+//        }
+
+        
+        //Previous implementation
+//        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
+
+        //New implementation
+        List<String> solutionArea = fileSolution.subList(context1b - 1, context2e);
+        
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
 
         ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);
