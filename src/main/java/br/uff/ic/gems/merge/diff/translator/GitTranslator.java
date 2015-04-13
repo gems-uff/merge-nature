@@ -55,7 +55,7 @@ public class GitTranslator {
             //--------------------------------------------------------
             //Removing whitespace in the begin of the line
             //--------------------------------------------------------
-            line = removingWhitespace(line);//work it better
+//            line = removingWhitespace(line);//work it better
 
             if (line.startsWith(LINEINTERVAL)) {
                 //read the interval line

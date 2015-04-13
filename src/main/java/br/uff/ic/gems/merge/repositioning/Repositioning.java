@@ -40,7 +40,7 @@ public class Repositioning {
 
             int initialLine = clusteredOperation.getLine() + displacement;
             int finalLine = initialLine + clusteredOperation.getSize() - 1;
-            
+
             if (clusteredOperation.getType() == OperationType.ADD) {
                 if (initialLine <= result) {
                     result += clusteredOperation.getSize();
@@ -72,22 +72,28 @@ public class Repositioning {
 
         List<Operation> clusteredOperations = gitTranslator.cluster(operations);
 
-        int displacement = 0;
+        int displacementRemove = 0, displacementAdd = 0;
 
         for (Operation clusteredOperation : clusteredOperations) {
 
-            int initialLine = clusteredOperation.getLine() + displacement;
-            int finalLine = initialLine + clusteredOperation.getSize() - 1;
-            
+            int initialLine = 0;
+
+            int finalLine = 0;
+
             if (clusteredOperation.getType() == OperationType.ADD) {
+                initialLine = clusteredOperation.getLine() + displacementAdd;
+
                 if (initialLine <= result) {
                     result += clusteredOperation.getSize();
-                    displacement += clusteredOperation.getSize();
+                    displacementAdd += clusteredOperation.getSize();
                 }
             } else if (clusteredOperation.getType() == OperationType.REMOVE) {
+                initialLine = clusteredOperation.getLine() + displacementRemove;
+                finalLine = initialLine + clusteredOperation.getSize() - 1;
+                
                 if (finalLine < result) {
                     result -= clusteredOperation.getSize();
-                    displacement -= clusteredOperation.getSize();
+                    displacementRemove -= clusteredOperation.getSize();
 
                 } else if (initialLine <= result
                         && result <= finalLine) {
