@@ -9,7 +9,7 @@ package br.uff.ic.gems.merge.operation;
  *
  * @author gleiph
  */
-public class Operation {
+public abstract class Operation {
     private int line;
     private int size;
     private OperationType type;
@@ -56,5 +56,7 @@ public class Operation {
         this.type = type;
     }
     
+    @Override
+    public abstract String toString();
     
 }

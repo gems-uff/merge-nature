@@ -81,7 +81,7 @@ public class Repositioning {
             int finalLine = 0;
 
             if (clusteredOperation.getType() == OperationType.ADD) {
-                initialLine = clusteredOperation.getLine() + displacementAdd;
+                initialLine = clusteredOperation.getLine() + displacementRemove;
 
                 if (initialLine <= result) {
                     result += clusteredOperation.getSize();

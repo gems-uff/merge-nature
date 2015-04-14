@@ -15,5 +15,10 @@ public class Remove extends Operation implements OperationInterface{
         super();
         super.setType(OperationType.REMOVE);
     }
+
+    @Override
+    public String toString() {
+        return "R("+this.getLine()+", "+this.getSize()+")";
+    }
     
 }

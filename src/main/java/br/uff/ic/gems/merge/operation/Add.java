@@ -16,4 +16,10 @@ public class Add extends Operation implements OperationInterface{
         super.setType(OperationType.ADD);
     }
 
+    @Override
+    public String toString() {
+        return "A("+this.getLine()+", "+this.getSize()+")";
+    }
+
+    
 }
