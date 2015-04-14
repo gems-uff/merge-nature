@@ -94,74 +94,160 @@ public class ConflictingChunkInformation implements Runnable {
         //- separator (?)
         //- initialVersion and finalVersion
         int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
+        int separator, begin, end;
         String initialFile, finalFile;
 
         context1bOriginal = beginConflict + 1;
         context1eOriginal = getConflictChunk().getBegin();
         context2bOriginal = getConflictChunk().getEnd() + 1;
         context2eOriginal = endConflict;
+        begin = beginConflict;
+        end = endConflict;
+        separator = begin + cpe.getSeparator() - cpe.getBegin();
 
         initialFile = pathConflict;
         finalFile = pathSolution;
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
-        int context1b = repositioning.repositioning(initialFile, finalFile, context1bOriginal);
-        int context1e = repositioning.repositioning(initialFile, finalFile, context1eOriginal);
-        int context2b = repositioning.repositioning(initialFile, finalFile, context2bOriginal);
-        int context2e = repositioning.repositioning(initialFile, finalFile, context2eOriginal);
 
-        if (context1b < 1) {
-            context1b = 1;
-        }
-        if (context2b < 1) {
-            context2b = 1;
-        }
-        if (context2e > fileSolution.size()) {
-            context2e = fileSolution.size();
-        }
-        if (context1e > fileSolution.size()) {
-            context2e = fileSolution.size();
+        int context1 = -1, context2 = fileSolution.size();
+        int context1Original = -1, context2Original = -1;
+
+        //Context 1
+        for (int i = context1bOriginal; i <= context1eOriginal; i++) {
+            context1 = repositioning.repositioning(initialFile, finalFile, i);
+
+            if (context1 != -1) {
+                context1Original = i;
+                break;
+            }
         }
 
-//        System.out.println(context1bOriginal + " => " + context1b);
-//        System.out.println("\t" + fileConflict.get(context1bOriginal - 1));
-//        if (context1b != -1) {
-//            System.out.println("\t" + fileSolution.get(context1b - 1));
+        if (context1 == -1) {
+            int c1a0 = -1, c1b0 = -1;
+            int c1a = -1, c1b = -1;
+
+            for (int i = begin; i < separator; i++) {
+                c1a = repositioning.repositioning(initialFile, finalFile, i);
+
+                if (c1a != -1) {
+                    c1a0 = i;
+                    break;
+                }
+            }
+
+            for (int i = separator + 1; i < end - 1; i++) {
+                c1b = repositioning.repositioning(initialFile, finalFile, i);
+
+                if (c1b != -1) {
+                    c1b0 = i;
+                    break;
+                }
+            }
+
+            if (c1a != -1 || c1b != -1) {
+                if (c1a == -1) {
+                    context1 = c1b;
+                    context1Original = c1b0;
+                } else if (c1b == -1) {
+                    context1 = c1a;
+                    context1Original = c1a0;
+                } else if (c1a < c1b) {
+                    context1 = c1a;
+                    context1Original = c1a0;
+                } else {
+                    context1 = c1b;
+                    context1Original = c1b0;
+                }
+            }
+
+        }
+
+        //Context 2
+        for (int i = context2eOriginal; i >= context2bOriginal; i--) {
+            context2 = repositioning.repositioning(initialFile, finalFile, i);
+
+            if (context2 != -1) {
+                context2Original = i;
+                break;
+            }
+        }
+
+        if (context2 == fileSolution.size()) {
+
+            int c2a0 = -1, c2b0 = -1;
+            int c2a = -1, c2b = -1;
+
+            for (int i = separator - 1; i > begin; i--) {
+                c2a = repositioning.repositioning(initialFile, finalFile, i);
+
+                if (c2a != -1) {
+                    c2a0 = i;
+                    break;
+                }
+            }
+
+            for (int i = end - 1; i > separator; i--) {
+                c2b = repositioning.repositioning(initialFile, finalFile, i);
+
+                if (c2b != -1) {
+                    c2b0 = i;
+                    break;
+                }
+            }
+
+            if (c2a != -1 || c2b != -1) {
+                if (c2a == -1) {
+                    context2 = c2b;
+                    context2Original = c2b0;
+                } else if (c2b == -1) {
+                    context2 = c2a;
+                    context2Original = c2a0;
+                } else if (c2a < c2b) {
+                    context2 = c2b;
+                    context2Original = c2b0;
+                } else {
+                    context2 = c2a;
+                    context2Original = c2a0;
+                }
+            }
+
+        }
+
+        if (context1 < 1) {
+            context1 = 1;
+        }
+        if (context2 > fileSolution.size()) {
+            context2 = fileSolution.size();
+        }
+
+
+//        System.out.println(context1Original + " => " + context1);
+//        if (context1Original >= 1) {
+//            System.out.println("\t" + fileConflict.get(context1Original - 1));
+//        } else {
+//            System.out.println("\t Empty!");
+//        }
+//        if (context1 != -1) {
+//            System.out.println("\t" + fileSolution.get(context1 - 1));
 //        } else {
 //            System.out.println("\t" + "Deleted");
 //        }
 //
-//        System.out.println(context2bOriginal + " => " + context2b);
-//        System.out.println("\t" + fileConflict.get(context2bOriginal - 1));
-//        if (context2b != -1) {
-//            System.out.println("\t" + fileSolution.get(context2b - 1));
+//        System.out.println(context2Original + " => " + context2);
+//        if (context2Original >= 1) {
+//            System.out.println("\t" + fileConflict.get(context2Original - 1));
 //        } else {
-//            System.out.println("\t" + "Deleted");
+//            System.out.println("\t Empty!");
 //        }
-//
-//        System.out.println(context2eOriginal + " => " + context2e);
-//        System.out.println("\t" + fileConflict.get(context2eOriginal - 1));
-//        if (context2e != -1) {
-//            System.out.println("\t" + fileSolution.get(context2e - 1));
-//        } else {
-//            System.out.println("\t" + "Deleted");
-//        }
-//
-//        System.out.println(context1eOriginal + " => " + context1e);
-//        System.out.println("\t" + fileConflict.get(context1eOriginal - 1));
-//        if (context1e != -1) {
-//            System.out.println("\t" + fileSolution.get(context1e - 1));
+//        if (context2 != -1) {
+//            System.out.println("\t" + fileSolution.get(context2 - 1));
 //        } else {
 //            System.out.println("\t" + "Deleted");
 //        }
 
-        
-        //Previous implementation
-//        List<String> solutionArea = ContextFinder.getSolution(beginContext, endContext, fileSolution, beginConflict, endConflict);
+        List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
-        //New implementation
-        List<String> solutionArea = fileSolution.subList(context1b - 1, context2e);
-        
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
 
         ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);

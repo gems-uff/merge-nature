@@ -24,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-
 /**
  * @author Gleiph
  */
@@ -114,6 +113,11 @@ public class Main extends javax.swing.JFrame {
         cbFiles.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbFilesItemStateChanged(evt);
+            }
+        });
+        cbFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbFilesActionPerformed(evt);
             }
         });
 
@@ -426,13 +430,20 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     String currentFile = "";
+    String currentRevision = "";
 
     private void cbFilesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbFilesItemStateChanged
 
-        if (cbFiles.getSelectedItem() != null && !currentFile.equals(cbFiles.getSelectedItem().toString())) {
+        TableModel model = jTableCont.getModel();
+
+        if (cbFiles.getSelectedItem() != null && 
+                (!currentFile.equals(cbFiles.getSelectedItem().toString())
+                || !currentRevision.equals(model.getValueAt(jTableCont.getSelectedRow(), 0).toString()))) {
 
             conflicts = new ArrayList<>();
             ConflictingChunk conflictingChunk = null;
+
+            currentRevision = model.getValueAt(jTableCont.getSelectedRow(), 0).toString();
 
             System.out.println(cbFiles.getSelectedItem().toString());
             currentFile = cbFiles.getSelectedItem().toString();
@@ -474,35 +485,39 @@ public class Main extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
-            int selectedIndex = jCbxConflicts.getSelectedIndex();
-            int context = 3;
-            ConflictingChunk conflictChunk = conflicts.get(selectedIndex);
+        int selectedIndex = jCbxConflicts.getSelectedIndex();
+        int context = 3;
+        ConflictingChunk conflictChunk = conflicts.get(selectedIndex);
 
-            if (initProject != null) {
-                baseRepositoryPath = initProject.getRepositoryPath();
-            }
+        if (initProject != null) {
+            baseRepositoryPath = initProject.getRepositoryPath();
+        }
 
-            //Creating repositories if they don't exist
-            String pathRelativeFile = cbFiles.getSelectedItem().toString().replace(baseRepositoryPath, "");
-            String pathDeveloperMergeSolution = baseRepositoryPath + "clone" + File.separator + "OK";
-            String pathLeftRepository = baseRepositoryPath + "clone" + File.separator + "1";
-            String pathRightRepository = baseRepositoryPath + "clone" + File.separator + "2";
-            String pathMergedRepository = baseRepositoryPath;
-            
-            ConflictingChunkInformation cci = new ConflictingChunkInformation(pathLeftRepository, pathRightRepository, 
-                    pathMergedRepository, pathDeveloperMergeSolution, pathRelativeFile, conflictChunk, context);
-            
-            Thread exacute = new Thread(cci);
-           
-            exacute.start();
-            
+        //Creating repositories if they don't exist
+        String pathRelativeFile = cbFiles.getSelectedItem().toString().replace(baseRepositoryPath, "");
+        String pathDeveloperMergeSolution = baseRepositoryPath + "clone" + File.separator + "OK";
+        String pathLeftRepository = baseRepositoryPath + "clone" + File.separator + "1";
+        String pathRightRepository = baseRepositoryPath + "clone" + File.separator + "2";
+        String pathMergedRepository = baseRepositoryPath;
+
+        ConflictingChunkInformation cci = new ConflictingChunkInformation(pathLeftRepository, pathRightRepository,
+                pathMergedRepository, pathDeveloperMergeSolution, pathRelativeFile, conflictChunk, context);
+
+        Thread exacute = new Thread(cci);
+
+        exacute.start();
+
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void cbFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFilesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbFilesActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

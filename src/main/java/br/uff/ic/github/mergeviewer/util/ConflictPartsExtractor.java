@@ -24,6 +24,9 @@ public class ConflictPartsExtractor {
     private List<String> rightConflict;
     private String leftFile;
     private String rightFile;
+    private int separator;
+    private int begin;
+    private int end;
 
     public ConflictPartsExtractor(List<String> conflictRegion) {
         this.conflictRegion = conflictRegion;
@@ -36,7 +39,6 @@ public class ConflictPartsExtractor {
     }
 
     public void extract() {
-        int begin = 0, separator = 0, end = 0;
         boolean takeBegin = false, takeSeparator = false, takeEnd = false;
 
         List<Integer> remove = new ArrayList<>();
@@ -175,6 +177,48 @@ public class ConflictPartsExtractor {
      */
     public void setRightFile(String rightFile) {
         this.rightFile = rightFile;
+    }
+
+    /**
+     * @return the separator
+     */
+    public int getSeparator() {
+        return separator;
+    }
+
+    /**
+     * @param separator the separator to set
+     */
+    public void setSeparator(int separator) {
+        this.separator = separator;
+    }
+
+    /**
+     * @return the begin
+     */
+    public int getBegin() {
+        return begin;
+    }
+
+    /**
+     * @param begin the begin to set
+     */
+    public void setBegin(int begin) {
+        this.begin = begin;
+    }
+
+    /**
+     * @return the end
+     */
+    public int getEnd() {
+        return end;
+    }
+
+    /**
+     * @param end the end to set
+     */
+    public void setEnd(int end) {
+        this.end = end;
     }
 
 }
