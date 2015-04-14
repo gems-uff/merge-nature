@@ -110,20 +110,22 @@ public class ConflictingChunkInformation implements Runnable {
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
-        int context1 = -1, context2 = fileSolution.size();
+        int context1 = -1, context2 = fileSolution.size() + 1;
         int context1Original = -1, context2Original = -1;
 
         //Context 1
+        boolean changed = false;
         for (int i = context1bOriginal; i <= context1eOriginal; i++) {
             context1 = repositioning.repositioning(initialFile, finalFile, i);
 
             if (context1 != -1) {
                 context1Original = i;
+                changed = true;
                 break;
             }
         }
 
-        if (context1 == -1) {
+        if (context1 == -1 && !changed) {
             int c1a0 = -1, c1b0 = -1;
             int c1a = -1, c1b = -1;
 
@@ -164,16 +166,18 @@ public class ConflictingChunkInformation implements Runnable {
         }
 
         //Context 2
+        changed = false;
         for (int i = context2eOriginal; i >= context2bOriginal; i--) {
             context2 = repositioning.repositioning(initialFile, finalFile, i);
 
             if (context2 != -1) {
                 context2Original = i;
+                changed = true;
                 break;
             }
         }
 
-        if (context2 == fileSolution.size()) {
+        if (context2 == fileSolution.size() && !changed) {
 
             int c2a0 = -1, c2b0 = -1;
             int c2a = -1, c2b = -1;
