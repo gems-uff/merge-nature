@@ -86,6 +86,11 @@ public class ConflictingChunkInformation implements Runnable {
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            String[] fileBroken = pathRelativeFile.split("\\.");
+            leftSS = fileBroken[fileBroken.length - 1];
+            rightSS = fileBroken[fileBroken.length - 1];
+
         }
 
         //Get the following data from the conflict:
@@ -225,7 +230,6 @@ public class ConflictingChunkInformation implements Runnable {
             context2 = fileSolution.size();
         }
 
-
 //        System.out.println(context1Original + " => " + context1);
 //        if (context1Original >= 1) {
 //            System.out.println("\t" + fileConflict.get(context1Original - 1));
@@ -249,7 +253,6 @@ public class ConflictingChunkInformation implements Runnable {
 //        } else {
 //            System.out.println("\t" + "Deleted");
 //        }
-
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();

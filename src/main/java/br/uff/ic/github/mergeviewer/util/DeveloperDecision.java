@@ -66,11 +66,11 @@ public class DeveloperDecision {
 
     public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution) {
 
-        if(solution == null)
+        if (solution == null) {
             return DeveloperChoice.MANUAL;
-        
+        }
+
         List<String> beginContext, endContext, leftConflict, rightConflict;
-        int begin = 0, end = 0, separator = 0;
 
         beginContext = cpe.getBeginContext();
         leftConflict = cpe.getLeftConflict();
@@ -97,9 +97,9 @@ public class DeveloperDecision {
             return DeveloperChoice.MANUAL;
         }
 
-        if (solutionClean.equals(leftConflict)) {
+        if (comparison(solutionClean, leftConflict)) {
             return DeveloperChoice.VERSION1;
-        } else if (solutionClean.equals(rightConflict)) {
+        } else if (comparison(solutionClean, rightConflict)) {
             return DeveloperChoice.VERSION2;
         } else if (isConcatenation(leftConflict, rightConflict, solutionClean, endContext)) {
             return DeveloperChoice.CONCATENATION;
@@ -108,6 +108,19 @@ public class DeveloperDecision {
         } else {
             return DeveloperChoice.MANUAL;
         }
+    }
+
+    private static boolean comparison(List<String> list1, List<String> list2) {
+        if (list1.size() != list2.size()) {
+            return false;
+        }
+        
+        for (int i = 0; i < list1.size(); i++) {
+            if(!list1.get(i).equals(list2.get(i)))
+                return false;
+        }
+        
+        return true;
     }
 
     private static boolean isCombination(List<String> version1, List<String> version2, List<String> solution) {
