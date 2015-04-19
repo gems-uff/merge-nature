@@ -340,6 +340,7 @@ public class GithubAPI {
                                     manager.getTransaction().commit();
 
                                 } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                             }
 
