@@ -12,7 +12,6 @@ import br.uff.ic.github.mergeviewer.ShowCase;
 import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
 import br.uff.ic.github.mergeviewer.util.ConflictPartsExtractor;
 import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
-import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
 import br.uff.ic.github.mergeviewer.util.Information;
 import java.io.IOException;
@@ -223,6 +222,7 @@ public class ConflictingChunkInformation implements Runnable {
 
         }
 
+        //Treating exceptions
         if (context1 < 1) {
             context1 = 1;
         }
@@ -230,29 +230,6 @@ public class ConflictingChunkInformation implements Runnable {
             context2 = fileSolution.size();
         }
 
-//        System.out.println(context1Original + " => " + context1);
-//        if (context1Original >= 1) {
-//            System.out.println("\t" + fileConflict.get(context1Original - 1));
-//        } else {
-//            System.out.println("\t Empty!");
-//        }
-//        if (context1 != -1) {
-//            System.out.println("\t" + fileSolution.get(context1 - 1));
-//        } else {
-//            System.out.println("\t" + "Deleted");
-//        }
-//
-//        System.out.println(context2Original + " => " + context2);
-//        if (context2Original >= 1) {
-//            System.out.println("\t" + fileConflict.get(context2Original - 1));
-//        } else {
-//            System.out.println("\t Empty!");
-//        }
-//        if (context2 != -1) {
-//            System.out.println("\t" + fileSolution.get(context2 - 1));
-//        } else {
-//            System.out.println("\t" + "Deleted");
-//        }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
