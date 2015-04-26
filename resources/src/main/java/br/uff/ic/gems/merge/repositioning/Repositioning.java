@@ -61,7 +61,7 @@ public class Repositioning {
         return result;
     }
 
-    public int repositioning(String initialFile, String finalFile, int line) {
+    public int repositioningCluster(String initialFile, String finalFile, int line) {
         int result = line;
 
         Git git = new Git(repositoryPath);
@@ -75,6 +75,8 @@ public class Repositioning {
         int displacementRemove = 0, displacementAdd = 0;
 
         for (Operation clusteredOperation : clusteredOperations) {
+
+            System.out.println("\t" + clusteredOperation.toString());
 
             int initialLine = 0;
 
@@ -90,7 +92,7 @@ public class Repositioning {
             } else if (clusteredOperation.getType() == OperationType.REMOVE) {
                 initialLine = clusteredOperation.getLine() + displacementRemove;
                 finalLine = initialLine + clusteredOperation.getSize() - 1;
-                
+
                 if (finalLine < result) {
                     result -= clusteredOperation.getSize();
                     displacementRemove -= clusteredOperation.getSize();
@@ -99,6 +101,42 @@ public class Repositioning {
                         && result <= finalLine) {
                     return -1;
                 }
+            }
+        }
+
+        return result;
+    }
+
+    public int repositioning(String initialFile, String finalFile, int line) {
+        int result = line;
+
+        Git git = new Git(repositoryPath);
+        String diff = git.fileDiff(initialFile, finalFile);
+
+        GitTranslator gitTranslator = new GitTranslator();
+        List<Operation> operations = gitTranslator.translateDelta(diff);
+
+        int addDisplacement = 0, removeDisplacement = 0;
+
+        for (Operation operation : operations) {
+
+            System.out.println(operation.toString());
+
+            if (operation.getLine() > line) {
+                System.out.println(line - removeDisplacement + addDisplacement);
+                return line - removeDisplacement + addDisplacement;
+            }
+
+            if (operation.getType() == OperationType.REMOVE) {
+                if (operation.getLine() == line) {
+                    return -1;
+                } else {
+                    System.out.println(operation.getLine() + " X ");
+                    removeDisplacement++;
+                }
+            } else if (operation.getType() == OperationType.ADD) {
+                System.out.println(" X " + operation.getLine());
+                addDisplacement++;
             }
         }
 
