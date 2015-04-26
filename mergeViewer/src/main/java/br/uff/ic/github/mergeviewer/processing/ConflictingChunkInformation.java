@@ -115,7 +115,7 @@ public class ConflictingChunkInformation implements Runnable {
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
         int context1 = -1, context2 = fileSolution.size() + 1;
-        int context1Original = -1, context2Original = -1;
+        int context1Original = -1, context2Original = fileConflict.size();
 
         //Context 1
         boolean changed = false;
@@ -134,7 +134,7 @@ public class ConflictingChunkInformation implements Runnable {
             int c1a = -1, c1b = -1;
 
             for (int i = begin; i < separator; i++) {
-                c1a = repositioning.repositioning(initialFile, finalFile, i);
+                c1a = repositioning.repositioningCluster(initialFile, finalFile, i);
 
                 if (c1a != -1) {
                     c1a0 = i;
@@ -143,7 +143,7 @@ public class ConflictingChunkInformation implements Runnable {
             }
 
             for (int i = separator + 1; i < end - 1; i++) {
-                c1b = repositioning.repositioning(initialFile, finalFile, i);
+                c1b = repositioning.repositioningCluster(initialFile, finalFile, i);
 
                 if (c1b != -1) {
                     c1b0 = i;
@@ -172,7 +172,7 @@ public class ConflictingChunkInformation implements Runnable {
         //Context 2
         changed = false;
         for (int i = context2eOriginal; i >= context2bOriginal; i--) {
-            context2 = repositioning.repositioning(initialFile, finalFile, i);
+            context2 = repositioning.repositioningCluster(initialFile, finalFile, i);
 
             if (context2 != -1) {
                 context2Original = i;
@@ -187,7 +187,7 @@ public class ConflictingChunkInformation implements Runnable {
             int c2a = -1, c2b = -1;
 
             for (int i = separator - 1; i > begin; i--) {
-                c2a = repositioning.repositioning(initialFile, finalFile, i);
+                c2a = repositioning.repositioningCluster(initialFile, finalFile, i);
 
                 if (c2a != -1) {
                     c2a0 = i;
@@ -196,7 +196,7 @@ public class ConflictingChunkInformation implements Runnable {
             }
 
             for (int i = end - 1; i > separator; i--) {
-                c2b = repositioning.repositioning(initialFile, finalFile, i);
+                c2b = repositioning.repositioningCluster(initialFile, finalFile, i);
 
                 if (c2b != -1) {
                     c2b0 = i;
@@ -226,10 +226,18 @@ public class ConflictingChunkInformation implements Runnable {
         if (context1 < 1) {
             context1 = 1;
         }
-        if (context2 > fileSolution.size()) {
+        if (context2 > fileSolution.size() || context2 < 1) {
             context2 = fileSolution.size();
         }
 
+        System.out.println(context1Original+" => "+ context1);
+        System.out.println("\t"+ fileConflict.get(context1Original - 1));
+        System.out.println("\t"+ fileSolution.get(context1 -1));
+        
+        System.out.println(context2Original+" => "+ context2);
+        System.out.println("\t"+ fileConflict.get(context2Original - 1));
+        System.out.println("\t"+ fileSolution.get(context2 - 1));
+        
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();

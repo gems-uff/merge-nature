@@ -38,7 +38,7 @@ public class DeveloperDecision {
 
         int beginSolution = 0, endSolution = 0;
         if (context1 != null) {
-            beginSolution = getIndexFromBegin(solution, context1.get(context1.size() - 1));
+            beginSolution = getIndexFromBegin(solution, context1);
         } else {
             beginSolution = 0;
         }
@@ -79,7 +79,7 @@ public class DeveloperDecision {
 
         int beginSolution = 0, endSolution = 0;
         if (beginContext != null && !beginContext.isEmpty()) {
-            beginSolution = getIndexFromBegin(solution, beginContext.get(beginContext.size() - 1));
+            beginSolution = getIndexFromBegin(solution, beginContext);
         } else {
             beginSolution = 0;
         }
@@ -114,12 +114,13 @@ public class DeveloperDecision {
         if (list1.size() != list2.size()) {
             return false;
         }
-        
+
         for (int i = 0; i < list1.size(); i++) {
-            if(!list1.get(i).equals(list2.get(i)))
+            if (!list1.get(i).equals(list2.get(i))) {
                 return false;
+            }
         }
-        
+
         return true;
     }
 
@@ -183,21 +184,20 @@ public class DeveloperDecision {
         return result;
     }
 
-    private static int getIndexFromBegin(List<String> text, String line) {
-        int i = 0;
+    private static int getIndexFromBegin(List<String> text, List<String> context) {
+        int result = -1;
 
-        for (int j = 0; j < text.size(); j++) {
-            if (text.get(j).equals(line)) {
-                i = j;
-                break;
+        for (int j = 0; j < context.size() && j < text.size(); j++) {
+            for (int k = 0; k < j + 1; k++) {
+                if(context.get(j).equals(text.get(k)))
+                    result = j;
             }
-
         }
 
-        if (i >= text.size()) {
+        if (result >= text.size() || result < 0) {
             return 0;
-        } else {
-            return i;
+        } else{
+            return result;
         }
     }
 
