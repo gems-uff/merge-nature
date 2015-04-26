@@ -105,6 +105,9 @@ public class ConflictingChunkInformation implements Runnable {
         context1eOriginal = getConflictChunk().getBegin();
         context2bOriginal = getConflictChunk().getEnd() + 1;
         context2eOriginal = endConflict;
+        
+        if(context2bOriginal > context2eOriginal)
+            context2bOriginal = context2eOriginal;
         begin = beginConflict;
         end = endConflict;
         separator = begin + cpe.getSeparator() - cpe.getBegin();

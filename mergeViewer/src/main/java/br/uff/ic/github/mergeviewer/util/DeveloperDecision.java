@@ -91,7 +91,10 @@ public class DeveloperDecision {
         }
 
         List<String> solutionClean;
-        if (beginSolution + 1 <= endSolution) {
+        if (beginSolution + 1 == endSolution) {
+            solutionClean = solution.subList(beginSolution, endSolution);
+
+        } else if (beginSolution + 1 < endSolution) {
             solutionClean = solution.subList(beginSolution + 1, endSolution);
         } else {
             return DeveloperChoice.MANUAL;
@@ -189,14 +192,15 @@ public class DeveloperDecision {
 
         for (int j = 0; j < context.size() && j < text.size(); j++) {
             for (int k = 0; k < j + 1; k++) {
-                if(context.get(j).equals(text.get(k)))
+                if (context.get(j).equals(text.get(k))) {
                     result = j;
+                }
             }
         }
 
         if (result >= text.size() || result < 0) {
             return 0;
-        } else{
+        } else {
             return result;
         }
     }
