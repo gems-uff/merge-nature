@@ -105,9 +105,10 @@ public class ConflictingChunkInformation implements Runnable {
         context1eOriginal = getConflictChunk().getBegin();
         context2bOriginal = getConflictChunk().getEnd() + 1;
         context2eOriginal = endConflict;
-        
-        if(context2bOriginal > context2eOriginal)
+
+        if (context2bOriginal > context2eOriginal) {
             context2bOriginal = context2eOriginal;
+        }
         begin = beginConflict;
         end = endConflict;
         separator = begin + cpe.getSeparator() - cpe.getBegin();
@@ -233,14 +234,17 @@ public class ConflictingChunkInformation implements Runnable {
             context2 = fileSolution.size();
         }
 
-        System.out.println(context1Original+" => "+ context1);
-        System.out.println("\t"+ fileConflict.get(context1Original - 1));
-        System.out.println("\t"+ fileSolution.get(context1 -1));
-        
-        System.out.println(context2Original+" => "+ context2);
-        System.out.println("\t"+ fileConflict.get(context2Original - 1));
-        System.out.println("\t"+ fileSolution.get(context2 - 1));
-        
+        try {
+            System.out.println(context1Original + " => " + context1);
+            System.out.println("\t" + fileConflict.get(context1Original - 1));
+            System.out.println("\t" + fileSolution.get(context1 - 1));
+
+            System.out.println(context2Original + " => " + context2);
+            System.out.println("\t" + fileConflict.get(context2Original - 1));
+            System.out.println("\t" + fileSolution.get(context2 - 1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();

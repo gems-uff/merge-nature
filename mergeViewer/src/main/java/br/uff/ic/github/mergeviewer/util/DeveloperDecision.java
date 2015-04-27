@@ -92,8 +92,14 @@ public class DeveloperDecision {
 
         List<String> solutionClean;
         if (beginSolution + 1 == endSolution) {
-            solutionClean = solution.subList(beginSolution, endSolution);
+            if (cpe.getBeginContext().size() + cpe.getEndContext().size() != solution.size()) {
+                solutionClean = solution.subList(beginSolution, endSolution);
+            } else {
+                solutionClean = solution.subList(beginSolution + 1, endSolution);
+            }
 
+        } else if (beginSolution + 1 < endSolution && beginSolution == 0 && cpe.getBeginContext().isEmpty()) {
+            solutionClean = solution.subList(beginSolution, endSolution);
         } else if (beginSolution + 1 < endSolution) {
             solutionClean = solution.subList(beginSolution + 1, endSolution);
         } else {
