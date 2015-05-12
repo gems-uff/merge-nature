@@ -5,10 +5,8 @@
  */
 package br.uff.ic.github.mergeviewer.analyzers;
 
-import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
-import br.uff.ic.github.mergeviewer.ast.ASTExtractor;
 import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.kinds.ConflictingFile;
 import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
@@ -107,7 +105,7 @@ public class ConflictingFileAnalyzer {
             if (hasSolution) {
                 solutionArea = ContextFinder.getSolution(beginContext, endContext, solutionFile,
                         conflictingChunk.getBegin(), conflictingChunk.getEnd());
-                DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea);
+                DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context);
                 conflictingChunk.setDeveloperChoice(developerDecision);
             } else {
                 conflictingChunk.setDeveloperChoice(DeveloperChoice.MANUAL);

@@ -13,7 +13,10 @@ import java.util.List;
  * @author gleiph
  */
 public class DeveloperDecision {
-
+    
+    public static int countBegin;
+    
+    @Deprecated
     public static DeveloperChoice getDeveloperDecision(List<String> conflict, List<String> solution) {
 
         List<String> context1, context2, version1, version2;
@@ -64,7 +67,7 @@ public class DeveloperDecision {
         }
     }
 
-    public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution) {
+    public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
 
         if (solution == null) {
             return DeveloperChoice.MANUAL;
@@ -92,7 +95,9 @@ public class DeveloperDecision {
 
         List<String> solutionClean;
         if (beginSolution + 1 == endSolution) {
-            if (cpe.getBeginContext().size() + cpe.getEndContext().size() != solution.size()) {
+            if (countBegin < context) {
+                solutionClean = solution.subList(beginSolution, endSolution);
+            } else if (cpe.getBeginContext().size() + cpe.getEndContext().size() != solution.size()) {
                 solutionClean = solution.subList(beginSolution, endSolution);
             } else {
                 solutionClean = solution.subList(beginSolution + 1, endSolution);
@@ -196,10 +201,13 @@ public class DeveloperDecision {
     private static int getIndexFromBegin(List<String> text, List<String> context) {
         int result = -1;
 
+        countBegin = 0;
+        
         for (int j = 0; j < context.size() && j < text.size(); j++) {
             for (int k = 0; k < j + 1; k++) {
                 if (context.get(j).equals(text.get(k))) {
                     result = j;
+                    countBegin++;
                 }
             }
         }

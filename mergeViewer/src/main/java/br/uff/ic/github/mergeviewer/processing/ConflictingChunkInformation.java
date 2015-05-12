@@ -247,7 +247,7 @@ public class ConflictingChunkInformation implements Runnable {
         }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
-        String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea).toString();
+        String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
 
         ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);
         showCase.setVisible(true);
