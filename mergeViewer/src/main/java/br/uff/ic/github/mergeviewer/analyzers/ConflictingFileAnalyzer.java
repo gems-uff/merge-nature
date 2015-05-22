@@ -34,7 +34,6 @@ public class ConflictingFileAnalyzer {
         int context = 3;
         boolean hasSolution = true;
 
-        System.out.println("\t" + conflictingFilePath);
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
         List<String> conflictingFileList;
@@ -240,17 +239,6 @@ public class ConflictingFileAnalyzer {
                 context2 = solutionContent.size();
             }
 
-            try {
-                System.out.println(context1Original + " => " + context1);
-                System.out.println("\t" + conflictingContent.get(context1Original - 1));
-                System.out.println("\t" + solutionContent.get(context1 - 1));
-
-                System.out.println(context2Original + " => " + context2);
-                System.out.println("\t" + conflictingContent.get(context2Original - 1));
-                System.out.println("\t" + solutionContent.get(context2 - 1));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             List<String> solutionArea = solutionContent.subList(context1 - 1, context2);
 
             String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
