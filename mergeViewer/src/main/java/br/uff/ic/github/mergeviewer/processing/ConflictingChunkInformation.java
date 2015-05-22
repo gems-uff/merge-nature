@@ -72,9 +72,6 @@ public class ConflictingChunkInformation implements Runnable {
         ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
         cpe.extract();
 
-        List<String> beginContext = cpe.getBeginContext();
-        List<String> endContext = cpe.getEndContext();
-
         String leftSS = null;
         String rightSS = null;
 

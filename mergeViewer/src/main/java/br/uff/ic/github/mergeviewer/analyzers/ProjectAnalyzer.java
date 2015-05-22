@@ -24,10 +24,10 @@ public class ProjectAnalyzer {
         begin = new Date();
         ProjectAnalyzer pa = new ProjectAnalyzer();
         pa.analyze("/Users/gleiph/Repositories/antlr4");
-        pa.analyze("/Users/gleiph/Repositories/voldemort");
-        pa.analyze("/Users/gleiph/Repositories/mct");
-        pa.analyze("/Users/gleiph/Repositories/lombok");
-        pa.analyze("/Users/gleiph/Repositories/twitter4j");
+//        pa.analyze("/Users/gleiph/Repositories/voldemort");
+//        pa.analyze("/Users/gleiph/Repositories/mct");
+//        pa.analyze("/Users/gleiph/Repositories/lombok");
+//        pa.analyze("/Users/gleiph/Repositories/twitter4j");
 
         end = new Date();
         

@@ -45,6 +45,7 @@ public class RevisionAnalyzer {
             List<String> mergeOutput = GitCMD.merge(repositoryPath, rightParent, false, true);
 
             if (OutputParser.isConflict(mergeOutput)) {
+                
                 revision.setStatus(MergeStatus.CONFLICTING);
 
                 List<String> conflictedFiles = GitCMD.conflictedFiles(repositoryPath);
