@@ -76,8 +76,6 @@ public class Repositioning {
 
         for (Operation clusteredOperation : clusteredOperations) {
 
-            System.out.println("\t" + clusteredOperation.toString());
-
             int initialLine = 0;
 
             int finalLine = 0;
@@ -120,10 +118,8 @@ public class Repositioning {
 
         for (Operation operation : operations) {
 
-            System.out.println(operation.toString());
 
             if (operation.getLine() > line) {
-                System.out.println(line - removeDisplacement + addDisplacement);
                 return line - removeDisplacement + addDisplacement;
             }
 
@@ -131,11 +127,9 @@ public class Repositioning {
                 if (operation.getLine() == line) {
                     return -1;
                 } else {
-                    System.out.println(operation.getLine() + " X ");
                     removeDisplacement++;
                 }
             } else if (operation.getType() == OperationType.ADD) {
-                System.out.println(" X " + operation.getLine());
                 addDisplacement++;
             }
         }

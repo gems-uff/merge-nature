@@ -5,9 +5,6 @@
  */
 package br.uff.ic.gems.merge.vcs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author gleiph
@@ -45,7 +42,6 @@ public class Git {
         StringBuilder result = new StringBuilder();
         
         String command = "git diff " + initialFile + " " + finalFile;
-        System.out.println(command);
         
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
         if (cmdOutput.getErrors().isEmpty()) {
