@@ -47,7 +47,7 @@ public class ConflictingFileAnalyzer {
         String rightRepository = repositoryPath + Information.RIGHT_REPOSITORY_SUFIX;
         String developerMergedRepository = repositoryPath + Information.DEVELOPER_MERGE_REPOSITORY_SUFIX;
 
-        //Cloning 
+        //Cloning
         ASTAuxiliar.cloneRepositories(repositoryPath, leftRepository, rightRepository, developerMergedRepository);
 
         //Checking out revisions
@@ -58,11 +58,10 @@ public class ConflictingFileAnalyzer {
         //Paths to files
         String solutionPath = developerMergedRepository + relativePath;
         String conflictPath = repositoryPath + relativePath;
-        
+
         //Files contenct
         List<String> conflictingContent = FileUtils.readLines(new File(conflictPath));
-        List <String> solutionContent = FileUtils.readLines(new File(solutionPath));
-
+        List<String> solutionContent = FileUtils.readLines(new File(solutionPath));
 
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
@@ -70,7 +69,7 @@ public class ConflictingFileAnalyzer {
             int beginConflict, endConflict;
             beginConflict = ASTAuxiliar.getConflictLowerBound(conflictingChunk, context);
             endConflict = ASTAuxiliar.getConflictUpperBound(conflictingChunk, context, conflictingContent);
-            
+
             List<String> conflictingArea = conflictingContent.subList(beginConflict, endConflict);
 
             //Getting parts of conflict area
@@ -80,8 +79,6 @@ public class ConflictingFileAnalyzer {
             List<String> leftKindConflict = null;
             List<String> rightKindConflict = null;
 
-            
-            
             if (conflictingFilePath.contains(".java")) {
                 try {
                     leftKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), leftRepository, relativePath);
@@ -93,7 +90,7 @@ public class ConflictingFileAnalyzer {
                 String[] fileBroken = relativePath.split("\\.");
                 leftKindConflict = new ArrayList<>();
                 leftKindConflict.add(fileBroken[fileBroken.length - 1]);
-                
+
                 rightKindConflict = new ArrayList<>();
                 rightKindConflict.add(fileBroken[fileBroken.length - 1]);
             }
@@ -124,9 +121,9 @@ public class ConflictingFileAnalyzer {
 
             Repositioning repositioning = new Repositioning(developerMergedRepository);
 
-            int context1 = checkContext1(context1bOriginal, context1eOriginal, repositioning, initialPath, finalPath, begin, separator, end);
+            int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, repositioning, initialPath, finalPath, begin, separator, end);
 
-            int context2 = checkContext2(solutionContent, conflictingContent, context2eOriginal, context2bOriginal, repositioning, initialPath, finalPath, separator, begin, end);
+            int context2 = ConflictingChunk.checkContext2(solutionContent, conflictingContent, context2eOriginal, context2bOriginal, repositioning, initialPath, finalPath, separator, begin, end);
 
             List<String> solutionArea = solutionContent.subList(context1 - 1, context2);
 
@@ -137,7 +134,7 @@ public class ConflictingFileAnalyzer {
                 //SetSolution
                 developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context);
                 conflictingChunk.setDeveloperDecision(developerDecision);
-            } 
+            }
 
             System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
             System.out.println("=================Conflicting area=================");
@@ -167,125 +164,7 @@ public class ConflictingFileAnalyzer {
         return conflictingFile;
     }
 
-    public static int checkContext2(List<String> solutionContent, List<String> conflictingContent, int context2eOriginal, int context2bOriginal, Repositioning repositioning, String initialPath, String finalPath, int separator, int begin, int end) {
-        //Context 2
-        int context2 = solutionContent.size() + 1;
-        int context2Original = conflictingContent.size();
-        boolean changed = false;
-        for (int i = context2eOriginal; i >= context2bOriginal; i--) {
-            context2 = repositioning.repositioningCluster(initialPath, finalPath, i);
-            
-            if (context2 != -1) {
-                context2Original = i;
-                changed = true;
-                break;
-            }
-        }
-        if (context2 == solutionContent.size() && !changed) {
-            
-            int c2a0 = -1, c2b0 = -1;
-            int c2a = -1, c2b = -1;
-            
-            for (int i = separator - 1; i > begin; i--) {
-                c2a = repositioning.repositioningCluster(initialPath, finalPath, i);
-                
-                if (c2a != -1) {
-                    c2a0 = i;
-                    break;
-                }
-            }
-            
-            for (int i = end - 1; i > separator; i--) {
-                c2b = repositioning.repositioningCluster(initialPath, finalPath, i);
-                
-                if (c2b != -1) {
-                    c2b0 = i;
-                    break;
-                }
-            }
-            
-            if (c2a != -1 || c2b != -1) {
-                if (c2a == -1) {
-                    context2 = c2b;
-                    context2Original = c2b0;
-                } else if (c2b == -1) {
-                    context2 = c2a;
-                    context2Original = c2a0;
-                } else if (c2a < c2b) {
-                    context2 = c2b;
-                    context2Original = c2b0;
-                } else {
-                    context2 = c2a;
-                    context2Original = c2a0;
-                }
-            }
-            
-        }
-        //Treating exceptions
-        if (context2 > solutionContent.size() || context2 < 1) {
-            context2 = solutionContent.size();
-        }
-        return context2;
-    }
-    
-    public static int checkContext1(int context1bOriginal, int context1eOriginal, Repositioning repositioning, String initialPath, String finalPath, int begin, int separator, int end) {
-        int context1 = -1, context1Original = -1;
-        boolean changed = false;
-        for (int i = context1bOriginal; i <= context1eOriginal; i++) {
-            context1 = repositioning.repositioning(initialPath, finalPath, i);
-            
-            if (context1 != -1) {
-                context1Original = i;
-                changed = true;
-                break;
-            }
-        }
-        if (context1 == -1 && !changed) {
-            int c1a0 = -1, c1b0 = -1;
-            int c1a = -1, c1b = -1;
-            
-            for (int i = begin; i < separator; i++) {
-                c1a = repositioning.repositioningCluster(initialPath, finalPath, i);
-                
-                if (c1a != -1) {
-                    c1a0 = i;
-                    break;
-                }
-            }
-            
-            for (int i = separator + 1; i < end - 1; i++) {
-                c1b = repositioning.repositioningCluster(initialPath, finalPath, i);
-                
-                if (c1b != -1) {
-                    c1b0 = i;
-                    break;
-                }
-            }
-            
-            if (c1a != -1 || c1b != -1) {
-                if (c1a == -1) {
-                    context1 = c1b;
-                    context1Original = c1b0;
-                } else if (c1b == -1) {
-                    context1 = c1a;
-                    context1Original = c1a0;
-                } else if (c1a < c1b) {
-                    context1 = c1a;
-                    context1Original = c1a0;
-                } else {
-                    context1 = c1b;
-                    context1Original = c1b0;
-                }
-            }
-            
-        }
-        //Treating exceptions
-            if (context1 < 1) {
-                context1 = 1;
-            }
-            return context1;
-    }
-    
+
     private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
         List<ConflictingChunk> result = new ArrayList<>();
         ConflictingChunk conflictingChunk = new ConflictingChunk();

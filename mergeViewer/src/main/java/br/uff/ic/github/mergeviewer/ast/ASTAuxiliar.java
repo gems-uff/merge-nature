@@ -6,8 +6,8 @@
 package br.uff.ic.github.mergeviewer.ast;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
+import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.Context;
-import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import java.io.File;
 import java.io.IOException;
@@ -37,25 +37,25 @@ public class ASTAuxiliar {
         }
     }
     
-    public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
-        int conflictingUpperBound;
-        conflictingUpperBound = conflictArea.getEnd() + context;
-        if (conflictingUpperBound > fileConflict.size()) {
-            conflictingUpperBound = fileConflict.size();
-        }
-        return conflictingUpperBound;
-    }
-
-    public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
-        int conflictLowerBound;
-        conflictLowerBound = conflictArea.getBegin() - context;
-        if (conflictLowerBound < 0) {
-            conflictLowerBound = 0;
-        }
-        return conflictLowerBound;
-    }
+//    public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
+//        int conflictingUpperBound;
+//        conflictingUpperBound = conflictArea.getEnd() + context;
+//        if (conflictingUpperBound > fileConflict.size()) {
+//            conflictingUpperBound = fileConflict.size();
+//        }
+//        return conflictingUpperBound;
+//    }
+//
+//    public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
+//        int conflictLowerBound;
+//        conflictLowerBound = conflictArea.getBegin() - context;
+//        if (conflictLowerBound < 0) {
+//            conflictLowerBound = 0;
+//        }
+//        return conflictLowerBound;
+//    }
     
-    public static int getConflictUpperBound(br.uff.ic.github.mergeviewer.kinds.ConflictingChunk conflictArea, int context, List<String> fileConflict) {
+    public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
         int conflictingUpperBound;
         conflictingUpperBound = conflictArea.getEnd() + context + 1;////I don't want do exclude the last line
         if (conflictingUpperBound > fileConflict.size()) {
@@ -64,7 +64,7 @@ public class ASTAuxiliar {
         return conflictingUpperBound;
     }
 
-    public static int getConflictLowerBound(br.uff.ic.github.mergeviewer.kinds.ConflictingChunk conflictArea, int context) {
+    public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
         int conflictLowerBound;
         conflictLowerBound = conflictArea.getBegin() - context;
         if (conflictLowerBound < 0) {

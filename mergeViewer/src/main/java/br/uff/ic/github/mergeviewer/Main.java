@@ -8,11 +8,11 @@ package br.uff.ic.github.mergeviewer;
 import br.uff.ic.gems.merge.utils.KrakenFile;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
+import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
-import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
@@ -465,7 +465,7 @@ public class Main extends javax.swing.JFrame {
                     conflictingChunk.setBegin(lineNumber);
                 } else if (line.contains(">>>>>>>")) {
                     conflictingChunk.setEnd(lineNumber + 1);//Why?
-                    conflictingChunk.setId("Case " + id++);
+                    conflictingChunk.setIdentifier("Case " + id++);
 
                     conflicts.add(conflictingChunk);
                 }
@@ -474,7 +474,7 @@ public class Main extends javax.swing.JFrame {
             jCbxConflicts.removeAllItems();
 
             for (ConflictingChunk conflict : conflicts) {
-                jCbxConflicts.addItem(conflict.getId());
+                jCbxConflicts.addItem(conflict.getIdentifier());
             }
         }
 
