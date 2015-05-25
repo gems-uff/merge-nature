@@ -56,8 +56,7 @@ public class RevisionAnalyzer {
 
                 for (String conflictedFile : conflictedFiles) {
                     try {
-                        ConflictingFile conflictingFile = new ConflictingFile(conflictedFile);
-                        ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
+                        ConflictingFile conflictingFile = ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
                         revision.getConflictingFiles().add(conflictingFile);
                         
                         if (conflictingFile.isJava()) {
