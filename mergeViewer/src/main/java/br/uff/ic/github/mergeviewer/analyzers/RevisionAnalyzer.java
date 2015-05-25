@@ -34,10 +34,12 @@ public class RevisionAnalyzer {
 
             String leftParent = parents.get(0);
             String rightParent = parents.get(1);
+            //Filling parents
             revision.setLeftSha(leftParent);
             revision.setRightSha(rightParent);
 
             String mergeBase = GitCMD.getMergeBase(repositoryPath, leftParent, rightParent);
+            //Filling base revision
             revision.setBaseSha(mergeBase);
 
             GitCMD.checkout(repositoryPath, leftParent);
