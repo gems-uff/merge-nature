@@ -92,7 +92,7 @@ public class ASTAuxiliar {
         //Dealing with AST
         ASTExtractor ats = new ASTExtractor(file);
         ats.parser();
-        List<String> kindConflict = ats.getStructures(begin, end);
+        List<String> kindConflict = ats.getLanguageConstructs(begin, end);
 
         return kindConflict;
     }

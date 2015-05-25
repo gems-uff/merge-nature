@@ -34,6 +34,7 @@ public class ASTExtractor {
     public ASTExtractor() {
     }
 
+    //It starts the analysis
     public void parser() throws IOException {
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         File file = new File(filePath);
@@ -42,13 +43,13 @@ public class ASTExtractor {
         parser.setSource(stringFile.toCharArray());
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
+        //Setting options
         Map options;
         options = JavaCore.getOptions();
         options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
         options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
         options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
         parser.setCompilerOptions(options);
-
         
         final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
         Visitor visitor = new Visitor(cu);
@@ -64,7 +65,7 @@ public class ASTExtractor {
 
     }
 
-    public List<String> getStructures(int begin, int end) {
+    public List<String> getLanguageConstructs(int begin, int end) {
         List<String> kindConflic = sourceCode.getKindConflict(begin, end);
         Collections.sort(kindConflic);
 
