@@ -59,6 +59,7 @@ public class ConflictingFileAnalyzer {
         String solutionPath = developerMergedRepository + relativePath;
         String conflictPath = repositoryPath + relativePath;
         
+        //Files contenct
         List<String> conflictingContent = FileUtils.readLines(new File(conflictPath));
         List <String> solutionContent = FileUtils.readLines(new File(solutionPath));
 
@@ -70,29 +71,31 @@ public class ConflictingFileAnalyzer {
             beginConflict = ASTAuxiliar.getConflictLowerBound(conflictingChunk, context);
             endConflict = ASTAuxiliar.getConflictUpperBound(conflictingChunk, context, conflictingContent);
             
-            //TODO: Store
             List<String> conflictingArea = conflictingContent.subList(beginConflict, endConflict);
 
             //Getting parts of conflict area
             ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
             cpe.extract();
 
-            String leftLanguageConstruct = null;
-            String rightLanguageConstruct = null;
+            List<String> leftKindConflict = null;
+            List<String> rightKindConflict = null;
 
             
             
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftLanguageConstruct = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), leftRepository, relativePath);
-                    rightLanguageConstruct = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), rightRepository, relativePath);
+                    leftKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), leftRepository, relativePath);
+                    rightKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), rightRepository, relativePath);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
                 String[] fileBroken = relativePath.split("\\.");
-                leftLanguageConstruct = fileBroken[fileBroken.length - 1];
-                rightLanguageConstruct = fileBroken[fileBroken.length - 1];
+                leftKindConflict = new ArrayList<>();
+                leftKindConflict.add(fileBroken[fileBroken.length - 1]);
+                
+                rightKindConflict = new ArrayList<>();
+                rightKindConflict.add(fileBroken[fileBroken.length - 1]);
             }
 
             //Get the following data from the conflict:
@@ -129,29 +132,33 @@ public class ConflictingFileAnalyzer {
 
             String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
 
+            DeveloperChoice developerDecision = DeveloperChoice.MANUAL;
             if (hasSolution) {
                 //SetSolution
-                DeveloperChoice developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context);
-                conflictingChunk.setDeveloperChoice(developerDecision);
-            } else {
-                conflictingChunk.setDeveloperChoice(DeveloperChoice.MANUAL);
-            }
+                developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context);
+                conflictingChunk.setDeveloperDecision(developerDecision);
+            } 
 
             System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
             System.out.println("=================Conflicting area=================");
+            conflictingChunk.setConflictingContent(conflictingArea);
             for (String ca : conflictingArea) {
                 System.out.println(ca);
             }
             System.out.println("=================Solution area=================");
+            conflictingChunk.setSolutionContent(solutionArea);
             for (String sa : solutionArea) {
                 System.out.println(sa);
             }
             System.out.println("=================Developers` decision=================");
-            System.out.println(conflictingChunk.getDeveloperChoice().toString());
+            conflictingChunk.setDeveloperDecision(developerDecision);
+            System.out.println(developerDecision.toString());
             System.out.println("=================Left language constructs=================");
-            System.out.println(leftLanguageConstruct);
+            conflictingChunk.setLeftKindConflict(leftKindConflict);
+            System.out.println(leftKindConflict);
             System.out.println("=================Right language constructs=================");
-            System.out.println(rightLanguageConstruct);
+            conflictingChunk.setRightKindConflict(rightKindConflict);
+            System.out.println(rightKindConflict);
 
         }
 

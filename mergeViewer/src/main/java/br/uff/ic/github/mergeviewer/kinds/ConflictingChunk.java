@@ -21,7 +21,9 @@ public class ConflictingChunk {
     private List<String> leftKindConflict;
     private List<String> rightKindConflict;
     private List<String> generalKindConflict;
-    private DeveloperChoice developerChoice;
+    private List<String> conflictingContent;    
+    private List<String> solutionContent;
+    private DeveloperChoice developerDecision;
     
     
     
@@ -126,15 +128,43 @@ public class ConflictingChunk {
     /**
      * @return the developerChoice
      */
-    public DeveloperChoice getDeveloperChoice() {
-        return developerChoice;
+    public DeveloperChoice getDeveloperDecision() {
+        return developerDecision;
     }
 
     /**
      * @param developerChoice the developerChoice to set
      */
-    public void setDeveloperChoice(DeveloperChoice developerChoice) {
-        this.developerChoice = developerChoice;
+    public void setDeveloperDecision(DeveloperChoice developerChoice) {
+        this.developerDecision = developerChoice;
+    }
+
+    /**
+     * @return the conflictingContent
+     */
+    public List<String> getConflictingContent() {
+        return conflictingContent;
+    }
+
+    /**
+     * @param conflictingContent the conflictingContent to set
+     */
+    public void setConflictingContent(List<String> conflictingContent) {
+        this.conflictingContent = conflictingContent;
+    }
+
+    /**
+     * @return the solutionContent
+     */
+    public List<String> getSolutionContent() {
+        return solutionContent;
+    }
+
+    /**
+     * @param solutionContent the solutionContent to set
+     */
+    public void setSolutionContent(List<String> solutionContent) {
+        this.solutionContent = solutionContent;
     }
 
 }

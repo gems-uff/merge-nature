@@ -73,7 +73,7 @@ public class ASTAuxiliar {
         return conflictLowerBound;
     }
     
-    public static String getSyntacticStructures(List<String> conflictArea, String repository, String relativePath) throws IOException {
+    public static List<String> getSyntacticStructures(List<String> conflictArea, String repository, String relativePath) throws IOException {
         //Left side
         List<String> conflict = conflictArea;
         String file = repository + relativePath;
@@ -93,8 +93,8 @@ public class ASTAuxiliar {
         ASTExtractor ats = new ASTExtractor(file);
         ats.parser();
         List<String> kindConflict = ats.getStructures(begin, end);
-        String ss = ats.toString(kindConflict);
-        return ss;
+
+        return kindConflict;
     }
 
 }

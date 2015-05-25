@@ -15,6 +15,7 @@ import br.uff.ic.github.mergeviewer.util.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
 import br.uff.ic.github.mergeviewer.util.Information;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,21 +73,23 @@ public class ConflictingChunkInformation implements Runnable {
         ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
         cpe.extract();
 
-        String leftSS = null;
-        String rightSS = null;
+        List<String> leftKindConflict = null;
+        List<String> rightKindConflict = null;
 
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftSS = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
-                rightSS = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
+                leftKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
+                rightKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             String[] fileBroken = pathRelativeFile.split("\\.");
-            leftSS = fileBroken[fileBroken.length - 1];
-            rightSS = fileBroken[fileBroken.length - 1];
+            leftKindConflict = new ArrayList<>();
+            leftKindConflict.add(fileBroken[fileBroken.length - 1]);
 
+            rightKindConflict = new ArrayList<>();
+            rightKindConflict.add(fileBroken[fileBroken.length - 1]);
         }
 
         //Get the following data from the conflict:
@@ -246,7 +249,7 @@ public class ConflictingChunkInformation implements Runnable {
 
         String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
 
-        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftSS, rightSS, dd);
+        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftKindConflict.toString(), rightKindConflict.toString(), dd);
         showCase.setVisible(true);
     }
 
