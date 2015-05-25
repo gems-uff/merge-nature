@@ -10,7 +10,7 @@ package br.uff.ic.github.mergeviewer.analyzers;
  *
  * @author gleiph
  */
-public class ConflictingChunkAnalizer {
+public class ConflictingChunkAnalyzer {
     
     
 }
