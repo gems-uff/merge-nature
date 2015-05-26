@@ -5,6 +5,8 @@
  */
 package br.uff.ic.gems.merge.vcs;
 
+import java.io.File;
+
 /**
  *
  * @author gleiph
@@ -42,6 +44,26 @@ public class Git {
         StringBuilder result = new StringBuilder();
         
         String command = "git diff " + initialFile + " " + finalFile;
+        
+        CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
+        if (cmdOutput.getErrors().isEmpty()) {
+
+            for (String line : cmdOutput.getOutput()) {
+                result.append(line).append("\n");
+            }
+
+            return result.toString();
+        } else {
+            return null;
+        }
+    }
+    
+    public String clone(String url, String directory) {
+        StringBuilder result = new StringBuilder();
+        
+        String command = "git clone " + url;
+        
+        System.out.println(command);
         
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
         if (cmdOutput.getErrors().isEmpty()) {
