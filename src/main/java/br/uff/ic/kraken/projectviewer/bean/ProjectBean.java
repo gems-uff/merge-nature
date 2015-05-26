@@ -23,6 +23,11 @@ import javax.persistence.Persistence;
 @RequestScoped
 public class ProjectBean {
 
+    private List<Project> projects;
+    private Project project;
+    private int id;
+    private String repositoryUrl;
+
     /**
      * Creates a new instance of Project
      */
@@ -50,17 +55,15 @@ public class ProjectBean {
                 break;
             }
         }
-        
-        if(project == null)
+
+        if (project == null) {
             return null;
-        else
+        } else {
+            repositoryUrl = project.getHtmlUrl();
             return PagesName.project;
+        }
     }
 
-    private List<Project> projects;
-    private Project project;
-    private int id;
-    
     /**
      * @return the projects
      */
@@ -68,9 +71,10 @@ public class ProjectBean {
         return projects;
     }
 
-    public String getProjectName(){
+    public String getProjectName() {
         return project.getName();
     }
+
     /**
      * @param projects the projects to set
      */
@@ -104,6 +108,20 @@ public class ProjectBean {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * @return the repositoryUrl
+     */
+    public String getRepositoryUrl() {
+        return repositoryUrl;
+    }
+
+    /**
+     * @param repositoryUrl the repositoryUrl to set
+     */
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
     }
 
 }
