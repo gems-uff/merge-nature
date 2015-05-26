@@ -1,0 +1,43 @@
+
+.center{
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-top: auto;
+    width: 200px;
+    height: 100px;
+    background: #aabbcc;
+}
+
+.table{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.order-table{   
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse:collapse;
+    text-align:center;
+    alignment-adjust: central;
+    alignment-baseline: central;
+}
+
+.order-table-header{
+    text-align:center;
+    background:none repeat scroll 0 0 #E5E5E5;
+    border-bottom:1px solid #BBBBBB;
+    padding:16px;
+}
+
+.order-table-odd-row{
+    text-align:center;
+    background:none repeat scroll 0 0 #aabbcc;
+    border-top:1px solid #BBBBBB;
+}
+
+.order-table-even-row{
+    text-align:center;
+    background:none repeat scroll 0 0 #F9F9F9;
+    border-top:1px solid #BBBBBB;
+}
