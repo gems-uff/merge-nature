@@ -119,7 +119,7 @@ public class LoginBean {
         validationComplete = true;
 
         if (isUsernameValid && isPasswordValid) {
-            return PagesName.project;
+            return PagesName.projects;
         }else
             return PagesName.index;
     }

@@ -17,7 +17,7 @@
     <navigation-rule>
         <from-view-id>/loginTemplate.xhtml</from-view-id>
         <navigation-case>
-            <from-outcome>project</from-outcome>
+            <from-outcome>projects</from-outcome>
             <to-view-id>/projects.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>

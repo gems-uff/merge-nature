@@ -6,6 +6,7 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.github.github.data.Project;
+import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
@@ -40,8 +41,26 @@ public class ProjectBean {
         }
     }
 
-    private List<Project> projects;
+    public String setProject() {
 
+        project = null;
+        for (Project p : projects) {
+            if (p.getId() == id) {
+                project = p;
+                break;
+            }
+        }
+        
+        if(project == null)
+            return null;
+        else
+            return PagesName.project;
+    }
+
+    private List<Project> projects;
+    private Project project;
+    private int id;
+    
     /**
      * @return the projects
      */
@@ -49,11 +68,42 @@ public class ProjectBean {
         return projects;
     }
 
+    public String getProjectName(){
+        return project.getName();
+    }
     /**
      * @param projects the projects to set
      */
     public void setProjects(List<Project> projects) {
         this.projects = projects;
+    }
+
+    /**
+     * @return the project
+     */
+    public Project getProject() {
+        return project;
+    }
+
+    /**
+     * @param project the project to set
+     */
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
 }
