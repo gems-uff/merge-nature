@@ -5,8 +5,6 @@
  */
 package br.uff.ic.gems.merge.vcs;
 
-import java.io.File;
-
 /**
  *
  * @author gleiph
@@ -58,7 +56,7 @@ public class Git {
         }
     }
     
-    public String clone(String url, String directory) {
+    public String clone(String url) {
         StringBuilder result = new StringBuilder();
         
         String command = "git clone " + url;
