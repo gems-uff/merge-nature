@@ -6,6 +6,9 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.merge.vcs.Git;
+import br.uff.ic.github.mergeviewer.analyzers.ProjectAnalyzer;
+import br.uff.ic.github.mergeviewer.kinds.Project;
+import java.io.File;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 
@@ -19,13 +22,35 @@ public class ProjectAnalysisBean {
 
     private String repositoryUrl;
     private String repositoryPath;
+    private String projectName;
 
-    
-    public String clone(){
+    public String cloneRepository() {
+
+        Git git = new Git(repositoryPath);
+        git.clone(repositoryUrl);
+
+        return null;
+    }
+
+    public String analyze() {
+        
+        File repositoriesDirectory = new File(repositoryPath);
+        if(!repositoriesDirectory.isDirectory())
+            repositoriesDirectory.mkdirs();
         
         Git git = new Git(repositoryPath);
-        git.clone(repositoryUrl, repositoryPath);
-        
+        git.clone(repositoryUrl);
+
+        String projectPath;
+        if (!repositoryPath.endsWith(File.separator)) {
+            projectPath = repositoryPath + File.separator + projectName;
+        } else {
+            projectPath = repositoryPath + projectName;
+        }
+
+        ProjectAnalyzer pa = new ProjectAnalyzer();
+        Project analyze = pa.analyze(projectPath);
+
         return null;
     }
 
@@ -56,5 +81,19 @@ public class ProjectAnalysisBean {
     public void setRepositoryPath(String repositoryPath) {
         this.repositoryPath = repositoryPath;
     }
-    
+
+    /**
+     * @return the projectName
+     */
+    public String getProjectName() {
+        return projectName;
+    }
+
+    /**
+     * @param projectName the projectName to set
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
 }
