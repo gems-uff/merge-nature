@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Query;
 
 /**
  *
@@ -182,8 +183,8 @@ public class Project implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    public static Project getProject(Long id, EntityManager manager){
+
+    public static Project getProject(Long id, EntityManager manager) {
         return manager.find(Project.class, id);
     }
 
@@ -199,5 +200,19 @@ public class Project implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static long lastId(EntityManager manager) {
+        //Jpa manager
+        String sql = "SELECT MAX(id) FROM Project p";
+        Query query = manager.createQuery(sql);
+
+        List result = query.getResultList();
+
+        if (result != null && !result.isEmpty()) {
+            return (long) result.get(0);
+        }else{
+            return -1;
+        }
     }
 }

@@ -174,7 +174,7 @@ public class GithubAPI {
 
         List<Language> result = new ArrayList<>();
         String name = null;
-        int size = 0;
+        double size = 0;
         double total = 0;
 
         boolean area = false;
@@ -199,7 +199,7 @@ public class GithubAPI {
 
                 split = line.split(":");
 
-                size = Integer.parseInt(split[1].replaceAll(" ", "").replaceAll(",", ""));
+                size = Double.parseDouble(split[1].replaceAll(" ", "").replaceAll(",", ""));
                 total += size;
                 result.add(new Language(name, size));
             }
@@ -256,6 +256,13 @@ public class GithubAPI {
 
         JSONParser parser = new JSONParser();
 
+        long lastId = Project.lastId(manager);
+        
+        if(lastId != -1){
+            link += "?since="+lastId;
+        }
+        
+        
         while (link != null) {
 
             output = CMD.cmdGithub(base + link);

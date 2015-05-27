@@ -18,7 +18,7 @@ public class Language implements Serializable{
     Long id;
     
     private String name;
-    private int size;
+    private double size;
     private double percentage;
 
     public Language() {
@@ -41,18 +41,18 @@ public class Language implements Serializable{
     /**
      * @return the size
      */
-    public int getSize() {
+    public double getSize() {
         return size;
     }
 
     /**
      * @param size the size to set
      */
-    public void setSize(int size) {
+    public void setSize(double size) {
         this.size = size;
     }
 
-    public Language(String name, int size) {
+    public Language(String name, double size) {
         this.name = name;
         this.size = size;
     }
