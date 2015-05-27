@@ -36,46 +36,5 @@ public class JPATest {
     public void tearDown() {
     }
 
-    @Test
-    public void createPersist() {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
 
-        EntityManager manager = factory.createEntityManager();
-
-        Project project = new Project();
-
-        project.setCreatedAt("ini");
-        project.setHtmlUrl("www...");
-        project.setName("projectTest");
-        project.setPriva(true);
-        project.setUpdatedAt("final");
-        project.setSearchUrl("www....");
-        project.setDevelopers(15);
-
-        List<Language> languages = new ArrayList<Language>();
-        Language language = new Language();
-        language.setName("Java");
-        language.setPercentage(90);
-        language.setSize(1098);
-
-        languages.add(language);
-
-        project.setLanguages(languages);
-        manager.getTransaction().begin();
-        manager.persist(language);
-        manager.persist(project);
-        manager.getTransaction().commit();
-
-        Project find = manager.find(Project.class, 1l);
-        Project find1 = manager.find(Project.class, 2l);
-
-        if (find != null) {
-            System.out.println(find.getName());
-        }
-
-        if (find1 != null) {
-            System.out.println(find1.getName());
-        }
-
-    }
 }
