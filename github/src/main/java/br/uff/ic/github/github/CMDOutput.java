@@ -15,8 +15,8 @@ public class CMDOutput {
     private List<String> errors;
 
     public CMDOutput() {
-        output = new ArrayList<String>();
-        errors = new ArrayList<String>();
+        output = new ArrayList<>();
+        errors = new ArrayList<>();
     }
 
     
