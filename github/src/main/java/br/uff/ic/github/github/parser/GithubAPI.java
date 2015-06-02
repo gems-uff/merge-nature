@@ -1,10 +1,10 @@
 package br.uff.ic.github.github.parser;
 
+import br.uff.ic.gems.resources.data.Language;
+import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.github.github.data.User;
 import br.uff.ic.github.github.CMD;
 import br.uff.ic.github.github.CMDOutput;
-import br.uff.ic.github.github.data.Language;
-import br.uff.ic.github.github.data.Project;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

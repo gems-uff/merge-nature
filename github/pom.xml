@@ -56,7 +56,7 @@
         </dependency>
 
         <!-- Database dependencies  -->
-        <dependency>
+<!--        <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
@@ -107,7 +107,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.182</version>
-        </dependency>
+        </dependency>-->
         
         
         <!-- File dependencies  -->
@@ -127,6 +127,12 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
             <version>2.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>br.uff.ic.gems</groupId>
+            <artifactId>Resources</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <classifier>jar-with-dependencies</classifier>
         </dependency>
     </dependencies>
 </project>
