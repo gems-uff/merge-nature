@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.gems.merge.operation;
+package br.uff.ic.gems.resources.operation;
 
 /**
  *
  * @author gleiph
  */
-public interface OperationInterface {
-
-    public OperationType getType();
-    public int getLine();
-    public int getSize();
-    
+public enum OperationType {
+    REMOVE, ADD;
 }

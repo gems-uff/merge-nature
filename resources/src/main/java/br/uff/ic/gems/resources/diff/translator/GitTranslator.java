@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.gems.merge.diff.translator;
+package br.uff.ic.gems.resources.diff.translator;
 
-import br.uff.ic.gems.merge.operation.Add;
-import br.uff.ic.gems.merge.operation.Operation;
-import br.uff.ic.gems.merge.operation.OperationType;
-import br.uff.ic.gems.merge.operation.Remove;
+import br.uff.ic.gems.resources.operation.Add;
+import br.uff.ic.gems.resources.operation.Operation;
+import br.uff.ic.gems.resources.operation.OperationType;
+import br.uff.ic.gems.resources.operation.Remove;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.gems.merge.repositioning;
+package br.uff.ic.gems.resources.repositioning;
 
-import br.uff.ic.gems.merge.diff.translator.GitTranslator;
-import br.uff.ic.gems.merge.operation.Operation;
-import br.uff.ic.gems.merge.operation.OperationType;
-import br.uff.ic.gems.merge.vcs.Git;
+import br.uff.ic.gems.resources.diff.translator.GitTranslator;
+import br.uff.ic.gems.resources.operation.Operation;
+import br.uff.ic.gems.resources.operation.OperationType;
+import br.uff.ic.gems.resources.vcs.Git;
 import java.util.List;
 
 /**
