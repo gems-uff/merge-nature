@@ -5,7 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.analyzers;
 
-import br.uff.ic.gems.merge.repositioning.Repositioning;
+import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
 import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;

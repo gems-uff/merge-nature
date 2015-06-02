@@ -5,7 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
-import br.uff.ic.gems.merge.repositioning.Repositioning;
+import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowCase;

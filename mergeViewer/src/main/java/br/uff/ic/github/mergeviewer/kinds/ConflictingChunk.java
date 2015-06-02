@@ -5,7 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.kinds;
 
-import br.uff.ic.gems.merge.repositioning.Repositioning;
+import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.github.mergeviewer.util.DeveloperChoice;
 import java.util.List;
 
