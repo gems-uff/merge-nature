@@ -5,7 +5,7 @@
  */
 package br.uff.ic.kraken.projectviewer.bean;
 
-import br.uff.ic.gems.merge.vcs.Git;
+import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.github.mergeviewer.analyzers.ProjectAnalyzer;
 import br.uff.ic.github.mergeviewer.kinds.Project;
 import java.io.File;
