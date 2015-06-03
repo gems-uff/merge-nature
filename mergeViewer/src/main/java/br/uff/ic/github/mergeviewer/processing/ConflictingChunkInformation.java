@@ -102,8 +102,8 @@ public class ConflictingChunkInformation implements Runnable {
         String initialFile, finalFile;
 
         context1bOriginal = beginConflict + 1;
-        context1eOriginal = getConflictChunk().getBegin();
-        context2bOriginal = getConflictChunk().getEnd() + 1;
+        context1eOriginal = getConflictChunk().getBeginLine();
+        context2bOriginal = getConflictChunk().getEndLine() + 1;
         context2eOriginal = endConflict;
 
         if (context2bOriginal > context2eOriginal) {

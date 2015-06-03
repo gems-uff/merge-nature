@@ -57,7 +57,7 @@ public class ASTAuxiliar {
     
     public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
         int conflictingUpperBound;
-        conflictingUpperBound = conflictArea.getEnd() + context + 1;////I don't want do exclude the last line
+        conflictingUpperBound = conflictArea.getEndLine()+ context + 1;////I don't want do exclude the last line
         if (conflictingUpperBound > fileConflict.size()) {
             conflictingUpperBound = fileConflict.size();
         }
@@ -66,7 +66,7 @@ public class ASTAuxiliar {
 
     public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
         int conflictLowerBound;
-        conflictLowerBound = conflictArea.getBegin() - context;
+        conflictLowerBound = conflictArea.getBeginLine()- context;
         if (conflictLowerBound < 0) {
             conflictLowerBound = 0;
         }

@@ -462,9 +462,9 @@ public class Main extends javax.swing.JFrame {
             for (String line : file) {
                 if (line.contains("<<<<<<<")) {
                     conflictingChunk = new ConflictingChunk();
-                    conflictingChunk.setBegin(lineNumber);
+                    conflictingChunk.setBeginLine(lineNumber);
                 } else if (line.contains(">>>>>>>")) {
-                    conflictingChunk.setEnd(lineNumber + 1);//Why?
+                    conflictingChunk.setEndLine(lineNumber + 1);//Why?
                     conflictingChunk.setIdentifier("Case " + id++);
 
                     conflicts.add(conflictingChunk);

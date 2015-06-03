@@ -105,8 +105,8 @@ public class ConflictingFileAnalyzer {
             String initialPath, finalPath;
 
             context1bOriginal = beginConflict + 1;
-            context1eOriginal = conflictingChunk.getBegin();
-            context2bOriginal = conflictingChunk.getEnd() + 1;
+            context1eOriginal = conflictingChunk.getBeginLine();
+            context2bOriginal = conflictingChunk.getEndLine()+ 1;
             context2eOriginal = endConflict;
 
             if (context2bOriginal > context2eOriginal) {
@@ -181,9 +181,9 @@ public class ConflictingFileAnalyzer {
             } else if (get.contains(">>>>>>>")) {
                 end = i;
 
-                conflictingChunk.setBegin(begin);
-                conflictingChunk.setSeparator(separator);
-                conflictingChunk.setEnd(end);
+                conflictingChunk.setBeginLine(begin);
+                conflictingChunk.setSeparatorLine(separator);
+                conflictingChunk.setEndLine(end);
                 conflictingChunk.setIdentifier("Case " + (identifier++));
 
                 result.add(conflictingChunk);
