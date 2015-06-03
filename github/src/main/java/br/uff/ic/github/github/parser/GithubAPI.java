@@ -1,10 +1,10 @@
 package br.uff.ic.github.github.parser;
 
+import br.uff.ic.gems.resources.cmd.CMDOutput;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.github.github.cmd.CMDGithub;
 import br.uff.ic.github.github.data.User;
-import br.uff.ic.github.github.CMD;
-import br.uff.ic.github.github.CMDOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -62,7 +62,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmdGithub(base + link);
+            output = CMDGithub.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains("{")) {
@@ -105,7 +105,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmdGithub(base + link);
+            output = CMDGithub.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains(BEGIN_PARENTS)) {
@@ -143,7 +143,7 @@ public class GithubAPI {
             url += "/languages";
         }
 
-        CMDOutput output = CMD.cmdGithub(base + url);
+        CMDOutput output = CMDGithub.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
 
@@ -162,7 +162,7 @@ public class GithubAPI {
 
     public static void generic(String query) {
 
-        CMDOutput output = CMD.cmdGithub(base + query);
+        CMDOutput output = CMDGithub.cmdGithub(base + query);
 
         for (String line : output.getOutput()) {
             System.out.println(line);
@@ -179,7 +179,7 @@ public class GithubAPI {
 
         boolean area = false;
 
-        CMDOutput output = CMD.cmdGithub(base + url);
+        CMDOutput output = CMDGithub.cmdGithub(base + url);
 
         for (String line : output.getOutput()) {
 
@@ -222,7 +222,7 @@ public class GithubAPI {
 
         while (link != null) {
 
-            output = CMD.cmdGithub(base + link);
+            output = CMDGithub.cmdGithub(base + link);
 
             for (String line : output.getOutput()) {
                 if (line.contains("{")) {
@@ -265,7 +265,7 @@ public class GithubAPI {
         
         while (link != null) {
 
-            output = CMD.cmdGithub(base + link);
+            output = CMDGithub.cmdGithub(base + link);
 
             String content = "";
             boolean begin = false;
@@ -377,7 +377,7 @@ public class GithubAPI {
 
         CMDOutput output = null;
 
-        output = CMD.cmdGithub(base + link);
+        output = CMDGithub.cmdGithub(base + link);
 
         String content = "";
         boolean begin = false;
