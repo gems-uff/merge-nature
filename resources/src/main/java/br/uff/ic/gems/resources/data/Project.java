@@ -28,6 +28,11 @@ public class Project implements Serializable {
     private int developers;
     private String message;
 
+    private String repositoryPath;
+    private int numberRevisions;
+    private int numberMergeRevisions;
+    private int numberConflictingMerges;
+    
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
@@ -214,5 +219,61 @@ public class Project implements Serializable {
         }else{
             return -1;
         }
+    }
+
+    /**
+     * @return the repositoryPath
+     */
+    public String getRepositoryPath() {
+        return repositoryPath;
+    }
+
+    /**
+     * @param repositoryPath the repositoryPath to set
+     */
+    public void setRepositoryPath(String repositoryPath) {
+        this.repositoryPath = repositoryPath;
+    }
+
+    /**
+     * @return the numberRevisions
+     */
+    public int getNumberRevisions() {
+        return numberRevisions;
+    }
+
+    /**
+     * @param numberRevisions the numberRevisions to set
+     */
+    public void setNumberRevisions(int numberRevisions) {
+        this.numberRevisions = numberRevisions;
+    }
+
+    /**
+     * @return the numberMergeRevisions
+     */
+    public int getNumberMergeRevisions() {
+        return numberMergeRevisions;
+    }
+
+    /**
+     * @param numberMergeRevisions the numberMergeRevisions to set
+     */
+    public void setNumberMergeRevisions(int numberMergeRevisions) {
+        this.numberMergeRevisions = numberMergeRevisions;
+    }
+
+    /**
+     * @return the numberConflictingMerges
+     */
+    public int getNumberConflictingMerges() {
+        return numberConflictingMerges;
+    }
+
+    /**
+     * @param numberConflictingMerges the numberConflictingMerges to set
+     */
+    public void setNumberConflictingMerges(int numberConflictingMerges) {
+        this.numberConflictingMerges = numberConflictingMerges;
     }
 }
