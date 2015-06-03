@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package br.uff.ic.gems.resources.vcs;
+package br.uff.ic.gems.resources.cmd;
 
 import java.util.ArrayList;
 import java.util.List;

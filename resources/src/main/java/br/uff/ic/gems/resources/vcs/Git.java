@@ -5,6 +5,9 @@
  */
 package br.uff.ic.gems.resources.vcs;
 
+import br.uff.ic.gems.resources.cmd.CMDOutput;
+import br.uff.ic.gems.resources.cmd.CMD;
+
 /**
  *
  * @author gleiph
