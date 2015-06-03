@@ -5,7 +5,7 @@
  */
 package br.uff.ic.kraken.projectviewer.bean;
 
-import br.uff.ic.github.github.data.Project;
+import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.ArrayList;
 import java.util.List;
