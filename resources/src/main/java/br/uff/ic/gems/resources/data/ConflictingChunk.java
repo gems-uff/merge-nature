@@ -10,6 +10,7 @@ import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,21 +33,16 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
     private List<String> leftKindConflict;
-    
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
     private List<String> rightKindConflict;
-    
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
     private List<String> generalKindConflict;
-    
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
     private List<String> conflictingContent;
-    
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @ElementCollection
     private List<String> solutionContent;
-    
 
     /**
      * @return the id

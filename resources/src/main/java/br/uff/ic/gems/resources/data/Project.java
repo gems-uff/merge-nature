@@ -221,7 +221,7 @@ public class Project implements Serializable {
 
         List result = query.getResultList();
 
-        if (result != null && !result.isEmpty()) {
+        if (result != null && !result.isEmpty() && result.get(0) != null) {
             return (long) result.get(0);
         } else {
             return -1;
