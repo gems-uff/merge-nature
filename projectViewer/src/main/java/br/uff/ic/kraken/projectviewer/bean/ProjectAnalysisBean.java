@@ -7,10 +7,10 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.github.mergeviewer.analyzers.ProjectAnalyzer;
-import br.uff.ic.github.mergeviewer.kinds.Project;
 import java.io.File;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
+import br.uff.ic.gems.resources.data.Project;
 
 /**
  *
@@ -50,6 +50,7 @@ public class ProjectAnalysisBean {
 
         ProjectAnalyzer pa = new ProjectAnalyzer();
         Project analyze = pa.analyze(projectPath);
+        
 
         return null;
     }
