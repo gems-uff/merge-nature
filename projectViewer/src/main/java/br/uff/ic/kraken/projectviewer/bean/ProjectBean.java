@@ -6,14 +6,13 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
 import javax.faces.bean.RequestScoped;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
  *
@@ -33,8 +32,7 @@ public class ProjectBean {
      */
     public ProjectBean() {
 
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
-        EntityManager manager = factory.createEntityManager();
+        EntityManager manager = DatabaseManager.getManager();
         projects = new ArrayList<>();
 
         for (int i = 0; i < 5000; i++) {
