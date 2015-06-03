@@ -3,6 +3,7 @@ package br.uff.ic.github.github.parser;
 import br.uff.ic.gems.resources.cmd.CMDOutput;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import br.uff.ic.github.github.cmd.CMDGithub;
 import br.uff.ic.github.github.data.User;
 import java.util.ArrayList;
@@ -246,8 +247,7 @@ public class GithubAPI {
     public static void projects() {
 
         //Jpa manager
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
-        EntityManager manager = factory.createEntityManager();
+        EntityManager manager = DatabaseManager.getManager();
 
         String LINK = "Link:";
 
