@@ -7,53 +7,101 @@ package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
+import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author gleiph
  */
-public class ConflictingChunk {
+@Entity
+public class ConflictingChunk implements Serializable {
 
-    private int begin;
-    private int separator;
-    private int end;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private int beginLine;
+    private int endLine;
+    private int separatorLine;
     private String identifier;
-    private List<String> leftKindConflict;
-    private List<String> rightKindConflict;
-    private List<String> generalKindConflict;
-    private List<String> conflictingContent;    
-    private List<String> solutionContent;
     private DeveloperDecision developerDecision;
+
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<String> leftKindConflict;
     
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<String> rightKindConflict;
     
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<String> generalKindConflict;
     
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<String> conflictingContent;
+    
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<String> solutionContent;
+    
+
     /**
-     * @return the begin
+     * @return the id
      */
-    public int getBegin() {
-        return begin;
+    public Long getId() {
+        return id;
     }
 
     /**
-     * @param begin the begin to set
+     * @param id the id to set
      */
-    public void setBegin(int begin) {
-        this.begin = begin;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
-     * @return the end
+     * @return the beginLine
      */
-    public int getEnd() {
-        return end;
+    public int getBeginLine() {
+        return beginLine;
     }
 
     /**
-     * @param end the end to set
+     * @param beginLine the beginLine to set
      */
-    public void setEnd(int end) {
-        this.end = end;
+    public void setBeginLine(int beginLine) {
+        this.beginLine = beginLine;
+    }
+
+    /**
+     * @return the endLine
+     */
+    public int getEndLine() {
+        return endLine;
+    }
+
+    /**
+     * @param endLine the endLine to set
+     */
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
+    /**
+     * @return the separatorLine
+     */
+    public int getSeparatorLine() {
+        return separatorLine;
+    }
+
+    /**
+     * @param separatorLine the separatorLine to set
+     */
+    public void setSeparatorLine(int separatorLine) {
+        this.separatorLine = separatorLine;
     }
 
     /**
@@ -113,20 +161,6 @@ public class ConflictingChunk {
     }
 
     /**
-     * @return the separator
-     */
-    public int getSeparator() {
-        return separator;
-    }
-
-    /**
-     * @param separator the separator to set
-     */
-    public void setSeparator(int separator) {
-        this.separator = separator;
-    }
-
-    /**
      * @return the developerChoice
      */
     public DeveloperDecision getDeveloperDecision() {
@@ -168,7 +202,7 @@ public class ConflictingChunk {
         this.solutionContent = solutionContent;
     }
 
-     public static int checkContext2(List<String> solutionContent, List<String> conflictingContent, int context2eOriginal, int context2bOriginal, Repositioning repositioning, String initialPath, String finalPath, int separator, int begin, int end) {
+    public static int checkContext2(List<String> solutionContent, List<String> conflictingContent, int context2eOriginal, int context2bOriginal, Repositioning repositioning, String initialPath, String finalPath, int separator, int begin, int end) {
         int context2 = solutionContent.size() + 1;
         int context2Original = conflictingContent.size();
         boolean changed = false;

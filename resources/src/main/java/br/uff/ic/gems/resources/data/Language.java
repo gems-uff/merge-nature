@@ -38,20 +38,6 @@ public class Language implements Serializable{
         this.name = name;
     }
 
-    /**
-     * @return the size
-     */
-    public double getSize() {
-        return size;
-    }
-
-    /**
-     * @param size the size to set
-     */
-    public void setSize(double size) {
-        this.size = size;
-    }
-
     public Language(String name, double size) {
         this.name = name;
         this.size = size;
@@ -69,6 +55,20 @@ public class Language implements Serializable{
      */
     public void setPercentage(double percentage) {
         this.percentage = percentage;
+    }
+
+    /**
+     * @return the size
+     */
+    public double getSize() {
+        return size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(double size) {
+        this.size = size;
     }
     
     

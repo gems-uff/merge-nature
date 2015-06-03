@@ -33,12 +33,13 @@ public class Project implements Serializable {
     private int numberRevisions;
     private int numberMergeRevisions;
     private int numberConflictingMerges;
-    
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Revision> revisions;
-    
+
     public Project() {
         this.id = 0l;
         this.name = null;
@@ -49,8 +50,9 @@ public class Project implements Serializable {
         this.searchUrl = null;
         this.developers = 0;
         this.message = null;
-        
+
         revisions = new ArrayList<>();
+        languages = new ArrayList<>();
     }
 
     /**
@@ -221,7 +223,7 @@ public class Project implements Serializable {
 
         if (result != null && !result.isEmpty()) {
             return (long) result.get(0);
-        }else{
+        } else {
             return -1;
         }
     }

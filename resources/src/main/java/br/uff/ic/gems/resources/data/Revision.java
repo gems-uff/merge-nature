@@ -6,14 +6,25 @@
 package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.states.MergeStatus;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author gleiph
  */
-public class Revision {
+@Entity
+public class Revision implements Serializable {
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String sha;
     private MergeStatus status;
@@ -22,6 +33,8 @@ public class Revision {
     private String baseSha;
     private int numberConflictingFiles;
     private int numberJavaConflictingFiles;
+
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ConflictingFile> conflictingFiles;
 
     public Revision() {
@@ -30,6 +43,20 @@ public class Revision {
 
     public boolean isConflict() {
         return this.status == MergeStatus.CONFLICTING;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**

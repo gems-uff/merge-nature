@@ -6,37 +6,68 @@
 package br.uff.ic.gems.resources.data;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author gleiph
  */
-public class ConflictingFile {
+@Entity
+public class ConflictingFile implements Serializable{
 
+    @Id
+    @GeneratedValue
+    private Long id;
+    
     private String name;
-    private String kind;
+    private String fileType;
     private String path;
+
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ConflictingChunk> conflictingChunks;
+
+    public ConflictingFile() {
+        conflictingChunks = new ArrayList<>();
+    }
 
     public ConflictingFile(String path) {
         this.path = path;
-        
+
         String[] split = path.split(File.separator);
         this.name = split[split.length - 1];
-        
+
         split = this.name.split("\\.");
-        this.kind = split[split.length - 1];
-        
+        this.fileType = split[split.length - 1];
+
         this.conflictingChunks = new ArrayList<>();
-        
+
     }
 
-    public boolean isJava(){
-        return this.getKind().toUpperCase().equals("JAVA");
+    public boolean isJava() {
+        return this.getFileType().toUpperCase().equals("JAVA");
     }
-    
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     /**
      * @return the name
      */
@@ -52,17 +83,17 @@ public class ConflictingFile {
     }
 
     /**
-     * @return the kind
+     * @return the fileType
      */
-    public String getKind() {
-        return kind;
+    public String getFileType() {
+        return fileType;
     }
 
     /**
-     * @param kind the kind to set
+     * @param fileType the fileType to set
      */
-    public void setKind(String kind) {
-        this.kind = kind;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
     /**
@@ -92,7 +123,5 @@ public class ConflictingFile {
     public void setConflictingChunks(List<ConflictingChunk> conflictingChunks) {
         this.conflictingChunks = conflictingChunks;
     }
-    
-    
-    
+
 }
