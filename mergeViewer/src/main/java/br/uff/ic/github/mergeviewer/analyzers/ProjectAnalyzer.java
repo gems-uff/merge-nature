@@ -6,7 +6,7 @@
 package br.uff.ic.github.mergeviewer.analyzers;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.kinds.Project;
+import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import java.io.File;
 import java.util.ArrayList;
