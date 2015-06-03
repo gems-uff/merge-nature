@@ -6,7 +6,7 @@
 package br.uff.ic.github.mergeviewer.processing;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.util.OutputParser;
+import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
 import java.util.List;
@@ -78,7 +78,7 @@ public class InitProject implements Runnable {
                 GitCMD.checkout(getRepositoryPath(), parents.get(0));
                 List<String> merge = GitCMD.merge(repositoryPath, parents.get(1), false, true);
 
-                if (OutputParser.isConflict(merge)) {
+                if (MergeStatusAnalizer.isConflict(merge)) {
                     status = Variables.CONFLICT;
                     List<String> conflictedFiles = GitCMD.conflictedFiles(repositoryPath);
 
@@ -94,7 +94,7 @@ public class InitProject implements Runnable {
 
                     javaPercentage = javaFiles / files;
 
-                } else if (OutputParser.isFastForward(merge)) {
+                } else if (MergeStatusAnalizer.isFastForward(merge)) {
                     status = Variables.FAST_FORWARD;
                 } else {
                     status = Variables.NO_CONFLICT;

@@ -8,7 +8,7 @@ package br.uff.ic.github.mergeviewer.processing;
 import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowFile;
-import br.uff.ic.github.mergeviewer.util.Information;
+import br.uff.ic.gems.resources.utils.Information;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;

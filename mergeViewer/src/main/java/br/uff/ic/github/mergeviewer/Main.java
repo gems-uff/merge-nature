@@ -13,7 +13,7 @@ import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
-import br.uff.ic.github.mergeviewer.util.Information;
+import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
 import java.io.Writer;

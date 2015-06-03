@@ -6,7 +6,7 @@
 package br.uff.ic.github.mergeviewer.processing;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.util.Information;
+import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.util.List;
 import javax.swing.JComboBox;
