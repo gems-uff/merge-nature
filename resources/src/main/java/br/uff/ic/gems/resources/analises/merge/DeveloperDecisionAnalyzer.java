@@ -5,6 +5,7 @@
  */
 package br.uff.ic.gems.resources.analises.merge;
 
+import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,61 +18,10 @@ public class DeveloperDecisionAnalyzer {
     
     public static int countBegin;
     
-    @Deprecated
-    public static br.uff.ic.gems.resources.states.DeveloperDecision getDeveloperDecision(List<String> conflict, List<String> solution) {
-
-        List<String> context1, context2, version1, version2;
-        int begin = 0, end = 0, separator = 0;
-
-        for (int i = 0; i < conflict.size(); i++) {
-            String line = conflict.get(i);
-
-            if (line.contains("<<<<<<<")) {
-                begin = i;
-            } else if (line.contains(">>>>>>")) {
-                end = i;
-            } else if (line.contains("=======")) {
-                separator = i;
-            }
-        }
-
-        context1 = subList(conflict, 0, begin);
-        version1 = subList(conflict, begin + 1, separator);
-        version2 = subList(conflict, separator + 1, end);
-        context2 = subList(conflict, end + 1, conflict.size());
-
-        int beginSolution = 0, endSolution = 0;
-        if (context1 != null) {
-            beginSolution = getIndexFromBegin(solution, context1);
-        } else {
-            beginSolution = 0;
-        }
-
-        if (context2 != null) {
-            endSolution = getIndexFromEnd(solution, context2.get(0));
-        } else {
-            endSolution = solution.size();
-        }
-
-        List<String> solutionClean = solution.subList(beginSolution + 1, endSolution);
-
-        if (solutionClean.equals(version1)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION1;
-        } else if (solutionClean.equals(version2)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION2;
-        } else if (isConcatenation(version1, version2, solutionClean, context2)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.CONCATENATION;
-        } else if (isCombination(version1, version2, solution)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.COMBINATION;
-        } else {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
-        }
-    }
-
-    public static br.uff.ic.gems.resources.states.DeveloperDecision getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
+    public static DeveloperDecision getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
 
         if (solution == null) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
+            return DeveloperDecision.MANUAL;
         }
 
         List<String> beginContext, endContext, leftConflict, rightConflict;
@@ -109,19 +59,19 @@ public class DeveloperDecisionAnalyzer {
         } else if (beginSolution + 1 < endSolution) {
             solutionClean = solution.subList(beginSolution + 1, endSolution);
         } else {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
+            return DeveloperDecision.MANUAL;
         }
 
         if (comparison(solutionClean, leftConflict)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION1;
+            return DeveloperDecision.VERSION1;
         } else if (comparison(solutionClean, rightConflict)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION2;
+            return DeveloperDecision.VERSION2;
         } else if (isConcatenation(leftConflict, rightConflict, solutionClean, endContext)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.CONCATENATION;
+            return DeveloperDecision.CONCATENATION;
         } else if (isCombination(leftConflict, rightConflict, solutionClean)) {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.COMBINATION;
+            return DeveloperDecision.COMBINATION;
         } else {
-            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
+            return DeveloperDecision.MANUAL;
         }
     }
 
