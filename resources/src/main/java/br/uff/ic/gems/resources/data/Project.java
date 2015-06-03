@@ -1,6 +1,7 @@
 package br.uff.ic.gems.resources.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -36,6 +37,8 @@ public class Project implements Serializable {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
+    private List<Revision> revisions;
+    
     public Project() {
         this.id = 0l;
         this.name = null;
@@ -46,6 +49,8 @@ public class Project implements Serializable {
         this.searchUrl = null;
         this.developers = 0;
         this.message = null;
+        
+        revisions = new ArrayList<>();
     }
 
     /**
@@ -275,5 +280,19 @@ public class Project implements Serializable {
      */
     public void setNumberConflictingMerges(int numberConflictingMerges) {
         this.numberConflictingMerges = numberConflictingMerges;
+    }
+
+    /**
+     * @return the revisions
+     */
+    public List<Revision> getRevisions() {
+        return revisions;
+    }
+
+    /**
+     * @param revisions the revisions to set
+     */
+    public void setRevisions(List<Revision> revisions) {
+        this.revisions = revisions;
     }
 }
