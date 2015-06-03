@@ -5,8 +5,8 @@
  */
 package br.uff.ic.kraken.projectviewer.bean;
 
+import br.uff.ic.gems.resources.analises.merge.ProjectAnalyzer;
 import br.uff.ic.gems.resources.vcs.Git;
-import br.uff.ic.github.mergeviewer.analyzers.ProjectAnalyzer;
 import java.io.File;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
