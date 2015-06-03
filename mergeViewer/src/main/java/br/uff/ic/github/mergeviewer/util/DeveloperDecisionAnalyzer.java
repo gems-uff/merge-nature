@@ -12,12 +12,12 @@ import java.util.List;
  *
  * @author gleiph
  */
-public class DeveloperDecision {
+public class DeveloperDecisionAnalyzer {
     
     public static int countBegin;
     
     @Deprecated
-    public static DeveloperChoice getDeveloperDecision(List<String> conflict, List<String> solution) {
+    public static br.uff.ic.gems.resources.states.DeveloperDecision getDeveloperDecision(List<String> conflict, List<String> solution) {
 
         List<String> context1, context2, version1, version2;
         int begin = 0, end = 0, separator = 0;
@@ -55,22 +55,22 @@ public class DeveloperDecision {
         List<String> solutionClean = solution.subList(beginSolution + 1, endSolution);
 
         if (solutionClean.equals(version1)) {
-            return DeveloperChoice.VERSION1;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION1;
         } else if (solutionClean.equals(version2)) {
-            return DeveloperChoice.VERSION2;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION2;
         } else if (isConcatenation(version1, version2, solutionClean, context2)) {
-            return DeveloperChoice.CONCATENATION;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.CONCATENATION;
         } else if (isCombination(version1, version2, solution)) {
-            return DeveloperChoice.COMBINATION;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.COMBINATION;
         } else {
-            return DeveloperChoice.MANUAL;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
         }
     }
 
-    public static DeveloperChoice getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
+    public static br.uff.ic.gems.resources.states.DeveloperDecision getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
 
         if (solution == null) {
-            return DeveloperChoice.MANUAL;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
         }
 
         List<String> beginContext, endContext, leftConflict, rightConflict;
@@ -108,19 +108,19 @@ public class DeveloperDecision {
         } else if (beginSolution + 1 < endSolution) {
             solutionClean = solution.subList(beginSolution + 1, endSolution);
         } else {
-            return DeveloperChoice.MANUAL;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
         }
 
         if (comparison(solutionClean, leftConflict)) {
-            return DeveloperChoice.VERSION1;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION1;
         } else if (comparison(solutionClean, rightConflict)) {
-            return DeveloperChoice.VERSION2;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.VERSION2;
         } else if (isConcatenation(leftConflict, rightConflict, solutionClean, endContext)) {
-            return DeveloperChoice.CONCATENATION;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.CONCATENATION;
         } else if (isCombination(leftConflict, rightConflict, solutionClean)) {
-            return DeveloperChoice.COMBINATION;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.COMBINATION;
         } else {
-            return DeveloperChoice.MANUAL;
+            return br.uff.ic.gems.resources.states.DeveloperDecision.MANUAL;
         }
     }
 

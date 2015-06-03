@@ -8,12 +8,12 @@ package br.uff.ic.github.mergeviewer.analyzers;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
-import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
-import br.uff.ic.github.mergeviewer.kinds.ConflictingFile;
+import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
 import br.uff.ic.github.mergeviewer.util.ConflictPartsExtractor;
-import br.uff.ic.github.mergeviewer.util.DeveloperChoice;
-import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
+import br.uff.ic.gems.resources.states.DeveloperDecision;
+import br.uff.ic.github.mergeviewer.util.DeveloperDecisionAnalyzer;
 import br.uff.ic.github.mergeviewer.util.Information;
 import java.io.File;
 import java.io.IOException;
@@ -127,12 +127,12 @@ public class ConflictingFileAnalyzer {
 
             List<String> solutionArea = solutionContent.subList(context1 - 1, context2);
 
-            String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
+            String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
-            DeveloperChoice developerDecision = DeveloperChoice.MANUAL;
+            DeveloperDecision developerDecision = DeveloperDecision.MANUAL;
             if (hasSolution) {
                 //SetSolution
-                developerDecision = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context);
+                developerDecision = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context);
                 conflictingChunk.setDeveloperDecision(developerDecision);
             }
 

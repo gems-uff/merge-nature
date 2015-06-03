@@ -6,9 +6,9 @@
 package br.uff.ic.github.mergeviewer.analyzers;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.kinds.ConflictingFile;
-import br.uff.ic.github.mergeviewer.kinds.MergeStatus;
-import br.uff.ic.github.mergeviewer.kinds.Revision;
+import br.uff.ic.gems.resources.data.ConflictingFile;
+import br.uff.ic.gems.resources.states.MergeStatus;
+import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.github.mergeviewer.util.OutputParser;
 import java.io.IOException;
 import java.util.List;

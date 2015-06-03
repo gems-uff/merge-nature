@@ -10,9 +10,9 @@ import br.uff.ic.gems.merge.utils.MergeUtils;
 import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowCase;
 import br.uff.ic.github.mergeviewer.ast.ASTAuxiliar;
-import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
+import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.ConflictPartsExtractor;
-import br.uff.ic.github.mergeviewer.util.DeveloperDecision;
+import br.uff.ic.github.mergeviewer.util.DeveloperDecisionAnalyzer;
 import br.uff.ic.github.mergeviewer.util.Information;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -247,7 +247,7 @@ public class ConflictingChunkInformation implements Runnable {
         }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
-        String dd = DeveloperDecision.getDeveloperDecision(cpe, solutionArea, context).toString();
+        String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
         ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftKindConflict.toString(), rightKindConflict.toString(), dd);
         showCase.setVisible(true);

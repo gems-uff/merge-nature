@@ -5,12 +5,14 @@
  */
 package br.uff.ic.github.mergeviewer.kinds;
 
+import br.uff.ic.gems.resources.data.Revision;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author gleiph
+ * @deprecated 
  */
 public class Project {
     private String name;

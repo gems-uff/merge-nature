@@ -6,7 +6,7 @@
 package br.uff.ic.github.mergeviewer.ast;
 
 import br.uff.ic.gems.merge.vcs.GitCMD;
-import br.uff.ic.github.mergeviewer.kinds.ConflictingChunk;
+import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.github.mergeviewer.util.Context;
 import br.uff.ic.github.mergeviewer.util.ContextFinder;
 import java.io.File;
