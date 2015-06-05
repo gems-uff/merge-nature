@@ -9,6 +9,7 @@ import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
+import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.utils.Information;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -31,6 +33,7 @@ public class ConflictingFileAnalyzer {
 
         int context = 3;
         boolean hasSolution = true;
+        EntityManager manager = DatabaseManager.getManager();
 
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
@@ -155,6 +158,7 @@ public class ConflictingFileAnalyzer {
             conflictingChunk.setRightKindConflict(rightKindConflict);
             System.out.println(rightKindConflict);
 
+            manager.persist(conflictingChunk);
         }
 
         conflictingFile.setConflictingChunks(conflictingChunks);

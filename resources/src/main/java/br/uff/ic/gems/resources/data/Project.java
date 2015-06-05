@@ -297,4 +297,8 @@ public class Project implements Serializable {
     public void setRevisions(List<Revision> revisions) {
         this.revisions = revisions;
     }
+    
+    public void save(EntityManager entityManager){
+            entityManager.persist(this);
+    }
 }
