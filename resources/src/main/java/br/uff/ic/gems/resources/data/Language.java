@@ -15,7 +15,7 @@ public class Language implements Serializable{
  
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
     
     private String name;
     private double size;
@@ -69,6 +69,20 @@ public class Language implements Serializable{
      */
     public void setSize(double size) {
         this.size = size;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
     
     

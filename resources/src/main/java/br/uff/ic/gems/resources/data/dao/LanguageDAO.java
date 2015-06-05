@@ -5,7 +5,7 @@
  */
 package br.uff.ic.gems.resources.data.dao;
 
-import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import javax.persistence.EntityManager;
 
@@ -13,25 +13,24 @@ import javax.persistence.EntityManager;
  *
  * @author gleiph
  */
-public class ProjectDAO {
-
-    public Project save(Project project) throws Exception {
+public class LanguageDAO {
+    public Language save(Language language) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
         try {
             manager.getTransaction().begin();
 
-            if (project.getId() == null) {
-                manager.persist(project);
+            if (language.getId() == null) {
+                manager.persist(language);
             } else {
 
-                if (!manager.contains(project)) {
-                    if (manager.find(Project.class, project.getId()) == null) {
-                        throw new Exception("Error during Project persistence!");
+                if (!manager.contains(language)) {
+                    if (manager.find(Language.class, language.getId()) == null) {
+                        throw new Exception("Error during Language persistence!");
                     }
                 }
                 
-                project = manager.merge(project);
+                language = manager.merge(language);
             }
 
             manager.getTransaction().commit();
@@ -39,18 +38,18 @@ public class ProjectDAO {
             throw e;
         }
 
-        return project;
+        return language;
     }
 
-    public void remove(Project project) {
+    public void remove(Language language) {
         EntityManager manager = DatabaseManager.getManager();
 
-        if (project.getId() != null) {
-            Project projectRemove = manager.find(Project.class, project.getId());
+        if (language.getId() != null) {
+            Language languageRemove = manager.find(Language.class, language.getId());
 
             try {
                 manager.getTransaction().begin();
-                manager.remove(projectRemove);
+                manager.remove(languageRemove);
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
@@ -58,17 +57,16 @@ public class ProjectDAO {
         }
     }
     
-    public Project getById(Long id){
-        Project project = null;
+    public Language getById(Long id){
+        Language language = null;
         EntityManager manager = DatabaseManager.getManager();
         
         try{
-            project = manager.find(Project.class, id);
+            language = manager.find(Language.class, id);
         } catch(Exception e){
             throw e;
         }
         
-        return project;
+        return language;
     }
-    
 }

@@ -1,11 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+ * To change this license header, choose License Headers in Revision Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package br.uff.ic.gems.resources.data.dao;
 
-import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import javax.persistence.EntityManager;
 
@@ -13,25 +13,24 @@ import javax.persistence.EntityManager;
  *
  * @author gleiph
  */
-public class ProjectDAO {
-
-    public Project save(Project project) throws Exception {
+public class RevisionDAO {
+    public Revision save(Revision revision) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
         try {
             manager.getTransaction().begin();
 
-            if (project.getId() == null) {
-                manager.persist(project);
+            if (revision.getId() == null) {
+                manager.persist(revision);
             } else {
 
-                if (!manager.contains(project)) {
-                    if (manager.find(Project.class, project.getId()) == null) {
-                        throw new Exception("Error during Project persistence!");
+                if (!manager.contains(revision)) {
+                    if (manager.find(Revision.class, revision.getId()) == null) {
+                        throw new Exception("Error during Revision persistence!");
                     }
                 }
                 
-                project = manager.merge(project);
+                revision = manager.merge(revision);
             }
 
             manager.getTransaction().commit();
@@ -39,18 +38,18 @@ public class ProjectDAO {
             throw e;
         }
 
-        return project;
+        return revision;
     }
 
-    public void remove(Project project) {
+    public void remove(Revision revision) {
         EntityManager manager = DatabaseManager.getManager();
 
-        if (project.getId() != null) {
-            Project projectRemove = manager.find(Project.class, project.getId());
+        if (revision.getId() != null) {
+            Revision revisionRemove = manager.find(Revision.class, revision.getId());
 
             try {
                 manager.getTransaction().begin();
-                manager.remove(projectRemove);
+                manager.remove(revisionRemove);
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
@@ -58,17 +57,16 @@ public class ProjectDAO {
         }
     }
     
-    public Project getById(Long id){
-        Project project = null;
+    public Revision getById(Long id){
+        Revision revision = null;
         EntityManager manager = DatabaseManager.getManager();
         
         try{
-            project = manager.find(Project.class, id);
+            revision = manager.find(Revision.class, id);
         } catch(Exception e){
             throw e;
         }
         
-        return project;
+        return revision;
     }
-    
 }
