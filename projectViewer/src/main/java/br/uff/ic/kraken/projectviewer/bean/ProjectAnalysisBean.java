@@ -11,6 +11,7 @@ import java.io.File;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.jpa.DatabaseManager;
 
 /**
  *
@@ -23,6 +24,7 @@ public class ProjectAnalysisBean {
     private String repositoryUrl;
     private String repositoryPath;
     private String projectName;
+    private Long id;
 
     public String cloneRepository() {
 
@@ -33,6 +35,8 @@ public class ProjectAnalysisBean {
     }
 
     public String analyze() {
+    
+        
         
         File repositoriesDirectory = new File(repositoryPath);
         if(!repositoriesDirectory.isDirectory())
@@ -49,7 +53,12 @@ public class ProjectAnalysisBean {
         }
 
         ProjectAnalyzer pa = new ProjectAnalyzer();
-        Project analyze = pa.analyze(projectPath);
+        
+        Project project = Project.getProject(id, DatabaseManager.getManager());
+        project.setRepositoryPath(projectPath);
+        
+        
+        Project analyze = pa.analyze(project);
         
 
         return null;
@@ -95,6 +104,20 @@ public class ProjectAnalysisBean {
      */
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

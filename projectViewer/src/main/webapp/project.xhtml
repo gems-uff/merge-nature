@@ -41,7 +41,7 @@
             <h:commandButton value="Analysis" action="#{projectAnalysisBean.analyze}">
                 <f:setPropertyActionListener target="#{projectAnalysisBean.repositoryUrl}" value="#{projectBean.repositoryUrl}"/>
                 <f:setPropertyActionListener target="#{projectAnalysisBean.projectName}" value="#{projectBean.projectName}"/>
-
+                <f:setPropertyActionListener target="#{projectAnalysisBean.id}" value="#{projectBean.id}"/>
                 <!--TODO: Revisit -->
                 <f:setPropertyActionListener target="#{projectAnalysisBean.repositoryPath}" value="/Users/gleiph/Desktop/repositories"/>
             </h:commandButton>
