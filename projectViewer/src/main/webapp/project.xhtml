@@ -45,6 +45,10 @@
                 <!--TODO: Revisit -->
                 <f:setPropertyActionListener target="#{projectAnalysisBean.repositoryPath}" value="/Users/gleiph/Desktop/repositories"/>
             </h:commandButton>
+
+            <h:commandButton value="View" action="#{analysisViewerBean.analysisData}">
+                <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{projectBean.id}"/>
+            </h:commandButton>
         </h:form>
     </h:body>
 

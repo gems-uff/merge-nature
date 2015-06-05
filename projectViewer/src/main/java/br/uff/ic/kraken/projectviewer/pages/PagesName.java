@@ -14,5 +14,6 @@ public class PagesName {
     public static final String index = "index";
     public static final String projects = "projects";
     public static final String project = "project";
+    public static final String projectAnalysis = "projectAnalysis";
 
 }
