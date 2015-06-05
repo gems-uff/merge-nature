@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class LanguageDAO {
+
     public Language save(Language language) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 

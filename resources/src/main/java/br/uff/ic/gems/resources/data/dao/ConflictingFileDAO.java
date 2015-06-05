@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class ConflictingFileDAO {
+    
     public ConflictingFile save(ConflictingFile conflictingFile) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 

@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class RevisionDAO {
+    
     public Revision save(Revision revision) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
