@@ -5,8 +5,8 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
+import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
 import java.util.List;
@@ -57,7 +57,7 @@ public class InitProject implements Runnable {
         jTable.setVisible(false);
 
         setRepositoryPath(absoluteFile.toString());
-        List<String> mergeRevisions = GitCMD.getMergeRevisions(getRepositoryPath());
+        List<String> mergeRevisions = Git.getMergeRevisions(getRepositoryPath());
         jProgressBar.setMinimum(1);
         jProgressBar.setMaximum(mergeRevisions.size());
         jProgressBar.setStringPainted(true);
@@ -69,18 +69,18 @@ public class InitProject implements Runnable {
         for (String revision : mergeRevisions) {
 
             System.out.println((++count) + " Current revision: " + revision);
-            List<String> parents = GitCMD.getParents(repositoryPath, revision);
-            GitCMD.reset(repositoryPath);
+            List<String> parents = Git.getParents(repositoryPath, revision);
+            Git.reset(repositoryPath);
 
             double javaPercentage = 0;
             double files = 0;
             if (parents.size() == 2) {
-                GitCMD.checkout(getRepositoryPath(), parents.get(0));
-                List<String> merge = GitCMD.merge(repositoryPath, parents.get(1), false, true);
+                Git.checkout(getRepositoryPath(), parents.get(0));
+                List<String> merge = Git.merge(repositoryPath, parents.get(1), false, true);
 
                 if (MergeStatusAnalizer.isConflict(merge)) {
                     status = Variables.CONFLICT;
-                    List<String> conflictedFiles = GitCMD.conflictedFiles(repositoryPath);
+                    List<String> conflictedFiles = Git.conflictedFiles(repositoryPath);
 
                     double javaFiles = 0;
 

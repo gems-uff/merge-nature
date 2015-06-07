@@ -6,8 +6,6 @@
 package br.uff.ic.github.mergeviewer.processing;
 
 import br.uff.ic.gems.resources.repositioning.Repositioning;
-import br.uff.ic.gems.merge.utils.MergeUtils;
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowCase;
 import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
@@ -15,11 +13,14 @@ import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.utils.Information;
+import br.uff.ic.gems.resources.vcs.Git;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -52,18 +53,25 @@ public class ConflictingChunkInformation implements Runnable {
         ASTAuxiliar.cloneRepositories(pathMergedRepository, pathDeveloperMergedRepository, pathLeftRepository, pathRightRepository);
 
         //Checking out revisions
-        GitCMD.checkout(pathDeveloperMergedRepository, Information.DEVELOPER_MERGE_REVISION);
-        GitCMD.checkout(pathLeftRepository, Information.LEFT_REVISION);
-        GitCMD.checkout(pathRightRepository, Information.RIGHT_REVISION);
+        Git.checkout(pathDeveloperMergedRepository, Information.DEVELOPER_MERGE_REVISION);
+        Git.checkout(pathLeftRepository, Information.LEFT_REVISION);
+        Git.checkout(pathRightRepository, Information.RIGHT_REVISION);
 
-        //Getting conflicting file
         String pathConflict = pathMergedRepository + pathRelativeFile;
         String pathSolution = pathDeveloperMergedRepository + pathRelativeFile;
 
-        List<String> fileConflict = MergeUtils.fileToLines(pathConflict);
+        //Getting conflicting file
+        List<String> fileConflict = null;
         //Getting solution file
-        List<String> fileSolution = MergeUtils.fileToLines(pathSolution);
+        List<String> fileSolution = null;
 
+        try {
+            fileConflict = FileUtils.readLines(new File(pathConflict));
+            fileSolution = FileUtils.readLines(new File(pathSolution));
+        } catch (IOException ex) {
+            Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         //Getting conflict area
         int beginConflict, endConflict;
         beginConflict = ASTAuxiliar.getConflictLowerBound(getConflictChunk(), context);

@@ -5,13 +5,11 @@
  */
 package br.uff.ic.github.mergeviewer.builder;
 
-import br.uff.ic.gems.merge.util.CMD;
-import br.uff.ic.gems.merge.util.CMDOutput;
-import java.io.File;
+import br.uff.ic.gems.resources.cmd.CMD;
+import br.uff.ic.gems.resources.cmd.CMDOutput;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.omg.SendingContext.RunTime;
 
 /**
  *

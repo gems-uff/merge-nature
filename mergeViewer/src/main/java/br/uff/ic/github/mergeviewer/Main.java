@@ -5,24 +5,27 @@
  */
 package br.uff.ic.github.mergeviewer;
 
-import br.uff.ic.gems.merge.utils.KrakenFile;
-import br.uff.ic.gems.merge.utils.MergeUtils;
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
 import br.uff.ic.github.mergeviewer.processing.InitProject;
 import br.uff.ic.github.mergeviewer.processing.ProcessRevision;
 import br.uff.ic.github.mergeviewer.processing.Understanding;
 import br.uff.ic.gems.resources.utils.Information;
+import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author Gleiph
@@ -324,22 +327,22 @@ public class Main extends javax.swing.JFrame {
         int rowCount = model.getRowCount();
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            Writer writer = KrakenFile.createWriter(chooser.getSelectedFile().getAbsolutePath());
+            Writer writer = FileManager.createWriter(chooser.getSelectedFile().getAbsolutePath());
             for (int i = 0; i < rowCount; i++) {
                 if (model.getValueAt(i, 2) != null) {
-                    KrakenFile.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
+                    FileManager.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
                             + ", " + model.getValueAt(i, 2) + ", " + model.getValueAt(i, 3) + "\n", writer);
                 } else {
-                    KrakenFile.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
+                    FileManager.write(model.getValueAt(i, 0) + ", " + model.getValueAt(i, 1)
                             + ", " + ", " + "\n", writer);
                 }
             }
 
             if (initProject != null) {
-                KrakenFile.write(initProject.getRepositoryPath(), writer);
+                FileManager.write(initProject.getRepositoryPath(), writer);
             }
 
-            KrakenFile.closeWriter(writer);
+            FileManager.closeWriter(writer);
         }
 
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -350,7 +353,15 @@ public class Main extends javax.swing.JFrame {
         int result = chooser.showOpenDialog(jMenu1);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            List<String> fileToLines = MergeUtils.fileToLines(chooser.getSelectedFile().getAbsolutePath());
+            
+            String pathSelectedFile = chooser.getSelectedFile().getAbsolutePath();
+            
+            List<String> fileToLines = null;
+            try {
+                fileToLines = FileUtils.readLines(new File(pathSelectedFile));
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             DefaultTableModel model = (DefaultTableModel) jTableCont.getModel();
 
@@ -403,10 +414,10 @@ public class Main extends javax.swing.JFrame {
             baseRepositoryPath = initProject.getRepositoryPath();
         }
 
-        List<String> allRevisions = GitCMD.getAllRevisions(baseRepositoryPath);
-        String date = GitCMD.getDate(baseRepositoryPath, allRevisions.get(0));
-        String date1 = GitCMD.getDate(baseRepositoryPath, allRevisions.get(allRevisions.size() - 1));
-        List<String> mergeRevisions = GitCMD.getMergeRevisions(baseRepositoryPath);
+        List<String> allRevisions = Git.getAllRevisions(baseRepositoryPath);
+        String date = Git.getDate(baseRepositoryPath, allRevisions.get(0));
+        String date1 = Git.getDate(baseRepositoryPath, allRevisions.get(allRevisions.size() - 1));
+        List<String> mergeRevisions = Git.getMergeRevisions(baseRepositoryPath);
 
         TableModel model = jTableCont.getModel();
         int rowCount = model.getRowCount();
@@ -453,7 +464,12 @@ public class Main extends javax.swing.JFrame {
             }
 
             String currentLocalFile = cbFiles.getSelectedItem().toString();
-            List<String> file = MergeUtils.fileToLines(currentLocalFile);
+            List<String> file = null;
+            try {
+                file = FileUtils.readLines(new File(currentLocalFile));
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             int lineNumber = 0;
 

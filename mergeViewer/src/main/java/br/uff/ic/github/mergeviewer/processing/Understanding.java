@@ -5,17 +5,20 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
-import br.uff.ic.gems.merge.utils.MergeUtils;
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.github.mergeviewer.ShowFile;
 import br.uff.ic.gems.resources.utils.Information;
+import br.uff.ic.gems.resources.vcs.Git;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -50,19 +53,19 @@ public class Understanding implements Runnable {
 
         if (!new File(head1Repository).isDirectory()) {
             System.out.println("Cloning 1");
-            GitCMD.clone(mergedRepository, mergedRepository, head1Repository);
+            Git.clone(mergedRepository, mergedRepository, head1Repository);
         }
         if (!new File(head2Repository).isDirectory()) {
             System.out.println("Cloning 2");
-            GitCMD.clone(mergedRepository, mergedRepository, head2Repository);
+            Git.clone(mergedRepository, mergedRepository, head2Repository);
         }
         if (!new File(originalRepository).isDirectory()) {
             System.out.println("Cloning Original");
-            GitCMD.clone(mergedRepository, mergedRepository, originalRepository);
+            Git.clone(mergedRepository, mergedRepository, originalRepository);
         }
         if (!new File(developerMergeRepository).isDirectory()) {
             System.out.println("Cloning Merge");
-            GitCMD.clone(mergedRepository, mergedRepository, developerMergeRepository);
+            Git.clone(mergedRepository, mergedRepository, developerMergeRepository);
         }
 
         String revision = Information.DEVELOPER_MERGE_REVISION;
@@ -72,10 +75,10 @@ public class Understanding implements Runnable {
         String head2 = Information.RIGHT_REVISION;
         String developerMerge = Information.DEVELOPER_MERGE_REVISION;
 
-        GitCMD.checkout(originalRepository, mergeBase);
-        GitCMD.checkout(head1Repository, head1);
-        GitCMD.checkout(head2Repository, head2);
-        GitCMD.checkout(developerMergeRepository, developerMerge);
+        Git.checkout(originalRepository, mergeBase);
+        Git.checkout(head1Repository, head1);
+        Git.checkout(head2Repository, head2);
+        Git.checkout(developerMergeRepository, developerMerge);
 
         jProgressBar.setIndeterminate(false);
         jProgressBar.setVisible(false);
@@ -115,7 +118,12 @@ public class Understanding implements Runnable {
 //        mergeFrame.setLocation((int) (0), (int) (3 * height / 5));
 //        mergeFrame.setSize(new Dimension((int) screenSize.getWidth(), (int) (screenSize.getHeight() / 5)));
         mergeFrame.setVisible(true);
-        List<String> merged = MergeUtils.fileToLines(mergedFile);
+        List<String> merged = null;
+        try {
+            merged = FileUtils.readLines(new File(mergedFile));
+        } catch (IOException ex) {
+            Logger.getLogger(Understanding.class.getName()).log(Level.SEVERE, null, ex);
+        }
         int conflicts = 0;
         for (String line : merged) {
             if (line.startsWith("<<<<<<<")) {

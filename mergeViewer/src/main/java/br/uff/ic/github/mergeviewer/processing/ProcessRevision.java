@@ -5,8 +5,8 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
-import br.uff.ic.gems.merge.vcs.GitCMD;
 import br.uff.ic.gems.resources.utils.Information;
+import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.github.mergeviewer.util.Variables;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -42,7 +42,7 @@ public class ProcessRevision implements Runnable {
 
         jProgressBar.setVisible(true);
         jProgressBar.setIndeterminate(true);
-        List<String> parents = GitCMD.getParents(repositoryPath, revision);
+        List<String> parents = Git.getParents(repositoryPath, revision);
         StringBuilder output = new StringBuilder();
 
         output.append("Version:").append("\n");
@@ -58,17 +58,17 @@ public class ProcessRevision implements Runnable {
             Information.LEFT_REVISION = parents.get(0);
             Information.RIGHT_REVISION = parents.get(1);
             //Merge base
-            String mergeBase = GitCMD.getMergeBase(repositoryPath, parents.get(0), parents.get(1));
+            String mergeBase = Git.getMergeBase(repositoryPath, parents.get(0), parents.get(1));
             output.append("Merge base:").append("\n");
             output.append("\t").append(mergeBase).append("\n");
             Information.BASE_REVISION = mergeBase;
             
             
             //Getting information about the merge
-            GitCMD.reset(repositoryPath);
-            GitCMD.checkout(repositoryPath, parents.get(0));
-            GitCMD.merge(repositoryPath, parents.get(1), false, true);
-            List<String> conflictedFiles = GitCMD.conflictedFiles(repositoryPath);
+            Git.reset(repositoryPath);
+            Git.checkout(repositoryPath, parents.get(0));
+            Git.merge(repositoryPath, parents.get(1), false, true);
+            List<String> conflictedFiles = Git.conflictedFiles(repositoryPath);
             output.append("Conflicting files:").append("\n");
             for (String conflictedFile : conflictedFiles) {
                 output.append("\t").append(conflictedFile).append("\n");
