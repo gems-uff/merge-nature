@@ -8,7 +8,7 @@ package br.uff.ic.gems.resources.analises.merge;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.gems.resources.data.Revision;
-import br.uff.ic.gems.resources.jpa.DatabaseManager;
+import br.uff.ic.gems.resources.data.dao.ConflictingFileDAO;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.IOException;
@@ -25,8 +25,9 @@ public class RevisionAnalyzer {
 
     public static Revision analyze(String revisionSHA, String repositoryPath) {
         Revision revision = new Revision();
-        EntityManager manager = DatabaseManager.getManager();
 
+        ConflictingFileDAO conflictingFileDAO = new ConflictingFileDAO();
+        
         revision.setSha(revisionSHA);
 
         Git.reset(repositoryPath);
@@ -60,7 +61,11 @@ public class RevisionAnalyzer {
                 for (String conflictedFile : conflictedFiles) {
                     try {
                         ConflictingFile conflictingFile = ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
-                        manager.persist(conflictingFile);
+                        try{
+                        conflictingFileDAO.save(conflictingFile);
+                        } catch(Exception e){
+                            System.out.println("Error whila persisting object!!");
+                        }
                         
                         revision.getConflictingFiles().add(conflictingFile);
                         

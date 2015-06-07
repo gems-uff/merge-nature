@@ -10,7 +10,8 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
-import br.uff.ic.gems.resources.jpa.DatabaseManager;
+import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
+import br.uff.ic.gems.resources.data.dao.LanguageConstructDAO;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.utils.Information;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -34,7 +34,8 @@ public class ConflictingFileAnalyzer {
 
         int context = 3;
         boolean hasSolution = true;
-        EntityManager manager = DatabaseManager.getManager();
+        LanguageConstructDAO languageConstructDAO = new LanguageConstructDAO();
+        ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
 
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
@@ -108,7 +109,7 @@ public class ConflictingFileAnalyzer {
 
             context1bOriginal = beginConflict + 1;
             context1eOriginal = conflictingChunk.getBeginLine();
-            context2bOriginal = conflictingChunk.getEndLine()+ 1;
+            context2bOriginal = conflictingChunk.getEndLine() + 1;
             context2eOriginal = endConflict;
 
             if (context2bOriginal > context2eOriginal) {
@@ -159,14 +160,23 @@ public class ConflictingFileAnalyzer {
             conflictingChunk.setRightLanguageConstructs(rightLanguageConstructs);
             System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
 
-            manager.persist(conflictingChunk);
+            try {
+                for (LanguageConstruct leftLanguageConstruct : leftLanguageConstructs) {
+                    languageConstructDAO.save(leftLanguageConstruct);
+                }
+                for (LanguageConstruct rightLanguageConstruct : rightLanguageConstructs) {
+                    languageConstructDAO.save(rightLanguageConstruct);
+                }
+                conflictingChunkDAO.save(conflictingChunk);
+            } catch (Exception e) {
+                System.out.println("Error while persisting objects!");
+            }
         }
 
         conflictingFile.setConflictingChunks(conflictingChunks);
 
         return conflictingFile;
     }
-
 
     private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
         List<ConflictingChunk> result = new ArrayList<>();
