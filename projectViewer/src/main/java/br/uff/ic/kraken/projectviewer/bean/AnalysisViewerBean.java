@@ -55,7 +55,7 @@ public class AnalysisViewerBean {
     public String analysisData() {
 
         ProjectDAO projectDAO = new ProjectDAO();
-        Project projectById = projectDAO.getProjectById(projectId);
+        Project projectById = projectDAO.getById(projectId);
 
         setRevisions(projectById.getRevisions());
 
