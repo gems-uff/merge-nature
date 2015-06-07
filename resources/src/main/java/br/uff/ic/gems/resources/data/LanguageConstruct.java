@@ -1,0 +1,113 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.uff.ic.gems.resources.data;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+/**
+ *
+ * @author gleiph
+ */
+@Entity
+public class LanguageConstruct implements Serializable{
+
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String name;
+    private int beginLine;
+    private int endLine;
+
+    public LanguageConstruct(String name, int beginLine, int endLine) {
+        this.name = name;
+        this.beginLine = beginLine;
+        this.endLine = endLine;
+    }
+
+    
+    
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the beginLine
+     */
+    public int getBeginLine() {
+        return beginLine;
+    }
+
+    /**
+     * @param beginLine the beginLine to set
+     */
+    public void setBeginLine(int beginLine) {
+        this.beginLine = beginLine;
+    }
+
+    /**
+     * @return the endLine
+     */
+    public int getEndLine() {
+        return endLine;
+    }
+
+    /**
+     * @param endLine the endLine to set
+     */
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
+    /**
+     * Get kind of conflict from the language constructs 
+     * @param begin
+     * @param end
+     * @param languageConstructs
+     * @return 
+     */
+    public static List<String>  getKindConflict(int begin, int end, List<LanguageConstruct> languageConstructs) {
+        List<String> result = new ArrayList<>();
+        
+        for (LanguageConstruct languageConstruct : languageConstructs) {
+            if(languageConstruct.getBeginLine()>= begin && 
+                    languageConstruct.getBeginLine()<= end && 
+                    !result.contains(languageConstruct.getName()))
+                result.add(languageConstruct.getName());
+        }
+        
+        return result;
+    }
+    
+}

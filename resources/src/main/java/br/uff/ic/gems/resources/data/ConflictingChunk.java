@@ -9,12 +9,10 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 /**
  *

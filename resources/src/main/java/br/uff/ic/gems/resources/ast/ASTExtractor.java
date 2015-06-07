@@ -5,7 +5,7 @@
  */
 package br.uff.ic.gems.resources.ast;
 
-import br.uff.ic.gems.resources.ast.data.SourceCodeFile;
+import br.uff.ic.gems.resources.data.LanguageConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 public class ASTExtractor {
 
     String filePath;
-    SourceCodeFile sourceCode;
+    List<LanguageConstruct> languageConstructs;
 
     public ASTExtractor(String filePath) {
         this.filePath = filePath;
@@ -61,12 +61,12 @@ public class ASTExtractor {
             comment.accept(visitor);
         }
 
-        sourceCode = visitor.getSourceCode();
+        languageConstructs = visitor.getLanguageConstructs();
 
     }
 
     public List<String> getLanguageConstructs(int begin, int end) {
-        List<String> kindConflic = sourceCode.getKindConflict(begin, end);
+        List<String> kindConflic = LanguageConstruct.getKindConflict(begin, end, languageConstructs);
         Collections.sort(kindConflic);
 
         return kindConflic;
