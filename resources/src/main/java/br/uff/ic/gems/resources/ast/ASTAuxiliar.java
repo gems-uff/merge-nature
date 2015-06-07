@@ -6,6 +6,7 @@
 package br.uff.ic.gems.resources.ast;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.utils.Context;
 import br.uff.ic.gems.resources.utils.ContextFinder;
 import br.uff.ic.gems.resources.vcs.Git;
@@ -73,7 +74,7 @@ public class ASTAuxiliar {
         return conflictLowerBound;
     }
     
-    public static List<String> getSyntacticStructures(List<String> conflictArea, String repository, String relativePath) throws IOException {
+    public static List<LanguageConstruct> getSyntacticStructures(List<String> conflictArea, String repository, String relativePath) throws IOException {
         //Left side
         List<String> conflict = conflictArea;
         String file = repository + relativePath;
@@ -92,7 +93,7 @@ public class ASTAuxiliar {
         //Dealing with AST
         ASTExtractor ats = new ASTExtractor(file);
         ats.parser();
-        List<String> kindConflict = ats.getLanguageConstructs(begin, end);
+        List<LanguageConstruct> kindConflict = ats.getLanguageConstructs(begin, end);
 
         return kindConflict;
     }

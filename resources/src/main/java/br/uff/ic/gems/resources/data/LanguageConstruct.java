@@ -17,7 +17,7 @@ import javax.persistence.Id;
  * @author gleiph
  */
 @Entity
-public class LanguageConstruct implements Serializable{
+public class LanguageConstruct implements Serializable {
 
     @Id
     @GeneratedValue
@@ -32,8 +32,6 @@ public class LanguageConstruct implements Serializable{
         this.endLine = endLine;
     }
 
-    
-    
     /**
      * @return the id
      */
@@ -91,23 +89,35 @@ public class LanguageConstruct implements Serializable{
     }
 
     /**
-     * Get kind of conflict from the language constructs 
+     * Get kind of conflict from the language constructs
+     *
      * @param begin
      * @param end
      * @param languageConstructs
-     * @return 
+     * @return
      */
-    public static List<String>  getKindConflict(int begin, int end, List<LanguageConstruct> languageConstructs) {
-        List<String> result = new ArrayList<>();
-        
+    public static List<LanguageConstruct> getLanguageConstructs(int begin, int end, List<LanguageConstruct> languageConstructs) {
+        List<LanguageConstruct> result = new ArrayList<>();
+
         for (LanguageConstruct languageConstruct : languageConstructs) {
-            if(languageConstruct.getBeginLine()>= begin && 
-                    languageConstruct.getBeginLine()<= end && 
-                    !result.contains(languageConstruct.getName()))
-                result.add(languageConstruct.getName());
+            if (languageConstruct.getBeginLine() >= begin
+                    && languageConstruct.getBeginLine() <= end) {
+                result.add(languageConstruct);
+            }
         }
-        
+
         return result;
     }
-    
+
+    public static String toString(List<LanguageConstruct> languageConstructs) {
+        List<String> result = new ArrayList<>();
+
+        for (LanguageConstruct languageConstruct : languageConstructs) {
+            if (!result.contains(languageConstruct.getName())) {
+                result.add(languageConstruct.getName());
+            }
+        }
+
+        return result.toString();
+    }
 }

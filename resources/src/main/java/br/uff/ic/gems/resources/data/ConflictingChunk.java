@@ -13,6 +13,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -31,12 +32,10 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @ElementCollection
-    private List<String> leftKindConflict;
-    @ElementCollection
-    private List<String> rightKindConflict;
-    @ElementCollection
-    private List<String> generalKindConflict;
+    @OneToMany
+    private List<LanguageConstruct> leftLanguageConstructs;
+    @OneToMany
+    private List<LanguageConstruct> rightLanguageConstructs;
     @ElementCollection
     private List<String> conflictingContent;
     @ElementCollection
@@ -113,47 +112,33 @@ public class ConflictingChunk implements Serializable {
     }
 
     /**
-     * @return the leftKindConflict
+     * @return the leftLanguageConstructs
      */
-    public List<String> getLeftKindConflict() {
-        return leftKindConflict;
+    public List<LanguageConstruct> getLeftLanguageConstructs() {
+        return leftLanguageConstructs;
     }
 
     /**
-     * @param leftKindConflict the leftKindConflict to set
+     * @param leftLanguageConstructs the leftLanguageConstructs to set
      */
-    public void setLeftKindConflict(List<String> leftKindConflict) {
-        this.leftKindConflict = leftKindConflict;
+    public void setLeftLanguageConstructs(List<LanguageConstruct> leftLanguageConstructs) {
+        this.leftLanguageConstructs = leftLanguageConstructs;
     }
 
     /**
-     * @return the rightKindConflict
+     * @return the rightLanguageConstructs
      */
-    public List<String> getRightKindConflict() {
-        return rightKindConflict;
+    public List<LanguageConstruct> getRightLanguageConstructs() {
+        return rightLanguageConstructs;
     }
 
     /**
-     * @param rightKindConflict the rightKindConflict to set
+     * @param rightLanguageConstructs the rightLanguageConstructs to set
      */
-    public void setRightKindConflict(List<String> rightKindConflict) {
-        this.rightKindConflict = rightKindConflict;
+    public void setRightLanguageConstructs(List<LanguageConstruct> rightLanguageConstructs) {
+        this.rightLanguageConstructs = rightLanguageConstructs;
     }
-
-    /**
-     * @return the generalKindConflict
-     */
-    public List<String> getGeneralKindConflict() {
-        return generalKindConflict;
-    }
-
-    /**
-     * @param generalKindConflict the generalKindConflict to set
-     */
-    public void setGeneralKindConflict(List<String> generalKindConflict) {
-        this.generalKindConflict = generalKindConflict;
-    }
-
+    
     /**
      * @return the developerChoice
      */

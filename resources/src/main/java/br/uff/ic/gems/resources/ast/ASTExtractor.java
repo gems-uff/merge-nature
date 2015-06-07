@@ -65,11 +65,8 @@ public class ASTExtractor {
 
     }
 
-    public List<String> getLanguageConstructs(int begin, int end) {
-        List<String> kindConflic = LanguageConstruct.getKindConflict(begin, end, languageConstructs);
-        Collections.sort(kindConflic);
-
-        return kindConflic;
+    public List<LanguageConstruct> getLanguageConstructs(int begin, int end) {
+        return LanguageConstruct.getLanguageConstructs(begin, end, languageConstructs);
     }
 
     public String toString(List<String> input) {
