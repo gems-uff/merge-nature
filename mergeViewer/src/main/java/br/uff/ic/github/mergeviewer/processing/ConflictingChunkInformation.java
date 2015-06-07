@@ -13,6 +13,7 @@ import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
+import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.utils.Information;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,23 +74,23 @@ public class ConflictingChunkInformation implements Runnable {
         ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
         cpe.extract();
 
-        List<String> leftKindConflict = null;
-        List<String> rightKindConflict = null;
+        List<LanguageConstruct> leftLanguageConstructs = null;
+        List<LanguageConstruct> rightLanguageConstructs = null;
 
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
-                rightKindConflict = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
+                leftLanguageConstructs = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
+                rightLanguageConstructs = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             String[] fileBroken = pathRelativeFile.split("\\.");
-            leftKindConflict = new ArrayList<>();
-            leftKindConflict.add(fileBroken[fileBroken.length - 1]);
+            leftLanguageConstructs = new ArrayList<>();
+            leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));
 
-            rightKindConflict = new ArrayList<>();
-            rightKindConflict.add(fileBroken[fileBroken.length - 1]);
+            rightLanguageConstructs = new ArrayList<>();
+            rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));
         }
 
         //Get the following data from the conflict:
@@ -249,7 +250,7 @@ public class ConflictingChunkInformation implements Runnable {
 
         String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
-        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftKindConflict.toString(), rightKindConflict.toString(), dd);
+        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, LanguageConstruct.toString(leftLanguageConstructs), LanguageConstruct.toString(rightLanguageConstructs), dd);
         showCase.setVisible(true);
     }
 
