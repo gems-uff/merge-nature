@@ -6,13 +6,12 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.jpa.DatabaseManager;
+import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
 import javax.faces.bean.RequestScoped;
-import javax.persistence.EntityManager;
 
 /**
  *
@@ -32,11 +31,12 @@ public class ProjectBean {
      */
     public ProjectBean() {
 
-        EntityManager manager = DatabaseManager.getManager();
+        ProjectDAO projectDAO = new ProjectDAO();
+        
         projects = new ArrayList<>();
 
         for (int i = 0; i < 5000; i++) {
-            Project project = Project.getProject(Long.parseLong(i + ""), manager);
+            Project project = projectDAO.getById(Long.parseLong(i + ""));
 
             if (project != null) {
                 projects.add(project);

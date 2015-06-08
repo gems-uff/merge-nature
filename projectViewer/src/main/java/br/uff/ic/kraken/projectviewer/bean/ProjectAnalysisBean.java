@@ -11,7 +11,7 @@ import java.io.File;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.jpa.DatabaseManager;
+import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 
 /**
  *
@@ -36,7 +36,7 @@ public class ProjectAnalysisBean {
 
     public String analyze() {
     
-        
+        ProjectDAO projectDAO = new ProjectDAO();
         
         File repositoriesDirectory = new File(repositoryPath);
         if(!repositoriesDirectory.isDirectory())
@@ -54,7 +54,7 @@ public class ProjectAnalysisBean {
 
         ProjectAnalyzer pa = new ProjectAnalyzer();
         
-        Project project = Project.getProject(id, DatabaseManager.getManager());
+        Project project = projectDAO.getById(id);
         project.setRepositoryPath(projectPath);
         
         
