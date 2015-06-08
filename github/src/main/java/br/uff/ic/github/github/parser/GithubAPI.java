@@ -3,14 +3,13 @@ package br.uff.ic.github.github.parser;
 import br.uff.ic.gems.resources.cmd.CMDOutput;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.jpa.DatabaseManager;
+import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.github.github.cmd.CMDGithub;
 import br.uff.ic.github.github.data.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -245,8 +244,8 @@ public class GithubAPI {
     public static void projects() {
 
         //Jpa manager
-        EntityManager manager = DatabaseManager.getManager();
-
+        ProjectDAO projectDAO = new ProjectDAO();
+        
         String LINK = "Link:";
 
         CMDOutput output = null;
@@ -254,7 +253,7 @@ public class GithubAPI {
 
         JSONParser parser = new JSONParser();
 
-        long lastId = Project.lastId(manager);
+        long lastId = projectDAO.getLastId();
         
         if(lastId != -1){
             link += "?since="+lastId;
@@ -297,7 +296,7 @@ public class GithubAPI {
                         String id = jsono.get("id").toString();
                         String searchUrl = jsono.get("url").toString();
 
-                        Project project = Project.getProject(Long.parseLong(id), manager);
+                        Project project = projectDAO.getById(Long.parseLong(id));
 
                         //Project is not in the database
                         if (project == null) {
@@ -329,21 +328,12 @@ public class GithubAPI {
                                 project.setLanguages(languagesList);
 
                                 try {
-                                    if (!manager.getTransaction().isActive()) {
-                                        manager.getTransaction().begin();
-                                    }
-                                    manager.persist(project);
-                                    manager.getTransaction().commit();
+                                    projectDAO.saveGithub(project);
                                 } catch (Exception e) {
                                 }
                             } else {
                                 try {
-                                    if (!manager.getTransaction().isActive()) {
-                                        manager.getTransaction().begin();
-                                    }
-                                    manager.persist(project);
-                                    manager.getTransaction().commit();
-
+                                    projectDAO.saveGithub(project);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
