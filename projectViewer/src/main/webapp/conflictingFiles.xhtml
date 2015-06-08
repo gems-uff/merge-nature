@@ -6,36 +6,26 @@
     <h:head>
         <title>Facelet Title</title>
         <h:outputStylesheet library="css" name="layout.css"  />
-
     </h:head>
     <h:body>
         <h:form>
-            <h:dataTable value="#{analysisViewerBean.revisions}" var="item"
+            <h:dataTable value="#{conflictingFileBean.conflictingFiles}" var="item"
                          styleClass="order-table"
                          headerClass="order-table-header"
                          rowClasses="order-table-odd-row,order-table-even-row" >
-
-                <!--                <h:column>
-                                    <f:facet name="header">Id </f:facet>
-                #{item.id}
-        </h:column>-->
                 <h:column>
-                    <f:facet name="header">SHA </f:facet>
-                    <h:commandLink value="#{item.sha}" action="#{conflictingFileBean.actionNavigation}">
+                    <f:facet name="header">File name </f:facet>
+                    <h:commandLink value="#{item.name}" action="#{conflictingFileBean.actionNavigation}">
                         <f:setPropertyActionListener target="#{conflictingFileBean.revisionId}" value="#{item.id}"/>
                     </h:commandLink>
                 </h:column>
-                <!--                <h:column>
-                                    <f:facet name="header">Left SHA </f:facet>
-                #{item.leftSha}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Right SHA </f:facet>
-                #{item.rightSha}
-        </h:column>-->
                 <h:column>
-                    <f:facet name="header">Status </f:facet>
-                    <h:outputText value="#{item.status}" style="#{analysisViewerBean.getStyle(item.status)}"/>
+                    <f:facet name="header">Path </f:facet>
+                    #{item.path}"
+                </h:column>
+                <h:column>
+                    <f:facet name="header">#Conflicting chunks </f:facet>
+                    #{item.conflictingChunks.size()}"
                 </h:column>
             </h:dataTable>
         </h:form>
