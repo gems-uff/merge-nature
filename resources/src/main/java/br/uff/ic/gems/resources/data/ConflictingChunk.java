@@ -14,6 +14,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
@@ -35,9 +37,17 @@ public class ConflictingChunk implements Serializable {
     private DeveloperDecision developerDecision;
 
     @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "ConflictingChunk_LeftLanguageConstruct", 
+            joinColumns = @JoinColumn(name = "Conflicting_ID"),
+            inverseJoinColumns = @JoinColumn(name = "LeftLanguageConstruct_ID"))
     private List<LanguageConstruct> leftLanguageConstructs;
+    
     @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "ConflictingChunk_RightLanguageConstruct", 
+            joinColumns = @JoinColumn(name = "Conflicting_ID"),
+            inverseJoinColumns = @JoinColumn(name = "RightLanguageConstruct_ID"))
     private List<LanguageConstruct> rightLanguageConstructs;
+    
     @ElementCollection
     @Lob
     private List<String> conflictingContent;

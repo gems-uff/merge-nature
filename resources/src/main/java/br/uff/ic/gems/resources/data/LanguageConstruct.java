@@ -26,6 +26,9 @@ public class LanguageConstruct implements Serializable {
     private int beginLine;
     private int endLine;
 
+    public LanguageConstruct() {
+    }
+
     public LanguageConstruct(String name, int beginLine, int endLine) {
         this.name = name;
         this.beginLine = beginLine;
