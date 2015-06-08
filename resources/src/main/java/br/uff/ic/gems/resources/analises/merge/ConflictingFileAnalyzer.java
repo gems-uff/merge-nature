@@ -159,18 +159,18 @@ public class ConflictingFileAnalyzer {
             System.out.println("=================Right language constructs=================");
             conflictingChunk.setRightLanguageConstructs(rightLanguageConstructs);
             System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
-
-            try {
-                for (LanguageConstruct leftLanguageConstruct : leftLanguageConstructs) {
-                    languageConstructDAO.save(leftLanguageConstruct);
-                }
-                for (LanguageConstruct rightLanguageConstruct : rightLanguageConstructs) {
-                    languageConstructDAO.save(rightLanguageConstruct);
-                }
-                conflictingChunkDAO.save(conflictingChunk);
-            } catch (Exception e) {
-                System.out.println("Error while persisting objects!");
-            }
+//            try {
+//
+//                for (LanguageConstruct leftLanguageConstruct : leftLanguageConstructs) {
+//                    languageConstructDAO.save(leftLanguageConstruct);
+//                }
+//                for (LanguageConstruct rightLanguageConstruct : rightLanguageConstructs) {
+//                    languageConstructDAO.save(rightLanguageConstruct);
+//                }
+//                conflictingChunkDAO.save(conflictingChunk);
+//            } catch (Exception ex) {
+//                Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
 
         conflictingFile.setConflictingChunks(conflictingChunks);

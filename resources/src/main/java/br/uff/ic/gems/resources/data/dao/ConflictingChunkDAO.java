@@ -64,6 +64,6 @@ public class ConflictingChunkDAO {
             throw e;
         }
         
-        return null;
+        return conflictingChunk;
     }
 }

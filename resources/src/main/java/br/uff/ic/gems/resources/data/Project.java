@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Query;
 
 /**
  *
@@ -41,7 +39,7 @@ public class Project implements Serializable {
     private List<Revision> revisions;
 
     public Project() {
-        this.id = 0l;
+        this.id = null;
         this.name = null;
         this.createdAt = null;
         this.updatedAt = null;
@@ -196,10 +194,6 @@ public class Project implements Serializable {
         this.id = id;
     }
 
-    public static Project getProject(Long id, EntityManager manager) {
-        return manager.find(Project.class, id);
-    }
-
     /**
      * @return the message
      */
@@ -212,20 +206,6 @@ public class Project implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public static long lastId(EntityManager manager) {
-        //Jpa manager
-        String sql = "SELECT MAX(id) FROM Project p";
-        Query query = manager.createQuery(sql);
-
-        List result = query.getResultList();
-
-        if (result != null && !result.isEmpty() && result.get(0) != null) {
-            return (long) result.get(0);
-        } else {
-            return -1;
-        }
     }
 
     /**
@@ -296,9 +276,5 @@ public class Project implements Serializable {
      */
     public void setRevisions(List<Revision> revisions) {
         this.revisions = revisions;
-    }
-    
-    public void save(EntityManager entityManager){
-            entityManager.persist(this);
     }
 }

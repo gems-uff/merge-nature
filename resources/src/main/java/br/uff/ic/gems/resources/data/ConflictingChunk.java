@@ -9,10 +9,12 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 /**
@@ -32,13 +34,15 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<LanguageConstruct> leftLanguageConstructs;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<LanguageConstruct> rightLanguageConstructs;
     @ElementCollection
+    @Lob
     private List<String> conflictingContent;
     @ElementCollection
+    @Lob
     private List<String> solutionContent;
 
     /**

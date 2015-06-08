@@ -12,10 +12,10 @@ import br.uff.ic.gems.resources.data.dao.ConflictingFileDAO;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
 
 /**
  *
@@ -58,13 +58,16 @@ public class RevisionAnalyzer {
                 revision.setNumberConflictingFiles(conflictedFiles.size());
                 int javaFiles = 0;
 
+                List<ConflictingFile> conflictingFiles = new ArrayList<>();
+                
                 for (String conflictedFile : conflictedFiles) {
                     try {
                         ConflictingFile conflictingFile = ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
-                        try{
-                        conflictingFileDAO.save(conflictingFile);
-                        } catch(Exception e){
-                            System.out.println("Error whila persisting object!!");
+                        conflictingFiles.add(conflictingFile);
+                        try {
+                            conflictingFileDAO.save(conflictingFile);
+                        } catch (Exception ex) {
+                            Logger.getLogger(RevisionAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         
                         revision.getConflictingFiles().add(conflictingFile);
@@ -78,6 +81,7 @@ public class RevisionAnalyzer {
                     }
                 }
 
+                revision.setConflictingFiles(conflictingFiles);
                 revision.setNumberJavaConflictingFiles(javaFiles);
 
             } else if (MergeStatusAnalizer.isFastForward(mergeOutput)) {
