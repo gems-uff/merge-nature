@@ -9,23 +9,23 @@
     </h:head>
     <h:body>
         <h:form>
-            <h:dataTable value="#{conflictingFileBean.conflictingFiles}" var="item"
+            <h:dataTable value="#{conflictingChunkBean.conflictingChunks}" var="item"
                          styleClass="order-table"
                          headerClass="order-table-header"
                          rowClasses="order-table-odd-row,order-table-even-row" >
                 <h:column>
                     <f:facet name="header">File name </f:facet>
-                    <h:commandLink value="#{item.name}" action="#{conflictingChunkBean.actionNavigation}">
-                        <f:setPropertyActionListener target="#{conflictingChunkBean.conflictingFileId}" value="#{item.id}"/>
+                    <h:commandLink value="#{item.identifier}">
+                        <f:setPropertyActionListener target="#{conflictingFileBean.revisionId}" value="#{item.id}"/>
                     </h:commandLink>
                 </h:column>
                 <h:column>
-                    <f:facet name="header">Path </f:facet>
-                    #{item.path}"
+                    <f:facet name="header">Begin line </f:facet>
+                    #{item.beginLine}"
                 </h:column>
                 <h:column>
-                    <f:facet name="header">#Conflicting chunks </f:facet>
-                    #{item.conflictingChunks.size()}"
+                    <f:facet name="header">End line </f:facet>
+                    #{item.endLine}"
                 </h:column>
             </h:dataTable>
         </h:form>

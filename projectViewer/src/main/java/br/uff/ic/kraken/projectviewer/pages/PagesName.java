@@ -16,5 +16,6 @@ public class PagesName {
     public static final String project = "project";
     public static final String projectAnalysis = "projectAnalysis";
     public static final String conflictingFiles = "conflictingFiles";
+    public static final String conflictingChunks = "conflictingChunks";
 
 }
