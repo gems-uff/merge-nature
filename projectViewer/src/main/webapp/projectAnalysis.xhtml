@@ -15,25 +15,25 @@
                          headerClass="order-table-header"
                          rowClasses="order-table-odd-row,order-table-even-row" >
 
-                <h:column>
+<!--                <h:column>
                     <f:facet name="header">Id </f:facet>
                         #{item.id}
-                </h:column>
+                </h:column>-->
                 <h:column>
                     <f:facet name="header">SHA </f:facet>
                         #{item.sha}
                 </h:column>
-                <h:column>
+<!--                <h:column>
                     <f:facet name="header">Left SHA </f:facet>
                         #{item.leftSha}
                 </h:column>
                 <h:column>
                     <f:facet name="header">Right SHA </f:facet>
                         #{item.rightSha}
-                </h:column>
+                </h:column>-->
                 <h:column>
                     <f:facet name="header">Status </f:facet>
-                        #{item.status}
+                    <h:outputText value="#{item.status}" style="#{analysisViewerBean.getStyle(item.status)}"/>
                 </h:column>
             </h:dataTable>
         </h:form>

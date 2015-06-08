@@ -8,6 +8,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.List;
 import javax.faces.bean.RequestScoped;
@@ -63,6 +64,14 @@ public class AnalysisViewerBean {
             return PagesName.projectAnalysis;
         } else {
             return null;
+        }
+    }
+
+    public String getStyle(MergeStatus mergeStatus) {
+        if (mergeStatus == MergeStatus.CONFLICTING) {
+            return "color: red";
+        } else {
+            return "color: green";
         }
     }
 }
