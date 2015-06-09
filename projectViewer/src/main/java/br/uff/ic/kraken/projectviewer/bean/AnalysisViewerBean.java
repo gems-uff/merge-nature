@@ -67,11 +67,29 @@ public class AnalysisViewerBean {
         }
     }
 
+    public String actionNavigator() {
+
+        ProjectDAO projectDAO = new ProjectDAO();
+        Project projectById = projectDAO.getById(projectId);
+
+        setRevisions(projectById.getRevisions());
+
+        if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
+            return PagesName.showAll;
+        } else {
+            return null;
+        }
+    }
+    
     public String getStyle(MergeStatus mergeStatus) {
         if (mergeStatus == MergeStatus.CONFLICTING) {
             return "color: red";
         } else {
             return "color: green";
         }
+    }
+    
+    public String format(String input){
+        return input.substring(0, 7);
     }
 }
