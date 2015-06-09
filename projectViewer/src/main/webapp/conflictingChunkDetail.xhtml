@@ -7,18 +7,21 @@
     </h:head>
     <h:body>
         <h:form>
+            <b> Begin: </b> 
             <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.beginLine}"/> 
             <br/>
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.endLine}"/> 
+            <b> End: </b> <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.endLine}"/> 
             <br/>
             <!--<h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.conflictingContent}"/>-->
 
+            <b> Conflicting content: </b> <br/><br/>
             <h:dataTable var="conflictingContent" value="#{conflictingChunkDetailBean.conflictingChunk.conflictingContent}">
                 <h:column>
                     <h:outputText value="#{conflictingContent}"/>
                 </h:column>
             </h:dataTable>
 
+            <b> Solution content: </b> <br/><br/>
             <br/>
             <h:dataTable var="solutionContent" value="#{conflictingChunkDetailBean.conflictingChunk.solutionContent}">
                 <h:column>
@@ -27,11 +30,13 @@
             </h:dataTable>
             <br/>
 
-
+            <b> Developer's decision: </b> <br/><br/>
             <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.developerDecision}"/> 
             <br/>
+            <b> Left kind of conflict: </b><br/><br/>
             <h:outputText value = "#{conflictingChunkDetailBean.leftLC}"/>
             <br/>
+            <b> Right kind of conflict: </b> <br/><br/>
             <h:outputText value = "#{conflictingChunkDetailBean.rightLC}"/>
         </h:form>
     </h:body>
