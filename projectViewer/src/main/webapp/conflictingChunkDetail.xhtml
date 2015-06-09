@@ -8,12 +8,31 @@
     <h:body>
         <h:form>
             <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.beginLine}"/> 
+            <br/>
             <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.endLine}"/> 
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.conflictingContent}"/>
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.solutionContent}"/> 
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.developerDecision.toString()}"/> 
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.leftLanguageConstructs}"/>
-            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.rightLanguageConstructs}"/>
+            <br/>
+            <!--<h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.conflictingContent}"/>-->
+
+            <h:dataTable var="conflictingContent" value="#{conflictingChunkDetailBean.conflictingChunk.conflictingContent}">
+                <h:column>
+                    <h:outputText value="#{conflictingContent}"/>
+                </h:column>
+            </h:dataTable>
+
+            <br/>
+            <h:dataTable var="solutionContent" value="#{conflictingChunkDetailBean.conflictingChunk.solutionContent}">
+                <h:column>
+                    <h:outputText value="#{solutionContent}"/>
+                </h:column>
+            </h:dataTable>
+            <br/>
+
+
+            <h:outputText value = "#{conflictingChunkDetailBean.conflictingChunk.developerDecision}"/> 
+            <br/>
+            <h:outputText value = "#{conflictingChunkDetailBean.leftLC}"/>
+            <br/>
+            <h:outputText value = "#{conflictingChunkDetailBean.rightLC}"/>
         </h:form>
     </h:body>
 </html>

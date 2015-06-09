@@ -6,6 +6,7 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import javax.faces.bean.RequestScoped;
@@ -23,6 +24,9 @@ public class ConflictingChunkDetailBean {
     private Long conflictingChunkId;
     private ConflictingChunk conflictingChunk;
 
+    private String leftLC;
+    private String rightLC;
+    
     /**
      * @return the conflictingChunkId
      */
@@ -58,4 +62,35 @@ public class ConflictingChunkDetailBean {
 
         return PagesName.conflictingChunkDetail;
     }
+
+    /**
+     * @return the leftLC
+     */
+    public String getLeftLC() {
+        this.leftLC = LanguageConstruct.toString(conflictingChunk.getLeftLanguageConstructs());
+        return leftLC;
+    }
+
+    /**
+     * @param leftLC the leftLC to set
+     */
+    public void setLeftLC(String leftLC) {
+        this.leftLC = leftLC;
+    }
+
+    /**
+     * @return the rightLC
+     */
+    public String getRightLC() {
+        rightLC = LanguageConstruct.toString(conflictingChunk.getRightLanguageConstructs());;
+        return rightLC;
+    }
+
+    /**
+     * @param rightLC the rightLC to set
+     */
+    public void setRightLC(String rightLC) {
+        this.rightLC = rightLC;
+    }
+    
 }
