@@ -9,9 +9,11 @@ and open the template in the editor.
 */
 
 .table{
-    width:10%; 
+    width:95%; 
     border-collapse:collapse; 
     alignment-adjust: central;
+    alignment-baseline: central;
+    text-align: left;
 }
 .table>td{
         padding:7px; border:#4e95f4 1px solid;
@@ -22,4 +24,19 @@ and open the template in the editor.
 
 .table>tbody>tr:hover { 
     background-color: #E5E5E5;
+}
+
+.div{
+    overflow:auto; 
+    width: 10%; 
+    height: 70px;
+}
+
+.tableContent{
+    font-size: 12px;
+    font-family: monospace, sans-serif;
+}
+
+.title{
+        font-size: 14px;
 }

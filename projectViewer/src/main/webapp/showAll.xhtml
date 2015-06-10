@@ -2,24 +2,35 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Facelet Title</title>
         <h:outputStylesheet library="css" name="table.css"  />
     </h:head>
     <h:body>
         <f:view>
-
-
             <h:form>
-                <h:dataTable value="#{analysisViewerBean.revisions}" var="item" styleClass="table">
-                    <h:column>
-                        <f:facet name="header">
-                            <h:outputText value="Sha" />
-                        </f:facet>
-                        <h:outputText value="#{analysisViewerBean.format(item.sha)}"/>
-                    </h:column>
-                </h:dataTable>
+                <div style="overflow:auto; width: 20%; height: 770px;">
+                    <p:treeTable value="#{analysisViewerBean.root}" var="item" styleClass="table">
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Merges" styleClass="title"/>  
+                            </f:facet>
+                            <h:outputText value="#{analysisViewerBean.format(item)}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:treeTable>
+                </div>
+                <!--            <h:form>
+                                <div style="overflow:auto; width: 10%; height: 770px;">
+                
+                                    <h:dataTable value="#{analysisViewerBean.revisions}" var="item" styleClass="table">
+                                        <h:column>
+                                            <h:outputText value="#{item.sha}" style="#{analysisViewerBean.getStyle(item.status)}"/>
+                                        </h:column>
+                                    </h:dataTable>
+                                </div>
+                            </h:form>-->
             </h:form>
         </f:view>
 
