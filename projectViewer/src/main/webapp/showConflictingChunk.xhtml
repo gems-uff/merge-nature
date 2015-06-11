@@ -12,7 +12,7 @@
         <f:view>
             <h:form>
                 <!--Left menu-->
-                <div style="overflow:auto; width: 20%; height: 770px;">
+                <div style="overflow:auto; width: 20%; height: 100vh;">
                     <p:treeTable value="#{analysisViewerBean.root}" var="item" styleClass="table">
                         <p:column>
                             <f:facet name="header">  
@@ -32,7 +32,7 @@
                 </div>
 
                 <!--Middle content-->
-                <div style="overflow:auto; width: 64%; height: 770px; position: fixed; top: 0%; left: 20.5%; ">
+                <div style="overflow:auto; width: 64%; height: 100vh; position: fixed; top: 0%; left: 20.5%; ">
                     <div>
                         <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.conflictingContent}" var="cc">
                             <p:column>
@@ -57,7 +57,7 @@
                 </div>
                 
                 <!--Right--> 
-                <div style="overflow:auto; width: 14%; height: 770px; position: fixed; top: 0%; left: 85.5%; ">
+                <div style="overflow:auto; width: 14%; height: 100vh; position: fixed; top: 0%; left: 85.5%; ">
                     <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.leftLanguageConstructs}" var="cc">
                         <f:facet name="header">  
                             <h:outputText value="Left Language Constructs" styleClass="title"/>  
