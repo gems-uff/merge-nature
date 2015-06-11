@@ -19,5 +19,6 @@ public class PagesName {
     public static final String conflictingChunks = "conflictingChunks";
     public static final String conflictingChunkDetail = "conflictingChunkDetail";
     public static final String showAll = "showAll";
+    public static final String showConflictingChunk = "showConflictingChunk";
 
 }

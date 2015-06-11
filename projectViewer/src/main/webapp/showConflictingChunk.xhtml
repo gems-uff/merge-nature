@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="table.css"/>
+    </h:head>
+    <h:body>
+        <f:view>
+            <h:form>
+                <!--Left menu-->
+                <div style="overflow:auto; width: 20%; height: 770px;">
+                    <p:treeTable value="#{analysisViewerBean.root}" var="item" styleClass="table">
+                        <p:column>
+                            <f:facet name="header">  
+                                <h:outputText value="Merges" styleClass="title"/>  
+                            </f:facet>
+                            <p:commandLink action="#{analysisViewerBean.presenter}" style="font-size: 12px;
+                                           font-family: monospace, sans-serif;
+                                           text-decoration: none;
+                                           ">
+                                #{analysisViewerBean.format(item.name)}
+                                <f:setPropertyActionListener target="#{analysisViewerBean.selectedId}" value="#{item.id}"/>
+                                <f:setPropertyActionListener target="#{analysisViewerBean.dataType}" value="#{item.dataType}"/>
+
+                            </p:commandLink>
+                        </p:column>
+                    </p:treeTable>
+                </div>
+
+                <!--Middle content-->
+                <div style="overflow:auto; width: 64%; height: 770px; position: fixed; top: 0%; left: 20.5%; ">
+                    <div>
+                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.conflictingContent}" var="cc">
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Conflicting content" styleClass="title"/>  
+                                </f:facet>
+                                <h:outputText value="#{cc}" styleClass="tableContent"/>
+                            </p:column>
+                        </p:dataTable> 
+                    </div>
+                    <br/>
+                    <div>
+                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.solutionContent}" var="cc">
+                            <f:facet name="header">  
+                                <h:outputText value="Solution content" styleClass="title"/>  
+                            </f:facet>
+                            <p:column>
+                                <h:outputText value="#{cc}" styleClass="tableContent"/>
+                            </p:column>
+                        </p:dataTable> 
+                    </div>
+                </div>
+                
+                <!--Right--> 
+                <div style="overflow:auto; width: 14%; height: 770px; position: fixed; top: 0%; left: 85.5%; ">
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.leftLanguageConstructs}" var="cc">
+                        <f:facet name="header">  
+                            <h:outputText value="Left Language Constructs" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{cc.name}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.rightLanguageConstructs}" var="cc">
+                        <f:facet name="header">  
+                            <h:outputText value="Right Language Constructs" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{cc.name}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.developerDecision}" var="cc">
+                        <f:facet name="header">  
+                            <h:outputText value="Developer's decision" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{cc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                </div>
+            </h:form>
+        </f:view>
+    </h:body>
+</html>
+

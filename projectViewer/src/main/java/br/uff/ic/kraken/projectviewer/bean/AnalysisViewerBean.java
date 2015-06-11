@@ -9,9 +9,12 @@ import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
+import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import br.uff.ic.kraken.projectviewer.utils.DataTypes;
+import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
 import java.util.List;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
@@ -28,9 +31,12 @@ public class AnalysisViewerBean {
 
     private Long projectId;
     private List<Revision> revisions;
-
     private TreeNode root;
 
+    private String selectedId;
+    private String dataType;
+    private ConflictingChunk selectedConflictingChunk;
+    
     /**
      * @return the projectId
      */
@@ -82,16 +88,16 @@ public class AnalysisViewerBean {
 
         if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
 
-            setRoot(new DefaultTreeNode("root", null));
+            root = new DefaultTreeNode("root", null);
 
             for (Revision revision : revisions) {
-                TreeNode rev = new DefaultTreeNode(revision.getSha(), getRoot());
+                TreeNode rev = new DefaultTreeNode(new TreeTableNode(revision.getSha(), revision.getId(), DataTypes.REVISION), root);
 
                 for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
-                    TreeNode cf = new DefaultTreeNode(revision.getSha(), conflictingFile.getName(), rev);
+                    TreeNode cf = new DefaultTreeNode(new TreeTableNode(conflictingFile.getName(), conflictingFile.getId(), DataTypes.CONFLICTING_FILE), rev);
 
                     for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                        TreeNode cc = new DefaultTreeNode(conflictingFile.getName(), conflictingChunk.getIdentifier(), cf);
+                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier(), conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
                     }
                 }
             }
@@ -143,6 +149,61 @@ public class AnalysisViewerBean {
      */
     public void setRoot(TreeNode root) {
         this.root = root;
+    }
+
+    public String presenter() {
+
+        if (dataType.equals(DataTypes.CONFLICTING_CHUNK)) {
+            ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
+
+            selectedConflictingChunk = conflictingChunkDAO.getById(Long.parseLong(selectedId));
+
+            return PagesName.showConflictingChunk;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return the selectedConflictingChunk
+     */
+    public ConflictingChunk getSelectedConflictingChunk() {
+        return selectedConflictingChunk;
+    }
+
+    /**
+     * @param selectedConflictingChunk the selectedConflictingChunk to set
+     */
+    public void setSelectedConflictingChunk(ConflictingChunk selectedConflictingChunk) {
+        this.selectedConflictingChunk = selectedConflictingChunk;
+    }
+
+    /**
+     * @return the selectedId
+     */
+    public String getSelectedId() {
+        return selectedId;
+    }
+
+    /**
+     * @param selectedId the selectedId to set
+     */
+    public void setSelectedId(String selectedId) {
+        this.selectedId = selectedId;
+    }
+
+    /**
+     * @return the dataType
+     */
+    public String getDataType() {
+        return dataType;
+    }
+
+    /**
+     * @param dataType the dataType to set
+     */
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
 }
