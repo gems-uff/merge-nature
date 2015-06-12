@@ -15,28 +15,8 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>projectAnalysisBean</managed-bean-name>
-        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ProjectAnalysisBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
         <managed-bean-name>analysisViewerBean</managed-bean-name>
         <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.AnalysisViewerBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
-        <managed-bean-name>conflictingFileBean</managed-bean-name>
-        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ConflictingFileBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
-        <managed-bean-name>conflictingChunkBean</managed-bean-name>
-        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ConflictingChunkBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
-        <managed-bean-name>conflictingChunkDetailBean</managed-bean-name>
-        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ConflictingChunkDetailBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     <managed-bean>
