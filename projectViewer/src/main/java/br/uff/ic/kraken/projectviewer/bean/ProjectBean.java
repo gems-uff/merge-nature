@@ -7,6 +7,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
@@ -18,7 +19,7 @@ import javax.faces.bean.RequestScoped;
  */
 @Named(value = "projectBean")
 @RequestScoped
-public class ProjectBean {
+public class ProjectBean implements Serializable{
 
     private List<Project> projects;
     private Project project;

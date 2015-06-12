@@ -16,30 +16,29 @@ import java.io.File;
  * @author gleiph
  */
 public class ProjectAnalyses {
-    
-    public String analyze(String repositoryPath, String repositoryUrl, String projectName, Long id) {
-    
+
+    public Project analyze(String repositoryPath, Project project) {
+
         ProjectDAO projectDAO = new ProjectDAO();
-        
+        ProjectAnalyzer pa = new ProjectAnalyzer();
+
         File repositoriesDirectory = new File(repositoryPath);
-        if(!repositoriesDirectory.isDirectory())
+        if (!repositoriesDirectory.isDirectory()) {
             repositoriesDirectory.mkdirs();
-        
+        }
+
         Git git = new Git(repositoryPath);
-        git.clone(repositoryUrl);
+        git.clone(project.getHtmlUrl());
 
         String projectPath;
         if (!repositoryPath.endsWith(File.separator)) {
-            projectPath = repositoryPath + File.separator + projectName;
+            projectPath = repositoryPath + File.separator + project.getName();
         } else {
-            projectPath = repositoryPath + projectName;
+            projectPath = repositoryPath + project.getName();
         }
 
-        ProjectAnalyzer pa = new ProjectAnalyzer();
-        
-        Project project = projectDAO.getById(id);
         project.setRepositoryPath(projectPath);
         
-        return null;
+        return pa.analyze(project);
     }
 }

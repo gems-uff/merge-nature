@@ -6,6 +6,7 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import java.io.Serializable;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 
@@ -15,7 +16,7 @@ import javax.inject.Named;
  */
 @Named(value = "loginBean")
 @RequestScoped
-public class LoginBean {
+public class LoginBean implements Serializable{
 
     private String username;
     private String password;

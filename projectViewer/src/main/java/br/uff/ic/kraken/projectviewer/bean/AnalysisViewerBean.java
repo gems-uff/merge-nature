@@ -14,7 +14,9 @@ import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DataTypes;
+import br.uff.ic.kraken.projectviewer.utils.ProjectAnalyses;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
+import java.io.Serializable;
 import java.util.List;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
@@ -27,7 +29,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "analysisViewerBean")
 @RequestScoped
-public class AnalysisViewerBean {
+public class AnalysisViewerBean implements Serializable{
 
     private Long projectId;
     private List<Revision> revisions;
@@ -94,6 +96,19 @@ public class AnalysisViewerBean {
         }
     }
 
+    public String analyze(){
+        
+        ProjectDAO projectDAO = new ProjectDAO();
+        Project project = projectDAO.getById(projectId);
+
+        String repositoriesPath = "/Users/gleiph/Desktop/repositories";
+        
+        ProjectAnalyses projectAnalyses = new ProjectAnalyses();
+        projectAnalyses.analyze(repositoriesPath, project);
+        
+        return null;
+    }
+    
     public String getStyle(MergeStatus mergeStatus) {
         if (mergeStatus == MergeStatus.CONFLICTING) {
             return "color: red";

@@ -51,6 +51,12 @@
                                 <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
                             </h:commandLink>
                         </h:column>
+                        <h:column>
+                            <f:facet name="header"> Analyze </f:facet>
+                            <h:commandLink value="Start" action="#{analysisViewerBean.analyze}">
+                                <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
+                            </h:commandLink>
+                        </h:column>
                     </h:dataTable>
                 </h:form>
             </f:view>

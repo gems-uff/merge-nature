@@ -20,8 +20,8 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>showConflictingChunkBean</managed-bean-name>
-        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ShowConflicts</managed-bean-class>
+        <managed-bean-name>showConflictsBean</managed-bean-name>
+        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ShowConflictsBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope></managed-bean>
     <navigation-rule>
         <from-view-id>/loginTemplate.xhtml</from-view-id>
