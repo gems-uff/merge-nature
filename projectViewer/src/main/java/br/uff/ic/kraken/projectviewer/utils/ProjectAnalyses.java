@@ -40,10 +40,6 @@ public class ProjectAnalyses {
         Project project = projectDAO.getById(id);
         project.setRepositoryPath(projectPath);
         
-        
-        Project analyze = pa.analyze(project);
-        
-
         return null;
     }
 }

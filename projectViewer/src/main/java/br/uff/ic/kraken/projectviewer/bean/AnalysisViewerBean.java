@@ -65,20 +65,6 @@ public class AnalysisViewerBean {
         this.revisions = revisions;
     }
 
-    public String analysisData() {
-
-        ProjectDAO projectDAO = new ProjectDAO();
-        Project projectById = projectDAO.getById(projectId);
-
-        setRevisions(projectById.getRevisions());
-
-        if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
-            return PagesName.projectAnalysis;
-        } else {
-            return null;
-        }
-    }
-
     public String actionNavigator() {
 
         ProjectDAO projectDAO = new ProjectDAO();
@@ -102,25 +88,12 @@ public class AnalysisViewerBean {
                 }
             }
 
-            return PagesName.showConflictingChunk;
+            return PagesName.showConflicts;
         } else {
             return null;
         }
     }
 
-//    public String actionNavigator() {
-//
-//        ProjectDAO projectDAO = new ProjectDAO();
-//        Project projectById = projectDAO.getById(projectId);
-//
-//        setRevisions(projectById.getRevisions());
-//
-//        if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
-//            return PagesName.showAll;
-//        } else {
-//            return null;
-//        }
-//    }
     public String getStyle(MergeStatus mergeStatus) {
         if (mergeStatus == MergeStatus.CONFLICTING) {
             return "color: red";
@@ -158,7 +131,7 @@ public class AnalysisViewerBean {
 
             selectedConflictingChunk = conflictingChunkDAO.getById(Long.parseLong(selectedId));
 
-            return PagesName.showConflictingChunk;
+            return PagesName.showConflicts;
         }
 
         return null;

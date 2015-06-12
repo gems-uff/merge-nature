@@ -64,7 +64,7 @@ public class Navigation {
                 break;
         }
 
-        return PagesName.showConflictingChunk + "?faces-redirect=true";
+        return PagesName.showConflicts + "?faces-redirect=true";
     }
 
     /**

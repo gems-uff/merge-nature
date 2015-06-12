@@ -7,7 +7,6 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
-import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
@@ -41,24 +40,6 @@ public class ProjectBean {
             if (project != null) {
                 projects.add(project);
             }
-        }
-    }
-
-    public String setProject() {
-
-        project = null;
-        for (Project p : projects) {
-            if (p.getId() == id) {
-                project = p;
-                break;
-            }
-        }
-
-        if (project == null) {
-            return null;
-        } else {
-            repositoryUrl = project.getHtmlUrl();
-            return PagesName.project;
         }
     }
 

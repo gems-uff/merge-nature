@@ -17,7 +17,7 @@ import javax.inject.Named;
 
 @Named(value = "showConflictingChunkBean")
 @RequestScoped
-public class ShowConflictingChunkBean extends Navigation implements Serializable {
+public class ShowConflicts extends Navigation implements Serializable {
  
     private Long id;
     private String dataType;
