@@ -102,7 +102,7 @@ public class AnalysisViewerBean {
                 }
             }
 
-            return PagesName.showAll;
+            return PagesName.showConflictingChunk;
         } else {
             return null;
         }

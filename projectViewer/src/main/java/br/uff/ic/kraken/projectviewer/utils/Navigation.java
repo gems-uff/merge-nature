@@ -25,9 +25,9 @@ public class Navigation {
     private ConflictingFile conflictingFile;
     private ConflictingChunk conflictingChunk;
 
-    private String revisionVisibility;
-    private String conflictingFileVisibility;
-    private String conflictingChunkVisibility;
+    private String revisionVisibility = "hidden";
+    private String conflictingFileVisibility = "hidden";
+    private String conflictingChunkVisibility = "hidden";
 
     public String dataNavigation(Long id, String dataType) {
 

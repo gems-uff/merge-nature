@@ -47,13 +47,7 @@
                         </h:column>
                         <h:column>
                             <f:facet name="header">Detail </f:facet>
-                            <h:commandLink value="+" action="#{projectBean.setProject()}">
-                                <f:setPropertyActionListener target="#{projectBean.id}" value="#{item.id}"/>
-                            </h:commandLink>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">Detail </f:facet>
-                            <h:commandLink value="ShowAll" action="#{analysisViewerBean.actionNavigator}">
+                            <h:commandLink value="+" action="#{analysisViewerBean.actionNavigator}">
                                 <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
                             </h:commandLink>
                         </h:column>
