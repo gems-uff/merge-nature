@@ -99,33 +99,63 @@
                 <!-- Begin conflicting file-->
                 <div style="overflow:auto; width: 79%; height: 100vh; position: fixed; top: 0%; 
                      left: 20.5%; visibility: #{showConflictsBean.conflictingFileVisibility};" >
-                        <p:dataTable value="#{showConflictsBean.conflictingFile}" var="cf">
-                            <f:facet name="header">  
-                                <h:outputText value="Conflicting file" styleClass="title"/>  
-                            </f:facet>
-                            <p:column>
+                    <p:dataTable value="#{showConflictsBean.conflictingFile}" var="cf">
+                        <f:facet name="header">  
+                            <h:outputText value="Conflicting file" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
 
-                            </p:column>
-                        </p:dataTable> 
-                        <h:panelGrid columns="2">
-                            <h:outputText value="Name: " styleClass="tableContent" style="font-weight: bold"/>
-                            <h:outputText value="#{showConflictsBean.conflictingFile.name}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Name: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.conflictingFile.name}" styleClass="tableContent"/>
 
-                            <h:outputText value="Path: " styleClass="tableContent" style="font-weight: bold"/>
-                            <h:outputText value="#{showConflictsBean.conflictingFile.path}" styleClass="tableContent"/>
+                        <h:outputText value="Path: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.conflictingFile.path}" styleClass="tableContent"/>
 
-                            <h:outputText value="Filetype: " styleClass="tableContent" style="font-weight: bold"/>
-                            <h:outputText value="#{showConflictsBean.conflictingFile.fileType}" styleClass="tableContent"/>
+                        <h:outputText value="Filetype: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.conflictingFile.fileType}" styleClass="tableContent"/>
 
-                            <h:outputText value="Conflicting chunks: " styleClass="tableContent" style="font-weight: bold"/>
-                            <h:outputText value="#{showConflictsBean.conflictingFile.conflictingChunks.size()}" styleClass="tableContent"/>
-                        </h:panelGrid>
+                        <h:outputText value="Conflicting chunks: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.conflictingFile.conflictingChunks.size()}" styleClass="tableContent"/>
+                    </h:panelGrid>
                 </div>
                 <!-- End conflicting file-->
 
                 <!-- Begin revision-->
                 <div style="overflow:auto; width: 79%; height: 100vh; position: fixed; top: 0%; 
-                     left: 20.5%; background: #ece3a5; visibility: #{showConflictsBean.revisionVisibility}" >
+                     left: 20.5%; visibility: #{showConflictsBean.revisionVisibility}" >
+                    <p:dataTable value="#{showConflictsBean.revision}" var="rev">
+                        <f:facet name="header">  
+                            <h:outputText value="Revision" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+
+                        </p:column>
+                    </p:dataTable> 
+                    <h:panelGrid columns="2">
+                        <h:outputText value="SHA: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.sha}" styleClass="tableContent"/>
+
+                        <h:outputText value="Parent 1: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.leftSha}" styleClass="tableContent"/>
+
+                        <h:outputText value="Parent 2: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.rightSha}" styleClass="tableContent"/>
+
+                        <h:outputText value="Merge base: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.baseSha}" styleClass="tableContent"/>
+                        
+                        <h:outputText value="Merge status: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.status}" styleClass="tableContent"/>
+                        
+                        <h:outputText value="Conflicting files: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.numberConflictingFiles}" styleClass="tableContent"/>
+                        
+                        <h:outputText value="Java conflicting files: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.revision.numberJavaConflictingFiles}" styleClass="tableContent"/>
+                    </h:panelGrid>
                 </div>
                 <!-- End revision-->
 
