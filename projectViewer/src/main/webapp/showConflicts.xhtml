@@ -99,17 +99,27 @@
                 <!-- Begin conflicting file-->
                 <div style="overflow:auto; width: 79%; height: 100vh; position: fixed; top: 0%; 
                      left: 20.5%; visibility: #{showConflictsBean.conflictingFileVisibility};" >
-                    <p:dataTable value="#{showConflictsBean.conflictingFile}" var="conflictingFile">
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="Conflicting file" styleClass="title"/>
+                        <p:dataTable value="#{showConflictsBean.conflictingFile}" var="cf">
+                            <f:facet name="header">  
+                                <h:outputText value="Conflicting file" styleClass="title"/>  
                             </f:facet>
-                                <h:outputText value="Name:" style="font-weight: bold"/>
-                                <h:outputText value="#{conflictingFile.name}"/>
-                            
-                        </h:column>
-                    </p:dataTable>
+                            <p:column>
 
+                            </p:column>
+                        </p:dataTable> 
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Name: " styleClass="tableContent" style="font-weight: bold"/>
+                            <h:outputText value="#{showConflictsBean.conflictingFile.name}" styleClass="tableContent"/>
+
+                            <h:outputText value="Path: " styleClass="tableContent" style="font-weight: bold"/>
+                            <h:outputText value="#{showConflictsBean.conflictingFile.path}" styleClass="tableContent"/>
+
+                            <h:outputText value="Filetype: " styleClass="tableContent" style="font-weight: bold"/>
+                            <h:outputText value="#{showConflictsBean.conflictingFile.fileType}" styleClass="tableContent"/>
+
+                            <h:outputText value="Conflicting chunks: " styleClass="tableContent" style="font-weight: bold"/>
+                            <h:outputText value="#{showConflictsBean.conflictingFile.conflictingChunks.size()}" styleClass="tableContent"/>
+                        </h:panelGrid>
                 </div>
                 <!-- End conflicting file-->
 
