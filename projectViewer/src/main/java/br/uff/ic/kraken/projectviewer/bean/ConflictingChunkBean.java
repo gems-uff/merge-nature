@@ -19,7 +19,7 @@ import javax.inject.Named;
  */
 @Named(value = "conflictingChunkBean")
 @RequestScoped
-public class ConflictingChunkBean {
+public class ConflictingChunkBean{
 
     private Long conflictingFileId;
     private List<ConflictingChunk> conflictingChunks;

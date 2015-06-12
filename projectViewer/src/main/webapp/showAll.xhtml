@@ -18,13 +18,13 @@
                                 <h:outputText value="Merges" styleClass="title"/>  
                             </f:facet>
                             <!--<h:outputText value="#{analysisViewerBean.format(item.name)}" styleClass="tableContent"/>-->
-                            <p:commandLink action="#{analysisViewerBean.presenter}" style="font-size: 12px;
+                            <p:commandLink action="#{showConflictingChunkBean.navigate}" style="font-size: 12px;
                                            font-family: monospace, sans-serif;
                                            text-decoration: none;
                                            ">
                                 #{analysisViewerBean.format(item.name)}
-                                <f:setPropertyActionListener target="#{analysisViewerBean.selectedId}" value="#{item.id}"/>
-                                <f:setPropertyActionListener target="#{analysisViewerBean.dataType}" value="#{item.dataType}"/>
+                                <f:setPropertyActionListener target="#{showConflictingChunkBean.id}" value="#{item.id}"/>
+                                <f:setPropertyActionListener target="#{showConflictingChunkBean.dataType}" value="#{item.dataType}"/>
 
                             </p:commandLink>
                         </p:column>
