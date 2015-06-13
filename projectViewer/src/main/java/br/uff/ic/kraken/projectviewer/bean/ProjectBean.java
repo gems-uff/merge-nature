@@ -37,17 +37,17 @@ public class ProjectBean implements Serializable {
         projects = new ArrayList<>();
 
         for (int i = 0; i < 5000; i++) {
-            Project project = projectDAO.getById(Long.parseLong(i + ""));
+            Project projectRecovered = projectDAO.getById(Long.parseLong(i + ""));
 
-            if (project != null) {
-                projects.add(project);
+            if (projectRecovered != null) {
+                projects.add(projectRecovered);
             }
         }
 
-        Project project = projectDAO.getById(214605l);
-        projects.add(project);
-        project = projectDAO.getById(4193864l);
-        projects.add(project);
+        Project projectRecovered = projectDAO.getById(214605l);
+        projects.add(projectRecovered);
+        projectRecovered = projectDAO.getById(4193864l);
+        projects.add(projectRecovered);
 
     }
 
