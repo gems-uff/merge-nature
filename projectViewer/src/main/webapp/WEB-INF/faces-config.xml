@@ -22,7 +22,13 @@
     <managed-bean>
         <managed-bean-name>showConflictsBean</managed-bean-name>
         <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.ShowConflictsBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>addGithubProjectBean</managed-bean-name>
+        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.AddGithubProjectBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
     <navigation-rule>
         <from-view-id>/loginTemplate.xhtml</from-view-id>
         <navigation-case>

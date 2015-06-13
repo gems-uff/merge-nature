@@ -7,6 +7,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import javax.faces.bean.RequestScoped;
  */
 @Named(value = "projectBean")
 @RequestScoped
-public class ProjectBean implements Serializable{
+public class ProjectBean implements Serializable {
 
     private List<Project> projects;
     private Project project;
@@ -32,7 +33,7 @@ public class ProjectBean implements Serializable{
     public ProjectBean() {
 
         ProjectDAO projectDAO = new ProjectDAO();
-        
+
         projects = new ArrayList<>();
 
         for (int i = 0; i < 5000; i++) {
@@ -42,6 +43,12 @@ public class ProjectBean implements Serializable{
                 projects.add(project);
             }
         }
+
+        Project project = projectDAO.getById(214605l);
+        projects.add(project);
+        project = projectDAO.getById(4193864l);
+        projects.add(project);
+
     }
 
     /**
@@ -104,4 +111,8 @@ public class ProjectBean implements Serializable{
         this.repositoryUrl = repositoryUrl;
     }
 
+    public String add() {
+        System.out.println("Passei...");
+        return PagesName.addGithubProject;
+    }
 }
