@@ -245,7 +245,7 @@ public class GithubAPI {
 
         //Jpa manager
         ProjectDAO projectDAO = new ProjectDAO();
-        
+
         String LINK = "Link:";
 
         CMDOutput output = null;
@@ -254,12 +254,11 @@ public class GithubAPI {
         JSONParser parser = new JSONParser();
 
         long lastId = projectDAO.getLastId();
-        
-        if(lastId != -1){
-            link += "?since="+lastId;
+
+        if (lastId != -1) {
+            link += "?since=" + lastId;
         }
-        
-        
+
         while (link != null) {
 
             output = CMDGithub.cmdGithub(base + link);
@@ -365,7 +364,11 @@ public class GithubAPI {
 
         CMDOutput output = null;
 
-        output = CMDGithub.cmdGithub(base + link);
+        if (base == null) {
+            output = CMDGithub.cmdGithub(link);
+        } else {
+            output = CMDGithub.cmdGithub(base + link);
+        }
 
         String content = "";
         boolean begin = false;
