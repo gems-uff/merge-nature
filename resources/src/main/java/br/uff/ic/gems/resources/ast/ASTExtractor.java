@@ -8,7 +8,6 @@ package br.uff.ic.gems.resources.ast;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
