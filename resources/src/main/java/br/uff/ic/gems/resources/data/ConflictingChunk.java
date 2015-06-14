@@ -200,7 +200,7 @@ public class ConflictingChunk implements Serializable {
         int context2Original = conflictingContent.size();
         boolean changed = false;
         for (int i = context2eOriginal; i >= context2bOriginal; i--) {
-            context2 = repositioning.repositioningCluster(initialPath, finalPath, i);
+            context2 = repositioning.repositioning(initialPath, finalPath, i);
             if (context2 != -1) {
                 context2Original = i;
                 changed = true;
@@ -213,14 +213,14 @@ public class ConflictingChunk implements Serializable {
             int c2a = -1;
             int c2b = -1;
             for (int i = separator - 1; i > begin; i--) {
-                c2a = repositioning.repositioningCluster(initialPath, finalPath, i);
+                c2a = repositioning.repositioning(initialPath, finalPath, i);
                 if (c2a != -1) {
                     c2a0 = i;
                     break;
                 }
             }
             for (int i = end - 1; i > separator; i--) {
-                c2b = repositioning.repositioningCluster(initialPath, finalPath, i);
+                c2b = repositioning.repositioning(initialPath, finalPath, i);
                 if (c2b != -1) {
                     c2b0 = i;
                     break;
@@ -266,14 +266,14 @@ public class ConflictingChunk implements Serializable {
             int c1a = -1;
             int c1b = -1;
             for (int i = begin; i < separator; i++) {
-                c1a = repositioning.repositioningCluster(initialPath, finalPath, i);
+                c1a = repositioning.repositioning(initialPath, finalPath, i);
                 if (c1a != -1) {
                     c1a0 = i;
                     break;
                 }
             }
             for (int i = separator + 1; i < end - 1; i++) {
-                c1b = repositioning.repositioningCluster(initialPath, finalPath, i);
+                c1b = repositioning.repositioning(initialPath, finalPath, i);
                 if (c1b != -1) {
                     c1b0 = i;
                     break;

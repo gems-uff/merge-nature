@@ -110,4 +110,18 @@ public class ProjectDAO {
             return -1;
         }
     }
+    
+    public List<Project> getAll() {
+        List<Project> projects = null;
+        EntityManager manager = DatabaseManager.getManager();
+
+        try {
+            Query query = manager.createQuery("SELECT p FROM Project p");
+            projects = query.getResultList();
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return projects;
+    }
 }

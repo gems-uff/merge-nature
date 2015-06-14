@@ -139,26 +139,26 @@ public class ConflictingFileAnalyzer {
                 conflictingChunk.setDeveloperDecision(developerDecision);
             }
 
-            System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
-            System.out.println("=================Conflicting area=================");
-            conflictingChunk.setConflictingContent(conflictingArea);
-            for (String ca : conflictingArea) {
-                System.out.println(ca);
-            }
-            System.out.println("=================Solution area=================");
-            conflictingChunk.setSolutionContent(solutionArea);
-            for (String sa : solutionArea) {
-                System.out.println(sa);
-            }
-            System.out.println("=================Developers` decision=================");
-            conflictingChunk.setDeveloperDecision(developerDecision);
-            System.out.println(developerDecision.toString());
-            System.out.println("=================Left language constructs=================");
-            conflictingChunk.setLeftLanguageConstructs(leftLanguageConstructs);
-            System.out.println(LanguageConstruct.toString(leftLanguageConstructs));
-            System.out.println("=================Right language constructs=================");
-            conflictingChunk.setRightLanguageConstructs(rightLanguageConstructs);
-            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
+//            System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
+//            System.out.println("=================Conflicting area=================");
+//            conflictingChunk.setConflictingContent(conflictingArea);
+//            for (String ca : conflictingArea) {
+//                System.out.println(ca);
+//            }
+//            System.out.println("=================Solution area=================");
+//            conflictingChunk.setSolutionContent(solutionArea);
+//            for (String sa : solutionArea) {
+//                System.out.println(sa);
+//            }
+//            System.out.println("=================Developers` decision=================");
+//            conflictingChunk.setDeveloperDecision(developerDecision);
+//            System.out.println(developerDecision.toString());
+//            System.out.println("=================Left language constructs=================");
+//            conflictingChunk.setLeftLanguageConstructs(leftLanguageConstructs);
+//            System.out.println(LanguageConstruct.toString(leftLanguageConstructs));
+//            System.out.println("=================Right language constructs=================");
+//            conflictingChunk.setRightLanguageConstructs(rightLanguageConstructs);
+//            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
                 for (LanguageConstruct leftLanguageConstruct : leftLanguageConstructs) {
