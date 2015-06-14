@@ -112,6 +112,11 @@ public class LanguageConstruct implements Serializable {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return this.name + " (" + this.beginLine + ", " + this.endLine + ")";
+    }
+
     public static String toString(List<LanguageConstruct> languageConstructs) {
         List<String> result = new ArrayList<>();
 

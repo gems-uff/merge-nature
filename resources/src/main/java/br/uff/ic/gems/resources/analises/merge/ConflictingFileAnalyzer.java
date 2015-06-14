@@ -82,23 +82,35 @@ public class ConflictingFileAnalyzer {
             ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
             cpe.extract();
 
-            List<LanguageConstruct> leftLanguageConstructs = null;
-            List<LanguageConstruct> rightLanguageConstructs = null;
+            KindConflict leftKindConflict = new KindConflict();
+            KindConflict rightKindConflict = new KindConflict();
 
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftLanguageConstructs = ASTAuxiliar.getSyntacticStructures(cpe.getLeftConflict(), leftRepository, relativePath);
-                    rightLanguageConstructs = ASTAuxiliar.getSyntacticStructures(cpe.getRightConflict(), rightRepository, relativePath);
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getLeftConflict(), leftRepository, relativePath);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getRightConflict(), rightRepository, relativePath);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
                 String[] fileBroken = relativePath.split("\\.");
-                leftLanguageConstructs = new ArrayList<>();
+
+                List leftFile = FileUtils.readLines(new File(leftRepository + relativePath));
+                List<LanguageConstruct> leftLanguageConstructs = new ArrayList<>();
                 leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));//Default lines
 
-                rightLanguageConstructs = new ArrayList<>();
+                leftKindConflict.setBeginLine(0);
+                leftKindConflict.setEndLine(leftFile.size());
+                leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
+
+                List rightFile = FileUtils.readLines(new File(leftRepository + relativePath));
+                List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
                 rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));//Default lines
+                
+                rightKindConflict.setBeginLine(0);
+                rightKindConflict.setEndLine(rightFile.size());
+                rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
+
             }
 
             //Get the following data from the conflict:
@@ -164,25 +176,18 @@ public class ConflictingFileAnalyzer {
 //            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
-                for (LanguageConstruct leftLanguageConstruct : leftLanguageConstructs) {
+                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructs()) {
                     languageConstructDAO.save(leftLanguageConstruct);
                 }
-                for (LanguageConstruct rightLanguageConstruct : rightLanguageConstructs) {
+                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructs()) {
                     languageConstructDAO.save(rightLanguageConstruct);
                 }
-
-                KindConflict leftKindConflict = new KindConflict();
-                KindConflict rightKindConflict = new KindConflict();
-
-                leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
-                rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
 
                 kindConflictDAO.save(leftKindConflict);
                 kindConflictDAO.save(rightKindConflict);
 
                 conflictingChunk.setLeftKindConflict(leftKindConflict);
                 conflictingChunk.setRightKindConflict(rightKindConflict);
-
                 conflictingChunk.setConflictingContent(conflictingArea);
                 conflictingChunk.setSolutionContent(solutionArea);
 
