@@ -38,24 +38,6 @@ public class ASTAuxiliar {
         }
     }
     
-//    public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
-//        int conflictingUpperBound;
-//        conflictingUpperBound = conflictArea.getEnd() + context;
-//        if (conflictingUpperBound > fileConflict.size()) {
-//            conflictingUpperBound = fileConflict.size();
-//        }
-//        return conflictingUpperBound;
-//    }
-//
-//    public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
-//        int conflictLowerBound;
-//        conflictLowerBound = conflictArea.getBegin() - context;
-//        if (conflictLowerBound < 0) {
-//            conflictLowerBound = 0;
-//        }
-//        return conflictLowerBound;
-//    }
-    
     public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
         int conflictingUpperBound;
         conflictingUpperBound = conflictArea.getEndLine()+ context + 1;////I don't want do exclude the last line
@@ -93,9 +75,9 @@ public class ASTAuxiliar {
         //Dealing with AST
         ASTExtractor ats = new ASTExtractor(file);
         ats.parser();
-        List<LanguageConstruct> kindConflict = ats.getLanguageConstructs(begin, end);
+        List<LanguageConstruct> languageConstructs = ats.getLanguageConstructs(begin, end);
 
-        return kindConflict;
+        return languageConstructs;
     }
 
 }

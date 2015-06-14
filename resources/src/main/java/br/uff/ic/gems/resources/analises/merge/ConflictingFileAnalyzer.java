@@ -9,8 +9,10 @@ import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
+import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
+import br.uff.ic.gems.resources.data.dao.KindConflictDAO;
 import br.uff.ic.gems.resources.data.dao.LanguageConstructDAO;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
@@ -36,6 +38,7 @@ public class ConflictingFileAnalyzer {
         boolean hasSolution = true;
         LanguageConstructDAO languageConstructDAO = new LanguageConstructDAO();
         ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
+        KindConflictDAO kindConflictDAO = new KindConflictDAO();
 
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
@@ -167,6 +170,22 @@ public class ConflictingFileAnalyzer {
                 for (LanguageConstruct rightLanguageConstruct : rightLanguageConstructs) {
                     languageConstructDAO.save(rightLanguageConstruct);
                 }
+
+                KindConflict leftKindConflict = new KindConflict();
+                KindConflict rightKindConflict = new KindConflict();
+
+                leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
+                rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
+
+                kindConflictDAO.save(leftKindConflict);
+                kindConflictDAO.save(rightKindConflict);
+
+                conflictingChunk.setLeftKindConflict(leftKindConflict);
+                conflictingChunk.setRightKindConflict(rightKindConflict);
+
+                conflictingChunk.setConflictingContent(conflictingArea);
+                conflictingChunk.setSolutionContent(solutionArea);
+
                 conflictingChunkDAO.save(conflictingChunk);
             } catch (Exception ex) {
                 Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);

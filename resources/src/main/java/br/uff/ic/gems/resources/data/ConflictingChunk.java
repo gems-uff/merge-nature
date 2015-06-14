@@ -9,15 +9,12 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -36,18 +33,11 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "ConflictingChunk_LeftLanguageConstruct", 
-            joinColumns = @JoinColumn(name = "Conflicting_ID"),
-            inverseJoinColumns = @JoinColumn(name = "LeftLanguageConstruct_ID"))
-    private List<LanguageConstruct> leftLanguageConstructs;
-    
-    @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "ConflictingChunk_RightLanguageConstruct", 
-            joinColumns = @JoinColumn(name = "Conflicting_ID"),
-            inverseJoinColumns = @JoinColumn(name = "RightLanguageConstruct_ID"))
-    private List<LanguageConstruct> rightLanguageConstructs;
-    
+    @OneToOne
+    private KindConflict leftKindConflict;
+    @OneToOne
+    private KindConflict rightKindConflict;
+
     @ElementCollection
     @Lob
     private List<String> conflictingContent;
@@ -125,34 +115,6 @@ public class ConflictingChunk implements Serializable {
         this.identifier = identifier;
     }
 
-    /**
-     * @return the leftLanguageConstructs
-     */
-    public List<LanguageConstruct> getLeftLanguageConstructs() {
-        return leftLanguageConstructs;
-    }
-
-    /**
-     * @param leftLanguageConstructs the leftLanguageConstructs to set
-     */
-    public void setLeftLanguageConstructs(List<LanguageConstruct> leftLanguageConstructs) {
-        this.leftLanguageConstructs = leftLanguageConstructs;
-    }
-
-    /**
-     * @return the rightLanguageConstructs
-     */
-    public List<LanguageConstruct> getRightLanguageConstructs() {
-        return rightLanguageConstructs;
-    }
-
-    /**
-     * @param rightLanguageConstructs the rightLanguageConstructs to set
-     */
-    public void setRightLanguageConstructs(List<LanguageConstruct> rightLanguageConstructs) {
-        this.rightLanguageConstructs = rightLanguageConstructs;
-    }
-    
     /**
      * @return the developerChoice
      */
@@ -299,5 +261,33 @@ public class ConflictingChunk implements Serializable {
             context1 = 1;
         }
         return context1;
+    }
+
+    /**
+     * @return the leftKindConflict
+     */
+    public KindConflict getLeftKindConflict() {
+        return leftKindConflict;
+    }
+
+    /**
+     * @param leftKindConflict the leftKindConflict to set
+     */
+    public void setLeftKindConflict(KindConflict leftKindConflict) {
+        this.leftKindConflict = leftKindConflict;
+    }
+
+    /**
+     * @return the rightKindConflict
+     */
+    public KindConflict getRightKindConflict() {
+        return rightKindConflict;
+    }
+
+    /**
+     * @param rightKindConflict the rightKindConflict to set
+     */
+    public void setRightKindConflict(KindConflict rightKindConflict) {
+        this.rightKindConflict = rightKindConflict;
     }
 }
