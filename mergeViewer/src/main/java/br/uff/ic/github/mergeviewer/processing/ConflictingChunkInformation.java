@@ -147,7 +147,7 @@ public class ConflictingChunkInformation implements Runnable {
             int c1a = -1, c1b = -1;
 
             for (int i = begin; i < separator; i++) {
-                c1a = repositioning.repositioningCluster(initialFile, finalFile, i);
+                c1a = repositioning.repositioning(initialFile, finalFile, i);
 
                 if (c1a != -1) {
                     c1a0 = i;
@@ -156,7 +156,7 @@ public class ConflictingChunkInformation implements Runnable {
             }
 
             for (int i = separator + 1; i < end - 1; i++) {
-                c1b = repositioning.repositioningCluster(initialFile, finalFile, i);
+                c1b = repositioning.repositioning(initialFile, finalFile, i);
 
                 if (c1b != -1) {
                     c1b0 = i;
@@ -185,7 +185,7 @@ public class ConflictingChunkInformation implements Runnable {
         //Context 2
         changed = false;
         for (int i = context2eOriginal; i >= context2bOriginal; i--) {
-            context2 = repositioning.repositioningCluster(initialFile, finalFile, i);
+            context2 = repositioning.repositioning(initialFile, finalFile, i);
 
             if (context2 != -1) {
                 context2Original = i;
@@ -200,7 +200,7 @@ public class ConflictingChunkInformation implements Runnable {
             int c2a = -1, c2b = -1;
 
             for (int i = separator - 1; i > begin; i--) {
-                c2a = repositioning.repositioningCluster(initialFile, finalFile, i);
+                c2a = repositioning.repositioning(initialFile, finalFile, i);
 
                 if (c2a != -1) {
                     c2a0 = i;
@@ -209,7 +209,7 @@ public class ConflictingChunkInformation implements Runnable {
             }
 
             for (int i = end - 1; i > separator; i--) {
-                c2b = repositioning.repositioningCluster(initialFile, finalFile, i);
+                c2b = repositioning.repositioning(initialFile, finalFile, i);
 
                 if (c2b != -1) {
                     c2b0 = i;
