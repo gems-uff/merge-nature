@@ -63,22 +63,22 @@
                 <!--Right--> 
                 <div style="overflow:auto; width: 14%; height: 100vh; position: fixed; top: 0%; 
                      left: 85.5%; visibility: #{showConflictsBean.conflictingChunkVisibility}">
-                    <p:dataTable value="#{showConflictsBean.conflictingChunk.leftLanguageConstructs}" var="cc">
+                    <p:dataTable value="#{showConflictsBean.conflictingChunk.leftKindConflict.languageConstructs}" var="lc">
                         <f:facet name="header">  
                             <h:outputText value="Left Language Constructs" styleClass="title"/>  
                         </f:facet>
                         <p:column>
-                            <h:outputText value="#{cc.name}" styleClass="tableContent"/>
+                            <h:outputText value="#{lc.name}" styleClass="tableContent"/>
                         </p:column>
                     </p:dataTable> 
                     <br/>
 
-                    <p:dataTable value="#{showConflictsBean.conflictingChunk.rightLanguageConstructs}" var="cc">
+                    <p:dataTable value="#{showConflictsBean.conflictingChunk.rightKindConflict.languageConstructs}" var="lc">
                         <f:facet name="header">  
                             <h:outputText value="Right Language Constructs" styleClass="title"/>  
                         </f:facet>
                         <p:column>
-                            <h:outputText value="#{cc.name}" styleClass="tableContent"/>
+                            <h:outputText value="#{lc.name}" styleClass="tableContent"/>
                         </p:column>
                     </p:dataTable> 
                     <br/>
