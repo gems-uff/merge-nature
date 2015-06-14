@@ -7,7 +7,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.github.github.parser.GithubAPI;
+//import br.uff.ic.github.github.parser.GithubAPI;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -40,19 +40,19 @@ public class AddGithubProjectBean implements Serializable {
     }
 
     public String saveProject() {
-        String githubURL = htmlURL.replace("https://github.com/", "https://api.github.com/repos/");
-        ProjectDAO projectDAO = new ProjectDAO();
-
-        Project project;
-        GithubAPI.init();
-
-        project = GithubAPI.project(githubURL);
-
-        try {
-            projectDAO.saveGithub(project);
-        } catch (Exception ex) {
-            Logger.getLogger(AddGithubProjectBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        String githubURL = htmlURL.replace("https://github.com/", "https://api.github.com/repos/");
+//        ProjectDAO projectDAO = new ProjectDAO();
+//
+//        Project project;
+//        GithubAPI.init();
+//
+//        project = GithubAPI.project(githubURL);
+//
+//        try {
+//            projectDAO.saveGithub(project);
+//        } catch (Exception ex) {
+//            Logger.getLogger(AddGithubProjectBean.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
         return PagesName.projects;
     }

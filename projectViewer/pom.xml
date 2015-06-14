@@ -20,13 +20,20 @@
             <artifactId>Resources</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>jar-with-dependencies</classifier>
+            <exclusions>
+                <exclusion>
+                    <!-- AST -->
+                    <groupId>org.eclipse.jdt</groupId>
+                    <artifactId>core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>5.2</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>br.uff.ic.github</groupId>
             <artifactId>GitHub</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -37,14 +44,13 @@
                     <artifactId>Resources</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        
     </dependencies>
 
     <build>
