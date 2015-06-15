@@ -12,7 +12,6 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
-import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -587,18 +586,6 @@ public class Visitor extends ASTVisitor {
      ***************************************************************************
      =========================================================================*/
     //>>>>>>>>>>>>>>>>                     Assignment
-    @Override
-    public boolean visit(Assignment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("Assignment", begin, end));
-
-//        System.out.println("Assignment(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
     //WildcardType  
     @Override
     public boolean visit(WildcardType node) {
