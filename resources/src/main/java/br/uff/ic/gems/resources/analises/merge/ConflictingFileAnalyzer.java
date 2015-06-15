@@ -100,7 +100,7 @@ public class ConflictingFileAnalyzer {
 
                 List leftFile = FileUtils.readLines(new File(leftRepository + relativePath));
                 List<LanguageConstruct> leftLanguageConstructs = new ArrayList<>();
-                leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));//Default lines
+                leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, leftFile.size()));//Default lines
 
                 leftKindConflict.setBeginLine(0);
                 leftKindConflict.setEndLine(leftFile.size());
@@ -108,7 +108,7 @@ public class ConflictingFileAnalyzer {
 
                 List rightFile = FileUtils.readLines(new File(leftRepository + relativePath));
                 List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
-                rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));//Default lines
+                rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, rightFile.size()));//Default lines
 
                 rightKindConflict.setBeginLine(0);
                 rightKindConflict.setEndLine(rightFile.size());
