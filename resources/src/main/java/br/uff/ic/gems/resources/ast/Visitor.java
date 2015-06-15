@@ -26,7 +26,6 @@ import org.eclipse.jdt.core.dom.EmptyStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -37,26 +36,21 @@ import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
-import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
-import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.WildcardType;
@@ -89,8 +83,8 @@ public class Visitor extends ASTVisitor {
             for (LanguageConstruct languageConstruct : languageConstructs) {
                 if (languageConstruct.getName().equals(ASTTypes.METHOD_DECLARATION)) {
                     for (LanguageConstruct languageConstruct1 : languageConstructs) {
-                        if(languageConstruct1.getName().equals(ASTTypes.ANNOTATION)
-                                && languageConstruct.getBeginLine() == languageConstruct1.getBeginLine()){
+                        if (languageConstruct1.getName().equals(ASTTypes.ANNOTATION)
+                                && languageConstruct.getBeginLine() == languageConstruct1.getBeginLine()) {
                             languageConstruct.setBeginLine(languageConstruct.getBeginLine() + 1);
                         }
                     }
@@ -109,6 +103,232 @@ public class Visitor extends ASTVisitor {
         this.languageConstructs = languageConstructs;
     }
 
+    /*=========================================================================
+     ***************************************************************************
+     |                       Begin visitors selected                           |
+     ***************************************************************************
+     =========================================================================*/
+    @Override
+    public boolean visit(BlockComment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(CatchClause node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.CATCH_CLAUSE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ClassInstanceCreation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
+
+        return true;
+    }
+
+    public boolean visit(Comment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnhancedForStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(FieldDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ForStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(IfStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.IF_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ImportDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.IMPORT_DECLARATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(Javadoc node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(LineComment node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(MarkerAnnotation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(MethodDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_DECLARATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(MethodInvocation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(PackageDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.PACKAGE_DECLARATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ReturnStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.RETURN_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(SingleVariableDeclaration node) {
+
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(SuperMethodInvocation node) {
+
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(TryStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.TRY_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(TypeDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        isInterface = node.isInterface();
+
+        if (isInterface) {
+            languageConstructs.add(new LanguageConstruct(ASTTypes.INTERFACE_DECLARATION, begin, end));
+        } else {
+            languageConstructs.add(new LanguageConstruct(ASTTypes.CLASS_DECLARATION, begin, end));
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(VariableDeclarationExpression node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(VariableDeclarationStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(WhileStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.WHILE_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    /*=========================================================================
+     ***************************************************************************
+     |                         End visitors selected                           |
+     ***************************************************************************
+     =========================================================================*/
     /*=========================================================================
      ***************************************************************************
      |                                  Tested                                |
@@ -136,66 +356,12 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //MarkerAnnotation (Annotation)
-    @Override
-    public boolean visit(MarkerAnnotation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, begin, end));
-
-        return true;
-    }
-
-    /*>>>>>>>>>>>>>>>>>>>>>>>>>>>           Comment                          */
-    //Block comment
-    @Override
-    public boolean visit(BlockComment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
-
-//        System.out.println("BlockComment (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-    
-    //Block comment
-    public boolean visit(Comment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
-
-        return true;
-    }
-
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           BreakStatement
     @Override
     public boolean visit(BreakStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct("BreakStatement", begin, end));
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           CatchClause
-    @Override
-    public boolean visit(CatchClause node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CATCH_CLAUSE, begin, end));
-
-//        System.out.println("CatchClause (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           LineComment 
-    @Override
-    public boolean visit(LineComment node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
 
         return true;
     }
@@ -256,78 +422,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Field - Attribute
-    @Override
-    public boolean visit(FieldDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, begin, end));
-
-        return true;
-    }
-
-//    /*
-//     FieldAccess
-//     this.name
-//     */
-//    @Override
-//    public boolean visit(FieldAccess node) {
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//        languageConstructs.add(new LanguageConstruct("FieldAccess", begin, end));
-//
-////        System.out.println("FieldAccess");
-////        System.out.println(node.toString());
-//        return true;
-//    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ForStatement
-    @Override
-    public boolean visit(ForStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, begin, end));
-
-//        System.out.println("ForStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    @Override
-    public boolean visit(EnhancedForStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, begin, end));
-
-//        System.out.println("EnhancedForStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           If statement
-    @Override
-    public boolean visit(IfStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.IF_STATEMENT, begin, end));
-
-//        System.out.println("IfStatement(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Import
-    @Override
-    public boolean visit(ImportDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.IMPORT_DECLARATION, begin, end));
-
-//        System.out.println("ImportDeclaration(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Instance initializer
     @Override
     public boolean visit(Initializer node) {
@@ -341,73 +435,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Instanciation
-    @Override
-    public boolean visit(ClassInstanceCreation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
-
-//        System.out.println("ClassInstanceCreation (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Javadoc
-    @Override
-    public boolean visit(Javadoc node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, begin, end));
-
-//        System.out.println("Javadoc (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Method declaration
-    @Override
-    public boolean visit(MethodDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_DECLARATION, begin, end));
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Method invocation
-    @Override
-    public boolean visit(MethodInvocation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Package 
-    @Override
-    public boolean visit(PackageDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.PACKAGE_DECLARATION, begin, end));
-
-//        System.out.println("PackageDeclaration(" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Return statement
-    @Override
-    public boolean visit(ReturnStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.RETURN_STATEMENT, begin, end));
-
-        return true;
-    }
-
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperConstructorInvocation 
     @Override
     public boolean visit(SuperConstructorInvocation node) {
@@ -418,30 +445,6 @@ public class Visitor extends ASTVisitor {
 
 //        System.out.println("SuperConstructorInvocation (" + begin + ", " + end + ")");
 //        System.out.println(node.toString());
-        return true;
-    }
-
-//    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperFieldAccess 
-//    @Override
-//    public boolean visit(SuperFieldAccess node) {
-//
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//        languageConstructs.add(new LanguageConstruct("SuperFieldAccess", begin, end));
-//
-////        System.out.println("SuperFieldAccess (" + begin + ", " + end + ")");
-////        System.out.println(node.toString());
-//        return true;
-//    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperMethodInvocation 
-    @Override
-    public boolean visit(SuperMethodInvocation node) {
-
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
-
         return true;
     }
 
@@ -474,94 +477,8 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-//    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ThisExpression
-//    @Override
-//    public boolean visit(ThisExpression node) {
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//        languageConstructs.add(new LanguageConstruct("ThisExpression", begin, end));
-//
-////        System.out.println("ThisExpression (" + begin + ", " + end + ")");
-////        System.out.println(node.toString());
-//        return true;
-//    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           TypeDeclaration (Closest from class)
-    @Override
-    public boolean visit(TypeDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        isInterface = node.isInterface();
-
-        if (isInterface) {
-            languageConstructs.add(new LanguageConstruct("InterfaceDeclaraton", begin, end));
-        } else {
-            languageConstructs.add(new LanguageConstruct("ClassDeclaration", begin, end));
-        }
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Try statement
-    @Override
-    public boolean visit(TryStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.TRY_STATEMENT, begin, end));
-
-        return true;
-    }
-
     /*
-     >>>>>>>>>>>>>>>>>>>>>>>>>>>           Variable
      */
-    //VariableDeclarationExpression
-    //int i=0 (inside the for)
-    @Override
-    public boolean visit(VariableDeclarationExpression node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
-
-        return true;
-    }
-
-    //VariableDeclarationStatement
-    //int j;
-    //int k=0;
-    //int v=returnStatement();
-    @Override
-    public boolean visit(VariableDeclarationStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
-
-        return true;
-    }
-
-    //SingleVariableDeclaration 
-    //String name
-    @Override
-    public boolean visit(SingleVariableDeclaration node) {
-
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           While statement
-    @Override
-    public boolean visit(WhileStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.WHILE_STATEMENT, begin, end));
-
-        return true;
-    }
-
     /*=========================================================================
      ***************************************************************************
      |                                  Untested                                |
@@ -592,10 +509,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //Blank
-    //Class declaration
-    //Class signature
-    //Comment
     @Override
     public boolean visit(ConstructorInvocation node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -643,29 +556,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-//    //QualifiedName 
-//    @Override
-//    public boolean visit(QualifiedName node) {
-//
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//
-//        languageConstructs.add(new LanguageConstruct("QualifiedName", begin, end));
-//
-////        System.out.println("QualifiedName (" + begin + ", " + end + ")");
-////        System.out.println(node.toString());
-//        return true;
-//    }
-
-    //Method interface
-    //Method signature
-//    public boolean visit(MethodSignature node) {
-//        System.out.println("MethodSignature");
-//        System.out.println(node.toString());
-//        return true;
-//    }
-    //Static initialization block
-    //Try statement
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>           TypeDeclarationStatement
     @Override
     public boolean visit(TypeDeclarationStatement node) {
@@ -691,22 +581,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //VariableDeclarationExpression (tested)
-    //No assiging value
-//    Subset of VariableDeclarationExpression
-//    @Override
-//    public boolean visit(VariableDeclarationFragment node) {
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//
-//        languageConstructs.add(new LanguageConstruct("VariableDeclarationFragment", begin, end));
-//
-////        System.out.println("VariableDeclarationFragment");
-////        System.out.println(node.toString());
-//        return true;
-//    }
-
-
     /*=========================================================================
      ***************************************************************************
      |                                  Unused                                |
@@ -724,20 +598,6 @@ public class Visitor extends ASTVisitor {
 //        System.out.println(node.toString());
         return true;
     }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Modifier 
-//    @Override
-//    public boolean visit(Modifier node) {
-//        int begin = cu.getLineNumber(node.getStartPosition());
-//        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//
-//        languageConstructs.add(new LanguageConstruct("Modifier", begin, end));
-//
-////        System.out.println("Modifier(" + begin + ", " + end + ")");
-////        System.out.println(node.toString());
-////        Put here the diference between the diferent kinds of initialization 
-//        return true;
-//    }
 
     //WildcardType  
     @Override

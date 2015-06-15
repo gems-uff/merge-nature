@@ -14,10 +14,12 @@ public class ASTTypes {
     public static final String ANNOTATION = "Annotation";
     public static final String ATTRIBUTE = "Attribute";
     public static final String CATCH_CLAUSE = "CatchClause";
+    public static final String CLASS_DECLARATION = "ClassDeclaraton";
     public static final String COMMENT = "Comment";
     public static final String FOR_STATEMENT = "ForStatement";
     public static final String IF_STATEMENT = "IfStatement";
     public static final String IMPORT_DECLARATION = "ImportDeclaration";
+    public static final String INTERFACE_DECLARATION = "InterfaceDeclaraton";
     public static final String METHOD_DECLARATION = "MethodDeclaration";
     public static final String METHOD_SIGNATURE = "MethodSignature";
     public static final String METHOD_INVOCATION = "MethodInvocation";
