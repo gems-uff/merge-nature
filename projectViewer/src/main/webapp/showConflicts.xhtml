@@ -95,6 +95,27 @@
                     </p:dataTable> 
                     <br/>
 
+                    <p:dataTable value="#{showConflictsBean.conflictingChunk.leftKindConflict.filteredLanguageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Left Language Constructs (#{showConflictsBean.conflictingChunk.leftKindConflict.beginLine}
+                                          , #{showConflictsBean.conflictingChunk.leftKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{showConflictsBean.conflictingChunk.rightKindConflict.filteredLanguageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Right Language Constructs (#{showConflictsBean.conflictingChunk.rightKindConflict.beginLine}
+                                          , #{showConflictsBean.conflictingChunk.rightKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
                 </div>
                 <!-- End conflicting chunk-->
 
