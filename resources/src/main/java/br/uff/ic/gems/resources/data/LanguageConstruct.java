@@ -103,8 +103,8 @@ public class LanguageConstruct implements Serializable {
         List<LanguageConstruct> result = new ArrayList<>();
 
         for (LanguageConstruct languageConstruct : languageConstructs) {
-            if (languageConstruct.getBeginLine() >= begin
-                    && languageConstruct.getBeginLine() <= end) {
+            if(!((languageConstruct.getBeginLine() < begin && languageConstruct.getEndLine() < begin) ||
+                    (languageConstruct.getBeginLine() > end && languageConstruct.getEndLine() > end))){
                 result.add(languageConstruct);
             }
         }

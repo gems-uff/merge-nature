@@ -23,6 +23,7 @@ public class Repositioning {
         this.repositoryPath = repositoryPath;
     }
 
+    @Deprecated
     public int repositioning(String initialVersion, String finalVersion, String pathFile, int line) {
         int result = line;
 
@@ -61,6 +62,7 @@ public class Repositioning {
         return result;
     }
 
+    @Deprecated
     public int repositioningCluster(String initialFile, String finalFile, int line) {
         int result = line;
 

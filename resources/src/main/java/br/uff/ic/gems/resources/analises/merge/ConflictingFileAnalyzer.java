@@ -87,8 +87,13 @@ public class ConflictingFileAnalyzer {
 
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getLeftConflict(), leftRepository, relativePath);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getRightConflict(), rightRepository, relativePath);
+                    int beginLine = conflictingChunk.getBeginLine() + 1;
+                    int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
+                    int endLine = conflictingChunk.getEndLine();
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine - 1, repositoryPath, rightRepository, relativePath);
+//                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getLeftConflict(), leftRepository, relativePath);
+//                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getRightConflict(), rightRepository, relativePath);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -106,7 +111,7 @@ public class ConflictingFileAnalyzer {
                 List rightFile = FileUtils.readLines(new File(leftRepository + relativePath));
                 List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
                 rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));//Default lines
-                
+
                 rightKindConflict.setBeginLine(0);
                 rightKindConflict.setEndLine(rightFile.size());
                 rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
