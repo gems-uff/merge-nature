@@ -91,9 +91,7 @@ public class ConflictingFileAnalyzer {
                     int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
                     int endLine = conflictingChunk.getEndLine();
                     leftKindConflict = ASTAuxiliar.getLanguageConstructs(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine - 1, repositoryPath, rightRepository, relativePath);
-//                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getLeftConflict(), leftRepository, relativePath);
-//                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getRightConflict(), rightRepository, relativePath);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
