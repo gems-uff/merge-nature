@@ -91,10 +91,16 @@ public class KindConflict implements Serializable {
         List<LanguageConstruct> result = new ArrayList<>();
         int currentIndex = this.beginLine;
 
+        List<LanguageConstruct> copyLanguageConstructs = new ArrayList<>();
+        
+        for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
+            copyLanguageConstructs.add(languageConstruct);
+        }
+        
         while (currentIndex <= this.endLine) {
             int size = 0;
             LanguageConstruct currentLanguageConstruct = new LanguageConstruct();
-            for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
+            for (LanguageConstruct languageConstruct : copyLanguageConstructs) {
                 if (languageConstruct.getBeginLine() == currentIndex
                         && size < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1) {
                     currentLanguageConstruct = languageConstruct;
@@ -108,7 +114,10 @@ public class KindConflict implements Serializable {
                     && currentLanguageConstruct.getEndLine() > this.endLine) {
                 currentLanguageConstruct = new LanguageConstruct(ASTTypes.METHOD_SIGNATURE, currentIndex, currentIndex);
                 result.add(currentLanguageConstruct);
-                currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() + 1;
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.RETURN_STATEMENT)) {
+                result.add(currentLanguageConstruct);
+                copyLanguageConstructs.remove(currentLanguageConstruct);
             } else {
                 result.add(currentLanguageConstruct);
                 currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() + 1;
