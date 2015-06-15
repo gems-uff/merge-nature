@@ -5,7 +5,9 @@
  */
 package br.uff.ic.gems.resources.data;
 
+import br.uff.ic.gems.resources.ast.ASTTypes;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -17,16 +19,15 @@ import javax.persistence.OneToMany;
  *
  * @author gleiph
  */
-
 @Entity
 public class KindConflict implements Serializable {
-    
+
     @Id
     @GeneratedValue
     private Long id;
     private int beginLine;
     private int endLine;
-    
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<LanguageConstruct> languageConstructs;
 
@@ -85,6 +86,35 @@ public class KindConflict implements Serializable {
     public void setEndLine(int endLine) {
         this.endLine = endLine;
     }
-    
-    
+
+    public List<LanguageConstruct> getFilteredLanguageConstructs() {
+        List<LanguageConstruct> result = new ArrayList<>();
+        int currentIndex = this.beginLine;
+
+        while (currentIndex <= this.endLine) {
+            int size = 0;
+            LanguageConstruct currentLanguageConstruct = new LanguageConstruct();
+            for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
+                if (languageConstruct.getBeginLine() == currentIndex
+                        && size < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1) {
+                    currentLanguageConstruct = languageConstruct;
+                    size = languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1;
+                }
+            }
+
+            if (currentLanguageConstruct.getId() == null) {
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.METHOD_DECLARATION)
+                    && currentLanguageConstruct.getEndLine() > this.endLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.METHOD_SIGNATURE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() + 1;
+            } else {
+                result.add(currentLanguageConstruct);
+                currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() + 1;
+            }
+        }
+
+        return result;
+    }
 }
