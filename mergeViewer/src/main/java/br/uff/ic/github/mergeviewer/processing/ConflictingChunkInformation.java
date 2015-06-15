@@ -62,9 +62,9 @@ public class ConflictingChunkInformation implements Runnable {
         String pathSolution = pathDeveloperMergedRepository + pathRelativeFile;
 
         //Getting conflicting file
-        List<String> fileConflict = null;
+        List fileConflict = null;
         //Getting solution file
-        List<String> fileSolution = null;
+        List fileSolution = null;
         //Getting left file
         List leftFile = null;
         //Getting Right file
@@ -95,8 +95,11 @@ public class ConflictingChunkInformation implements Runnable {
 
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getLeftConflict(), pathLeftRepository, pathRelativeFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructs(cpe.getRightConflict(), pathRightRepository, pathRelativeFile);
+                int beginLine = conflictChunk.getBeginLine() + 1;
+                int separatorLine = (conflictChunk.getBeginLine() + 1) + (cpe.getSeparator() -cpe.getBegin());
+                int endLine = conflictChunk.getEndLine();
+                leftKindConflict = ASTAuxiliar.getLanguageConstructs(beginLine + 1, separatorLine - 1,pathMergedRepository, pathLeftRepository, pathRelativeFile);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine -1, pathMergedRepository, pathRightRepository, pathRelativeFile);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
