@@ -10,17 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author gleiph
  */
 @Entity
+@SequenceGenerator(name = "LC_SEQ", sequenceName = "LC_SEQ",
+        initialValue = 1, allocationSize = 1)
 public class LanguageConstruct implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LC_SEQ")
     private Long id;
     private String name;
     private int beginLine;

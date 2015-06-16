@@ -12,18 +12,22 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author gleiph
  */
 @Entity
+@SequenceGenerator(name = "REV_SEQ", sequenceName = "REV_SEQ",
+        initialValue = 1, allocationSize = 1)
 public class Revision implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REV_SEQ")
     private Long id;
 
     private String sha;
@@ -34,7 +38,7 @@ public class Revision implements Serializable {
     private int numberConflictingFiles;
     private int numberJavaConflictingFiles;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany
     private List<ConflictingFile> conflictingFiles;
 
     public Revision() {

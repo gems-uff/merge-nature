@@ -96,7 +96,7 @@ public class ProjectAnalyzer {
             }
 
             try {
-                revisionDAO.save(revision);
+                revision = revisionDAO.save(revision);
             } catch (Exception ex) {
                 Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -35,7 +35,7 @@ public class Project implements Serializable {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany
     private List<Revision> revisions;
 
     public Project() {

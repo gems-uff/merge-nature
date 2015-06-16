@@ -12,25 +12,30 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author gleiph
  */
 @Entity
-public class ConflictingFile implements Serializable{
+@SequenceGenerator(name = "CF_SEQ", sequenceName = "CF_SEQ",
+        initialValue = 1, allocationSize = 1)
+
+public class ConflictingFile implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CF_SEQ")
     private Long id;
-    
+
     private String name;
     private String fileType;
     private String path;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany
     private List<ConflictingChunk> conflictingChunks;
 
     public ConflictingFile() {

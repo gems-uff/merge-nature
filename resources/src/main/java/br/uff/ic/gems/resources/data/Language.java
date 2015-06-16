@@ -3,20 +3,23 @@ package br.uff.ic.gems.resources.data;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author Gleiph
  */
-
 @Entity
-public class Language implements Serializable{
- 
+@SequenceGenerator(name = "LAN_SEQ", sequenceName = "LAN_SEQ",
+        initialValue = 1, allocationSize = 1)
+public class Language implements Serializable {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LAN_SEQ")
     private Long id;
-    
+
     private String name;
     private double size;
     private double percentage;
@@ -84,6 +87,5 @@ public class Language implements Serializable{
     public void setId(Long id) {
         this.id = id;
     }
-    
-    
+
 }

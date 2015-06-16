@@ -12,23 +12,28 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author gleiph
  */
 @Entity
+@SequenceGenerator(name="KC_SEQ", sequenceName = "KC_SEQ", 
+        initialValue = 1, allocationSize = 1)
+    
 public class KindConflict implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "KC_SEQ")
     private Long id;
     private int beginLine;
     private int endLine;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<LanguageConstruct> languageConstructs;
 
     /**

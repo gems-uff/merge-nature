@@ -27,14 +27,13 @@ public class RevisionAnalyzer {
         Revision revision = new Revision();
 
         ConflictingFileDAO conflictingFileDAO = new ConflictingFileDAO();
-        
+
         revision.setSha(revisionSHA);
 
         Git.reset(repositoryPath);
         List<String> parents = Git.getParents(repositoryPath, revisionSHA);
 
         if (parents.size() == 2) {
-
 
             String leftParent = parents.get(0);
             String rightParent = parents.get(1);
@@ -51,7 +50,7 @@ public class RevisionAnalyzer {
             List<String> mergeOutput = Git.merge(repositoryPath, rightParent, false, true);
 
             if (MergeStatusAnalizer.isConflict(mergeOutput)) {
-                
+
                 revision.setStatus(MergeStatus.CONFLICTING);
 
                 List<String> conflictedFiles = Git.conflictedFiles(repositoryPath);
@@ -59,19 +58,18 @@ public class RevisionAnalyzer {
                 int javaFiles = 0;
 
                 List<ConflictingFile> conflictingFiles = new ArrayList<>();
-                
+
                 for (String conflictedFile : conflictedFiles) {
                     try {
                         ConflictingFile conflictingFile = ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
-                        conflictingFiles.add(conflictingFile);
                         try {
-                            conflictingFileDAO.save(conflictingFile);
+                            conflictingFile = conflictingFileDAO.save(conflictingFile);
                         } catch (Exception ex) {
                             Logger.getLogger(RevisionAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
-                        revision.getConflictingFiles().add(conflictingFile);
-                        
+
+                        conflictingFiles.add(conflictingFile);
+
                         if (conflictingFile.isJava()) {
                             javaFiles++;
                         }

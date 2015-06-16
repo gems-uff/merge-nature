@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class RevisionDAO {
-    
+
     public Revision save(Revision revision) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
@@ -30,13 +30,15 @@ public class RevisionDAO {
                         throw new Exception("Error during Revision persistence!");
                     }
                 }
-                
+
                 revision = manager.merge(revision);
             }
 
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
 
         return revision;
@@ -54,20 +56,24 @@ public class RevisionDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public Revision getById(Long id){
+
+    public Revision getById(Long id) {
         Revision revision = null;
         EntityManager manager = DatabaseManager.getManager();
-        
-        try{
+
+        try {
             revision = manager.find(Revision.class, id);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return revision;
     }
 }

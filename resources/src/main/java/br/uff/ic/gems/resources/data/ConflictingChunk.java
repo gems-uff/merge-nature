@@ -9,22 +9,27 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
  * @author gleiph
  */
 @Entity
+@SequenceGenerator(name="CC_SEQ", sequenceName = "CC_SEQ", 
+        initialValue = 1, allocationSize = 1)
 public class ConflictingChunk implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CC_SEQ")
     private Long id;
 
     private int beginLine;
@@ -33,9 +38,9 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private KindConflict leftKindConflict;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private KindConflict rightKindConflict;
 
     @ElementCollection

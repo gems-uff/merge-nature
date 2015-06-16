@@ -15,19 +15,17 @@ import javax.persistence.Persistence;
  */
 public class DatabaseManager {
 
-    private static EntityManager instance = null;
+    private static EntityManagerFactory instance = null;
 
     public DatabaseManager() {
     }
 
     public static EntityManager getManager() {
         if (instance == null) {
-//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Test");
-
-            instance = factory.createEntityManager();
+//            instance = Persistence.createEntityManagerFactory("Local");
+            instance = Persistence.createEntityManagerFactory("Test");
         }
 
-        return instance;
+        return instance.createEntityManager();
     }
 }
