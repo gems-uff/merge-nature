@@ -30,13 +30,15 @@ public class LanguageDAO {
                         throw new Exception("Error during Language persistence!");
                     }
                 }
-                
+
                 language = manager.merge(language);
             }
 
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
 
         return language;
@@ -54,20 +56,24 @@ public class LanguageDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public Language getById(Long id){
+
+    public Language getById(Long id) {
         Language language = null;
         EntityManager manager = DatabaseManager.getManager();
-        
-        try{
+
+        try {
             language = manager.find(Language.class, id);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return language;
     }
 }

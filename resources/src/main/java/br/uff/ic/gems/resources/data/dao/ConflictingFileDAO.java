@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class ConflictingFileDAO {
-    
+
     public ConflictingFile save(ConflictingFile conflictingFile) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
@@ -30,13 +30,15 @@ public class ConflictingFileDAO {
                         throw new Exception("Error during ConflictingFile persistence!");
                     }
                 }
-                
+
                 conflictingFile = manager.merge(conflictingFile);
             }
 
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
 
         return conflictingFile;
@@ -54,20 +56,24 @@ public class ConflictingFileDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public ConflictingFile getById(Long id){
+
+    public ConflictingFile getById(Long id) {
         ConflictingFile conflictingFile = null;
         EntityManager manager = DatabaseManager.getManager();
-        
-        try{
+
+        try {
             conflictingFile = manager.find(ConflictingFile.class, id);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return conflictingFile;
     }
 }

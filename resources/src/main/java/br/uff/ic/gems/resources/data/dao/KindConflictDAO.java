@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class KindConflictDAO {
-    
+
     public KindConflict save(KindConflict kindConflict) throws Exception {
 
         EntityManager manager = DatabaseManager.getManager();
@@ -35,6 +35,8 @@ public class KindConflictDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
         return kindConflict;
     }
@@ -50,21 +52,25 @@ public class KindConflictDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public KindConflict getById(Long id){
+
+    public KindConflict getById(Long id) {
         EntityManager manager = DatabaseManager.getManager();
         KindConflict kindConflict = null;
-        
-        try{
+
+        try {
             kindConflict = manager.find(KindConflict.class, id);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return kindConflict;
     }
-    
+
 }

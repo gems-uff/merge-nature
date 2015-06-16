@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  * @author gleiph
  */
 public class LanguageConstructDAO {
-    
+
     public LanguageConstruct save(LanguageConstruct languageConstruct) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
@@ -30,13 +30,15 @@ public class LanguageConstructDAO {
                         throw new Exception("Error during LanguageConstruct persistence!");
                     }
                 }
-                
+
                 languageConstruct = manager.merge(languageConstruct);
             }
 
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
 
         return languageConstruct;
@@ -54,20 +56,24 @@ public class LanguageConstructDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public LanguageConstruct getById(Long id){
+
+    public LanguageConstruct getById(Long id) {
         LanguageConstruct languageConstruct = null;
         EntityManager manager = DatabaseManager.getManager();
-        
-        try{
+
+        try {
             languageConstruct = manager.find(LanguageConstruct.class, id);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return languageConstruct;
     }
 }

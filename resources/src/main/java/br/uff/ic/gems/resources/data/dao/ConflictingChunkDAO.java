@@ -35,7 +35,10 @@ public class ConflictingChunkDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
+
         return conflictingChunk;
     }
 
@@ -50,20 +53,24 @@ public class ConflictingChunkDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
+            } finally {
+                manager.close();
             }
         }
     }
-    
-    public ConflictingChunk getById(Long id){
+
+    public ConflictingChunk getById(Long id) {
         EntityManager manager = DatabaseManager.getManager();
         ConflictingChunk conflictingChunk = null;
-        
-        try{
+
+        try {
             conflictingChunk = manager.find(ConflictingChunk.class, id);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw e;
+        } finally {
+            manager.close();
         }
-        
+
         return conflictingChunk;
     }
 }
