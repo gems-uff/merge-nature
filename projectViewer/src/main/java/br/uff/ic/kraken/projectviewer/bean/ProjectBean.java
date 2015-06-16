@@ -46,6 +46,8 @@ public class ProjectBean implements Serializable {
      * @return the projects
      */
     public List<Project> getProjects() {
+        ProjectDAO projectDAO = new ProjectDAO();
+        projects = projectDAO.getAll();
         return projects;
     }
 
