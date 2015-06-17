@@ -102,6 +102,7 @@ public class AnalysisViewerBean implements Serializable{
         Project project = projectDAO.getById(projectId);
 
         String repositoriesPath = "/Users/gleiph/Desktop/repositories";
+//        String repositoriesPath = "/home/gmenezes/repositories";
         
         ProjectAnalyses projectAnalyses = new ProjectAnalyses();
         projectAnalyses.analyze(repositoriesPath, project);
