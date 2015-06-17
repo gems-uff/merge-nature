@@ -1,6 +1,6 @@
 package br.uff.ic.github.github;
 
-import br.uff.ic.github.github.parser.GithubAPI;
+import br.uff.ic.gems.resources.github.parser.GithubAPI;
 
 /**
  *

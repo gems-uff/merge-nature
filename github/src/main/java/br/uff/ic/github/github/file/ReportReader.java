@@ -1,7 +1,7 @@
-package br.uff.ic.github.github.parser;
+package br.uff.ic.github.github.file;
 
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.github.github.file.FileManager;
+import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
