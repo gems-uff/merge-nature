@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -90,7 +92,7 @@ public class ASTAuxiliar {
         return kindConflict;
     }
 
-    public static KindConflict getLanguageConstructs(int begin, int end, String currentRepository, String baseRepository, String relativePath) throws IOException {
+    public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String baseRepository, String relativePath) throws IOException {
 
         KindConflict kindConflict = new KindConflict();
 
@@ -113,4 +115,39 @@ public class ASTAuxiliar {
         return kindConflict;
     }
 
+    public static KindConflict getLanguageConstructsAny(int begin, int end, String currentRepository, String baseRepository, String relativePath) {
+
+        KindConflict kindConflict = new KindConflict();
+
+        String currentFile = currentRepository + relativePath;
+        String baseFile = baseRepository + relativePath;
+
+        int beginRepositioned = 0, endRepositioned = 0, fileSize = 0;
+        List<String> file;
+
+        try {
+            Repositioning repositioning = new Repositioning(currentRepository);
+            beginRepositioned = repositioning.repositioning(currentFile, baseFile, begin);
+            endRepositioned = repositioning.repositioning(currentFile, baseFile, end);
+            file = FileUtils.readLines(new File(baseFile));
+            fileSize = file.size();
+        } catch (Exception e) {
+            beginRepositioned = begin;
+            endRepositioned = end;
+        }
+
+
+        //Dealing with AST
+        List<LanguageConstruct> languageConstructs = new ArrayList<>();
+
+        String[] fileBroken = relativePath.split("\\.");
+        LanguageConstruct languageConstruct = new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, fileSize);
+        languageConstructs.add(languageConstruct);
+
+        kindConflict.setBeginLine(beginRepositioned);
+        kindConflict.setEndLine(endRepositioned);
+        kindConflict.setLanguageConstructs(languageConstructs);
+
+        return kindConflict;
+    }
 }

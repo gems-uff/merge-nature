@@ -10,7 +10,6 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.KindConflict;
-import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
 import br.uff.ic.gems.resources.data.dao.KindConflictDAO;
 import br.uff.ic.gems.resources.data.dao.LanguageConstructDAO;
@@ -85,35 +84,22 @@ public class ConflictingFileAnalyzer {
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
 
+            int beginLine = conflictingChunk.getBeginLine() + 1;
+            int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
+            int endLine = conflictingChunk.getEndLine();
+
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    int beginLine = conflictingChunk.getBeginLine() + 1;
-                    int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
-                    int endLine = conflictingChunk.getEndLine();
-                    leftKindConflict = ASTAuxiliar.getLanguageConstructs(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                String[] fileBroken = relativePath.split("\\.");
 
-                List leftFile = FileUtils.readLines(new File(leftRepository + relativePath));
-                List<LanguageConstruct> leftLanguageConstructs = new ArrayList<>();
-                leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, leftFile.size()));//Default lines
-
-                leftKindConflict.setBeginLine(0);
-                leftKindConflict.setEndLine(leftFile.size());
-                leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
-
-                List rightFile = FileUtils.readLines(new File(leftRepository + relativePath));
-                List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
-                rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, rightFile.size()));//Default lines
-
-                rightKindConflict.setBeginLine(0);
-                rightKindConflict.setEndLine(rightFile.size());
-                rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
-
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
+            
             }
 
             //Get the following data from the conflict:
@@ -179,16 +165,14 @@ public class ConflictingFileAnalyzer {
 //            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
-//                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructs()) {
+//                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructsJava()) {
 //                    languageConstructDAO.save(leftLanguageConstruct);
 //                }
-//                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructs()) {
+//                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructsJava()) {
 //                    languageConstructDAO.save(rightLanguageConstruct);
 //                }
-
 //                kindConflictDAO.save(leftKindConflict);
 //                kindConflictDAO.save(rightKindConflict);
-
                 conflictingChunk.setLeftKindConflict(leftKindConflict);
                 conflictingChunk.setRightKindConflict(rightKindConflict);
                 conflictingChunk.setConflictingContent(conflictingArea);
