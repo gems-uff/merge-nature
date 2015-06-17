@@ -98,8 +98,8 @@ public class ConflictingChunkInformation implements Runnable {
                 int beginLine = conflictChunk.getBeginLine() + 1;
                 int separatorLine = (conflictChunk.getBeginLine() + 1) + (cpe.getSeparator() -cpe.getBegin());
                 int endLine = conflictChunk.getEndLine();
-                leftKindConflict = ASTAuxiliar.getLanguageConstructs(beginLine + 1, separatorLine - 1,pathMergedRepository, pathLeftRepository, pathRelativeFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructs(separatorLine + 1, endLine -1, pathMergedRepository, pathRightRepository, pathRelativeFile);
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, pathMergedRepository, pathLeftRepository, pathRelativeFile);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, pathMergedRepository, pathRightRepository, pathRelativeFile);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -113,10 +113,10 @@ public class ConflictingChunkInformation implements Runnable {
             leftKindConflict.setBeginLine(0);
             leftKindConflict.setEndLine(leftFile.size());
             leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
-            
+
             List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
             rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));
-            
+
             rightKindConflict.setBeginLine(0);
             rightKindConflict.setEndLine(rightFile.size());
             rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
@@ -279,7 +279,7 @@ public class ConflictingChunkInformation implements Runnable {
 
         String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
-        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, LanguageConstruct.toString(leftKindConflict.getLanguageConstructs()), 
+        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, LanguageConstruct.toString(leftKindConflict.getLanguageConstructs()),
                 LanguageConstruct.toString(rightKindConflict.getLanguageConstructs()), dd);
         showCase.setVisible(true);
     }
