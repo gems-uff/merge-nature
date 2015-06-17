@@ -7,7 +7,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.github.github.parser.GithubAPI;
+import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.io.Serializable;
 import java.util.logging.Level;
