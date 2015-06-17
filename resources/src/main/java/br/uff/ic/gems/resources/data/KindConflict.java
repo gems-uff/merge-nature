@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 /**
@@ -29,6 +31,9 @@ public class KindConflict implements Serializable {
     private int endLine;
 
     @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "KindConflict_LanguageConstruct", 
+            joinColumns = @JoinColumn(name = "KindConflict_ID"),
+            inverseJoinColumns = @JoinColumn(name = "LanguageConstruct_ID"))
     private List<LanguageConstruct> languageConstructs;
 
     /**

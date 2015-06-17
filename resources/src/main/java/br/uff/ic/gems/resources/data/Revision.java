@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 /**
@@ -34,7 +37,10 @@ public class Revision implements Serializable {
     private int numberConflictingFiles;
     private int numberJavaConflictingFiles;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinTable(name = "Revision_ConflictingFile", 
+            joinColumns = @JoinColumn(name = "Revision_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ConflictingFile_ID"))
     private List<ConflictingFile> conflictingFiles;
 
     public Revision() {

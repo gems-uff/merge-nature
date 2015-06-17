@@ -64,11 +64,11 @@ public class RevisionAnalyzer {
                     try {
                         ConflictingFile conflictingFile = ConflictingFileAnalyzer.analyze(conflictedFile, repositoryPath, leftParent, rightParent, revisionSHA);
                         conflictingFiles.add(conflictingFile);
-                        try {
-                            conflictingFileDAO.save(conflictingFile);
-                        } catch (Exception ex) {
-                            Logger.getLogger(RevisionAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+//                        try {
+//                            conflictingFileDAO.save(conflictingFile);
+//                        } catch (Exception ex) {
+//                            Logger.getLogger(RevisionAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
                         
                         revision.getConflictingFiles().add(conflictingFile);
                         

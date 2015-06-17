@@ -37,9 +37,7 @@ public class LanguageConstructDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return languageConstruct;
     }
@@ -56,9 +54,7 @@ public class LanguageConstructDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -70,9 +66,7 @@ public class LanguageConstructDAO {
             languageConstruct = manager.find(LanguageConstruct.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return languageConstruct;
     }

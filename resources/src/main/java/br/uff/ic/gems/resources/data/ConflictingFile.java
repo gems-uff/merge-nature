@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 /**
@@ -20,17 +23,20 @@ import javax.persistence.OneToMany;
  * @author gleiph
  */
 @Entity
-public class ConflictingFile implements Serializable{
+public class ConflictingFile implements Serializable {
 
     @Id
     @GeneratedValue
     private Long id;
-    
+
     private String name;
     private String fileType;
     private String path;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinTable(name = "ConflictingFile_ConflictingChunk", 
+            joinColumns = @JoinColumn(name = "ConflictingFile_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ConflictingChunk_ID"))
     private List<ConflictingChunk> conflictingChunks;
 
     public ConflictingFile() {

@@ -179,22 +179,22 @@ public class ConflictingFileAnalyzer {
 //            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
-                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructs()) {
-                    languageConstructDAO.save(leftLanguageConstruct);
-                }
-                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructs()) {
-                    languageConstructDAO.save(rightLanguageConstruct);
-                }
+//                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructs()) {
+//                    languageConstructDAO.save(leftLanguageConstruct);
+//                }
+//                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructs()) {
+//                    languageConstructDAO.save(rightLanguageConstruct);
+//                }
 
-                kindConflictDAO.save(leftKindConflict);
-                kindConflictDAO.save(rightKindConflict);
+//                kindConflictDAO.save(leftKindConflict);
+//                kindConflictDAO.save(rightKindConflict);
 
                 conflictingChunk.setLeftKindConflict(leftKindConflict);
                 conflictingChunk.setRightKindConflict(rightKindConflict);
                 conflictingChunk.setConflictingContent(conflictingArea);
                 conflictingChunk.setSolutionContent(solutionArea);
 
-                conflictingChunkDAO.save(conflictingChunk);
+//                conflictingChunkDAO.save(conflictingChunk);
             } catch (Exception ex) {
                 Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }

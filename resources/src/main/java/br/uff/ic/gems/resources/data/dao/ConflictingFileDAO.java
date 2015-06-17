@@ -37,9 +37,7 @@ public class ConflictingFileDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return conflictingFile;
     }
@@ -56,9 +54,7 @@ public class ConflictingFileDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -70,9 +66,7 @@ public class ConflictingFileDAO {
             conflictingFile = manager.find(ConflictingFile.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return conflictingFile;
     }

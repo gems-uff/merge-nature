@@ -35,9 +35,7 @@ public class KindConflictDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
         return kindConflict;
     }
 
@@ -52,9 +50,7 @@ public class KindConflictDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -66,9 +62,7 @@ public class KindConflictDAO {
             kindConflict = manager.find(KindConflict.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return kindConflict;
     }

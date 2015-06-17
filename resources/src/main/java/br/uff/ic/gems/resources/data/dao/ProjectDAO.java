@@ -33,9 +33,7 @@ public class ProjectDAO {
         } catch (Exception e) {
             manager.getTransaction().rollback();
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return project;
     }
@@ -62,9 +60,7 @@ public class ProjectDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return project;
     }
@@ -81,9 +77,7 @@ public class ProjectDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -95,9 +89,7 @@ public class ProjectDAO {
             project = manager.find(Project.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return project;
     }
@@ -111,8 +103,6 @@ public class ProjectDAO {
         Query query = manager.createQuery(sql);
 
         List result = query.getResultList();
-
-        manager.close();
 
         if (result != null && !result.isEmpty() && result.get(0) != null) {
             return (long) result.get(0);
@@ -131,9 +121,7 @@ public class ProjectDAO {
             projects = query.getResultList();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return projects;
     }

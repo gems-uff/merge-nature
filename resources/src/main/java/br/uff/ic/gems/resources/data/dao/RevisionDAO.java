@@ -37,9 +37,7 @@ public class RevisionDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return revision;
     }
@@ -56,9 +54,7 @@ public class RevisionDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -70,9 +66,7 @@ public class RevisionDAO {
             revision = manager.find(Revision.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
+        } 
 
         return revision;
     }

@@ -22,6 +22,7 @@ import java.util.logging.Logger;
  */
 public class ProjectAnalyzer {
 
+    @Deprecated
     public Project analyze(String repositoryPath) {
 
         Project project = new Project();
@@ -60,16 +61,16 @@ public class ProjectAnalyzer {
         } catch (Exception ex) {
             Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return project;
     }
 
     public Project analyze(Project project) {
 
         String repositoryPath = project.getRepositoryPath();
-        
+
         RevisionDAO revisionDAO = new RevisionDAO();
-        
+
         ProjectDAO projectDAO = new ProjectDAO();
 
         project.setRepositoryPath(repositoryPath);
@@ -96,11 +97,11 @@ public class ProjectAnalyzer {
             }
 
             try {
-                revisionDAO.save(revision);
+                revision = revisionDAO.save(revision);
             } catch (Exception ex) {
                 Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             revisions.add(revision);
         }
 

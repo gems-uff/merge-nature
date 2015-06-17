@@ -35,10 +35,7 @@ public class ConflictingChunkDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
-
+        } 
         return conflictingChunk;
     }
 
@@ -53,9 +50,7 @@ public class ConflictingChunkDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } finally {
-                manager.close();
-            }
+            } 
         }
     }
 
@@ -67,10 +62,7 @@ public class ConflictingChunkDAO {
             conflictingChunk = manager.find(ConflictingChunk.class, id);
         } catch (Exception e) {
             throw e;
-        } finally {
-            manager.close();
-        }
-
+        } 
         return conflictingChunk;
     }
 }

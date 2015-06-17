@@ -9,10 +9,13 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 
@@ -33,9 +36,16 @@ public class ConflictingChunk implements Serializable {
     private String identifier;
     private DeveloperDecision developerDecision;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "ConflictingChunk_LeftKindConflict",
+            joinColumns = @JoinColumn(name = "ConflictingChunk_ID"),
+            inverseJoinColumns = @JoinColumn(name = "LeftKindConflict_ID"))
     private KindConflict leftKindConflict;
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "ConflictingChunk_RightKindConflict",
+            joinColumns = @JoinColumn(name = "ConflictingChunk_ID"),
+            inverseJoinColumns = @JoinColumn(name = "RightKindConflict_ID"))
     private KindConflict rightKindConflict;
 
     @ElementCollection
@@ -45,114 +55,66 @@ public class ConflictingChunk implements Serializable {
     @Lob
     private List<String> solutionContent;
 
-    /**
-     * @return the id
-     */
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the beginLine
-     */
     public int getBeginLine() {
         return beginLine;
     }
 
-    /**
-     * @param beginLine the beginLine to set
-     */
     public void setBeginLine(int beginLine) {
         this.beginLine = beginLine;
     }
 
-    /**
-     * @return the endLine
-     */
     public int getEndLine() {
         return endLine;
     }
 
-    /**
-     * @param endLine the endLine to set
-     */
     public void setEndLine(int endLine) {
         this.endLine = endLine;
     }
 
-    /**
-     * @return the separatorLine
-     */
     public int getSeparatorLine() {
         return separatorLine;
     }
 
-    /**
-     * @param separatorLine the separatorLine to set
-     */
     public void setSeparatorLine(int separatorLine) {
         this.separatorLine = separatorLine;
     }
 
-    /**
-     * @return the identifier
-     */
     public String getIdentifier() {
         return identifier;
     }
 
-    /**
-     * @param identifier the identifier to set
-     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    /**
-     * @return the developerChoice
-     */
     public DeveloperDecision getDeveloperDecision() {
         return developerDecision;
     }
 
-    /**
-     * @param developerChoice the developerChoice to set
-     */
     public void setDeveloperDecision(DeveloperDecision developerChoice) {
         this.developerDecision = developerChoice;
     }
 
-    /**
-     * @return the conflictingContent
-     */
     public List<String> getConflictingContent() {
         return conflictingContent;
     }
 
-    /**
-     * @param conflictingContent the conflictingContent to set
-     */
     public void setConflictingContent(List<String> conflictingContent) {
         this.conflictingContent = conflictingContent;
     }
 
-    /**
-     * @return the solutionContent
-     */
     public List<String> getSolutionContent() {
         return solutionContent;
     }
 
-    /**
-     * @param solutionContent the solutionContent to set
-     */
     public void setSolutionContent(List<String> solutionContent) {
         this.solutionContent = solutionContent;
     }
@@ -263,30 +225,18 @@ public class ConflictingChunk implements Serializable {
         return context1;
     }
 
-    /**
-     * @return the leftKindConflict
-     */
     public KindConflict getLeftKindConflict() {
         return leftKindConflict;
     }
 
-    /**
-     * @param leftKindConflict the leftKindConflict to set
-     */
     public void setLeftKindConflict(KindConflict leftKindConflict) {
         this.leftKindConflict = leftKindConflict;
     }
 
-    /**
-     * @return the rightKindConflict
-     */
     public KindConflict getRightKindConflict() {
         return rightKindConflict;
     }
 
-    /**
-     * @param rightKindConflict the rightKindConflict to set
-     */
     public void setRightKindConflict(KindConflict rightKindConflict) {
         this.rightKindConflict = rightKindConflict;
     }
