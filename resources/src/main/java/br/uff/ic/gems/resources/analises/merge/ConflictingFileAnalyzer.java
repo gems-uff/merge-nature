@@ -189,30 +189,63 @@ public class ConflictingFileAnalyzer {
         return conflictingFile;
     }
 
-    private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
+        private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
         List<ConflictingChunk> result = new ArrayList<>();
         ConflictingChunk conflictingChunk = new ConflictingChunk();
-        int begin = 0, separator = 0, end, identifier = 1;
+        int begin = 0, separator = 0, end = 0, identifier = 1;
+
+        List<Integer> begins, separators, ends;
+        begins = new ArrayList<>();
+        separators = new ArrayList<>();
+        ends = new ArrayList<>();
 
         for (int i = 0; i < fileList.size(); i++) {
             String get = fileList.get(i);
 
             if (get.contains("<<<<<<<")) {
-                conflictingChunk = new ConflictingChunk();
                 begin = i;
+                begins.add(begin);
             } else if (get.contains("=======")) {
                 separator = i;
+                separators.add(separator);
             } else if (get.contains(">>>>>>>")) {
                 end = i;
-
-                conflictingChunk.setBeginLine(begin);
-                conflictingChunk.setSeparatorLine(separator);
-                conflictingChunk.setEndLine(end);
-                conflictingChunk.setIdentifier("Case " + (identifier++));
-
-                result.add(conflictingChunk);
+                ends.add(end);
             }
 
+        }
+
+        while (!(begins.isEmpty() || separators.isEmpty() || ends.isEmpty())) {
+
+            for (int i = begins.size() - 1; i >= 0; i--) {
+                Integer b = begins.get(i);
+
+                for (int j = 0; j < separators.size(); j++) {
+                    Integer s = separators.get(j);
+
+                    if (s > b) {
+                        for (int k = 0; k < ends.size(); k++) {
+                            Integer e = ends.get(k);
+                            if (e > s) {
+                                ends.remove(e);
+                                break;
+                            }
+                        }
+                        separators.remove(s);
+                        break;
+                    }
+                }
+                begins.remove(b);
+                break;
+            }
+
+            conflictingChunk = new ConflictingChunk();
+            conflictingChunk.setBeginLine(begin);
+            conflictingChunk.setSeparatorLine(separator);
+            conflictingChunk.setEndLine(end);
+            conflictingChunk.setIdentifier("Case " + (identifier++));
+            
+            result.add(conflictingChunk);
         }
 
         return result;
