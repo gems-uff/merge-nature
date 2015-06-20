@@ -92,12 +92,9 @@ public class ASTAuxiliar {
         return kindConflict;
     }
 
-    public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String baseRepository, String relativePath) throws IOException {
+    public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String currentFile, String baseFile) throws IOException {
 
         KindConflict kindConflict = new KindConflict();
-
-        String currentFile = currentRepository + relativePath;
-        String baseFile = baseRepository + relativePath;
 
         Repositioning repositioning = new Repositioning(currentRepository);
         int beginRepositioned = repositioning.repositioning(currentFile, baseFile, begin);

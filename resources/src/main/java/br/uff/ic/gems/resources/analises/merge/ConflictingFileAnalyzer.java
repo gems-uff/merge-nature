@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.ThisExpression;
 
 /**
  *
@@ -88,18 +89,37 @@ public class ConflictingFileAnalyzer {
             int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
             int endLine = conflictingChunk.getEndLine();
 
+            String left = conflictingContent.get(beginLine - 1);
+            String right = conflictingContent.get(endLine);
+
+            String leftRelativePath = getMove(left);
+            String rightRelativePath = getMove(right);
+            
+
+            if(leftRelativePath == null)
+                leftRelativePath = relativePath;
+            
+            if(rightRelativePath == null)
+                rightRelativePath = relativePath;
+
+            String currentFile, leftFile, rightFile;
+            
+            currentFile = repositoryPath + File.separator + relativePath;
+            leftFile = leftRepository + File.separator + leftRelativePath;
+            rightFile = rightRepository + File.separator + rightRelativePath;
+            
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine, repositoryPath, currentFile, rightFile);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
 
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, repositoryPath, leftRepository, relativePath);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, repositoryPath, rightRepository, relativePath);
-            
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, repositoryPath, currentFile, rightFile);
+
             }
 
             //Get the following data from the conflict:
@@ -189,7 +209,7 @@ public class ConflictingFileAnalyzer {
         return conflictingFile;
     }
 
-        private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
+    private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
         List<ConflictingChunk> result = new ArrayList<>();
         ConflictingChunk conflictingChunk = new ConflictingChunk();
         int begin = 0, separator = 0, end = 0, identifier = 1;
@@ -244,10 +264,21 @@ public class ConflictingFileAnalyzer {
             conflictingChunk.setSeparatorLine(separator);
             conflictingChunk.setEndLine(end);
             conflictingChunk.setIdentifier("Case " + (identifier++));
-            
+
             result.add(conflictingChunk);
         }
 
         return result;
+    }
+
+    private static String getMove(String line) {
+
+        if (line.contains(":")) {
+            String[] split = line.split(":");
+            return split[split.length - 1];
+        }
+
+        return null;
+
     }
 }
