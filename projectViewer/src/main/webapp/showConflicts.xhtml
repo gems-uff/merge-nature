@@ -80,7 +80,9 @@
                                           , #{showConflictsBean.conflictingChunk.rightKindConflict.endLine})" styleClass="title"/>  
                         </f:facet>
                         <p:column>
+                            
                             <h:outputText value="#{lc}" styleClass="tableContent"/>
+                            
                         </p:column>
                     </p:dataTable> 
                     <br/>
@@ -169,13 +171,13 @@
 
                         <h:outputText value="Merge base: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.revision.baseSha}" styleClass="tableContent"/>
-                        
+
                         <h:outputText value="Merge status: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.revision.status}" styleClass="tableContent"/>
-                        
+
                         <h:outputText value="Conflicting files: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.revision.numberConflictingFiles}" styleClass="tableContent"/>
-                        
+
                         <h:outputText value="Java conflicting files: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.revision.numberJavaConflictingFiles}" styleClass="tableContent"/>
                     </h:panelGrid>

@@ -37,6 +37,7 @@ and open the template in the editor.
 .tableContent{
     font-size: 12px;
     font-family: monospace, sans-serif;
+    white-space: pre-wrap;
 }
 
 .title{
