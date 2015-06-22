@@ -13,9 +13,11 @@ public class ASTTypes {
 
     public static final String ANNOTATION = "Annotation";
     public static final String ANNOTATION_TYPE_MEMBER_DECLARATION = "AnnotationTypeMemberDeclaration";
+    public static final String ASSERT_STATEMENT = "AssertStatement";
     public static final String ATTRIBUTE = "Attribute";
     public static final String BREAK_STATEMENT = "BreakStatement";
     public static final String CASE_STATEMENT = "CaseStatement";
+    public static final String CAST_EXPRESSION = "CastExpression";
     public static final String CATCH_CLAUSE = "CatchClause";
     public static final String CLASS_DECLARATION = "ClassDeclaration";
     public static final String COMMENT = "Comment";
@@ -34,6 +36,7 @@ public class ASTTypes {
     public static final String PACKAGE_DECLARATION = "PackageDeclaration";
     public static final String RETURN_STATEMENT = "ReturnStatement";
     public static final String SWITCH_STATEMENT = "SwitchStatement";
+    public static final String SYNCHRONIZED_STATEMENT = "SynchronizedStatement";
     public static final String THROW_STATEMENT = "ThrowStatement";
     public static final String TRY_STATEMENT = "TryStatement";
     public static final String VARIABLE = "Variable";

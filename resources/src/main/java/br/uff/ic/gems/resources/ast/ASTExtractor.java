@@ -38,6 +38,7 @@ public class ASTExtractor {
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         File file = new File(filePath);
 
+        System.out.println(file.getAbsolutePath());
         String stringFile = FileUtils.readFileToString(file);
         parser.setSource(stringFile.toCharArray());
         parser.setKind(ASTParser.K_COMPILATION_UNIT);

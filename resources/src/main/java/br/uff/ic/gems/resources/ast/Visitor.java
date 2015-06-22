@@ -11,8 +11,15 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.ArrayCreation;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
+import org.eclipse.jdt.core.dom.ArrayType;
+import org.eclipse.jdt.core.dom.AssertStatement;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.BreakStatement;
+import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.Comment;
@@ -23,6 +30,7 @@ import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -33,24 +41,28 @@ import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
-import org.eclipse.jdt.internal.compiler.ast.ForeachStatement;
 
 /**
  *
@@ -114,6 +126,26 @@ public class Visitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(AnonymousClassDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.CLASS_DECLARATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(AssertStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ASSERT_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
     public boolean visit(BlockComment node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -131,6 +163,16 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
+    @Override
+    public boolean visit(CastExpression node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.CAST_EXPRESSION, begin, end));
+
+        return true;
+    }
+    
     @Override
     public boolean visit(CatchClause node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -166,7 +208,7 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(ContinueStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -175,7 +217,7 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(DoStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -323,7 +365,7 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(PackageDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -401,6 +443,16 @@ public class Visitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(SynchronizedStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.SYNCHRONIZED_STATEMENT, begin, end));
+
+        return true;
+    }
+    
+    @Override
     public boolean visit(ThrowStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -466,8 +518,6 @@ public class Visitor extends ASTVisitor {
      |                         End visitors selected                           |
      ***************************************************************************
      =========================================================================*/
-    
-    
     /*=========================================================================
      ***************************************************************************
      |                                  Untested                                |
@@ -483,11 +533,88 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    public boolean visit(ForeachStatement node) {
-        int begin = cu.getLineNumber(node.sourceStart());
-        int end = cu.getLineNumber(node.sourceEnd());
+    @Override
+    public boolean visit(ArrayAccess node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("ForeachStatement", begin, end));
+        languageConstructs.add(new LanguageConstruct("ArrayAccess", begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayCreation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("ArrayCreation", begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayInitializer node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("ArrayInitializer", begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayType node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("ArrayType", begin, end));
+
+        return true;
+    }
+
+    public boolean visit(Expression node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("Expression", begin, end));
+
+        return true;
+    }
+
+    public boolean visit(Name node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("Name", begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(QualifiedType node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("QualifiedType", begin, end));
+
+        return true;
+    }
+
+    public boolean visit(Statement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("Statement", begin, end));
+
+        return true;
+    }
+
+    public boolean visit(Type node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct("Type", begin, end));
 
         return true;
     }
@@ -512,4 +639,5 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
+
 }
