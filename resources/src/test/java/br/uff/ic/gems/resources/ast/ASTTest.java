@@ -43,11 +43,9 @@ public class ASTTest {
     
     @Test
     public void test() throws IOException{
-        File f = new File("teste");
-        System.out.println(f.getAbsolutePath());
         ASTExtractor aSTExtractor = new ASTExtractor("src/test/java/br/uff/ic/gems/resources/ast/ASTTypesTest.java");
         aSTExtractor.parser();
-        List<LanguageConstruct> languageConstructs = aSTExtractor.getLanguageConstructs(0, 23);
+        List<LanguageConstruct> languageConstructs = aSTExtractor.getLanguageConstructs(0, 41);
         
         for (LanguageConstruct languageConstruct : languageConstructs) {
             System.out.println("languageConstruct = " + languageConstruct.toString());

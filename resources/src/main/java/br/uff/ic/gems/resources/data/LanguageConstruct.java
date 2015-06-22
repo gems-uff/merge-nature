@@ -8,9 +8,11 @@ package br.uff.ic.gems.resources.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  *
@@ -25,6 +27,8 @@ public class LanguageConstruct implements Serializable {
     private String name;
     private int beginLine;
     private int endLine;
+    @Transient
+    private String identifier;
 
     public LanguageConstruct() {
     }
@@ -33,6 +37,14 @@ public class LanguageConstruct implements Serializable {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
+        this.identifier = null;
+    }
+
+    public LanguageConstruct(String name, int beginLine, int endLine, String identifier) {
+        this.name = name;
+        this.beginLine = beginLine;
+        this.endLine = endLine;
+        this.identifier = identifier;
     }
 
     /**
@@ -92,6 +104,20 @@ public class LanguageConstruct implements Serializable {
     }
 
     /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
      * Get kind of conflict from the language constructs
      *
      * @param begin
@@ -103,9 +129,11 @@ public class LanguageConstruct implements Serializable {
         List<LanguageConstruct> result = new ArrayList<>();
 
         for (LanguageConstruct languageConstruct : languageConstructs) {
-            if(!((languageConstruct.getBeginLine() < begin && languageConstruct.getEndLine() < begin) ||
-                    (languageConstruct.getBeginLine() > end && languageConstruct.getEndLine() > end))){
-                result.add(languageConstruct);
+            if (!((languageConstruct.getBeginLine() < begin && languageConstruct.getEndLine() < begin)
+                    || (languageConstruct.getBeginLine() > end && languageConstruct.getEndLine() > end))) {
+                if (!result.contains(languageConstruct)) {
+                    result.add(languageConstruct);
+                }
             }
         }
 
@@ -128,4 +156,41 @@ public class LanguageConstruct implements Serializable {
 
         return result.toString();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        hash = 29 * hash + Objects.hashCode(this.name);
+        hash = 29 * hash + this.beginLine;
+        hash = 29 * hash + this.endLine;
+        hash = 29 * hash + Objects.hashCode(this.identifier);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final LanguageConstruct other = (LanguageConstruct) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.beginLine != other.beginLine) {
+            return false;
+        }
+        if (this.endLine != other.endLine) {
+            return false;
+        }
+        if (!Objects.equals(this.identifier, other.identifier)) {
+            return false;
+        }
+        return true;
+    }
+
+    
 }

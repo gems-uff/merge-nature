@@ -13,6 +13,8 @@ public class ASTTypes {
 
     public static final String ANNOTATION = "Annotation";
     public static final String ANNOTATION_TYPE_MEMBER_DECLARATION = "AnnotationTypeMemberDeclaration";
+    public static final String ARRAY_ACCESS = "ArrayAccess";
+    public static final String ARRAY_INITIALIZER = "ArrayInitializer";
     public static final String ASSERT_STATEMENT = "AssertStatement";
     public static final String ATTRIBUTE = "Attribute";
     public static final String BREAK_STATEMENT = "BreakStatement";

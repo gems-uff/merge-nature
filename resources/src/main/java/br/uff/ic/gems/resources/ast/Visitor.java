@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
-import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.AssertStatement;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -47,6 +46,7 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
@@ -62,6 +62,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
@@ -145,6 +146,18 @@ public class Visitor extends ASTVisitor {
 
         return begin;
     }
+
+    public String getTypeByIdentifier(String identifier) {
+        for (LanguageConstruct languageConstruct : languageConstructs) {
+            if (languageConstruct.getIdentifier() != null) {
+                if (languageConstruct.getIdentifier().equals(identifier)) {
+                    return languageConstruct.getName();
+                }
+            }
+
+        }
+        return null;
+    }
     /*=========================================================================
      ***************************************************************************
      |                       Begin visitors selected                           |
@@ -166,6 +179,36 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         languageConstructs.add(new LanguageConstruct(ASTTypes.CLASS_DECLARATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayAccess node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ARRAY_ACCESS, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayCreation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(ArrayInitializer node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ARRAY_INITIALIZER, begin, end));
 
         return true;
     }
@@ -294,9 +337,18 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(FieldDeclaration node) {
+
         int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, begin, end));
+
+        List<VariableDeclarationFragment> fragments = node.fragments();
+
+        for (VariableDeclarationFragment fragment : fragments) {
+            begin = cu.getLineNumber(fragment.getStartPosition());
+            end = cu.getLineNumber(fragment.getStartPosition() + fragment.getLength());
+            languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, begin, end, fragment.getName().getIdentifier()));
+
+        }
 
         return true;
     }
@@ -425,7 +477,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(SingleVariableDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end, node.getName().getIdentifier()));
 
         return true;
     }
@@ -512,18 +564,30 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(VariableDeclarationExpression node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+
+        List<VariableDeclarationFragment> fragments = node.fragments();
+        for (VariableDeclarationFragment fragment : fragments) {
+            int begin = cu.getLineNumber(fragment.getStartPosition());
+            int end = cu.getLineNumber(fragment.getStartPosition() + fragment.getLength());
+            languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end, fragment.getName().getIdentifier()));
+        }
 
         return true;
     }
 
     @Override
     public boolean visit(VariableDeclarationStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+        int begin, end;
+
+        List<VariableDeclarationFragment> fragments = node.fragments();
+
+        for (VariableDeclarationFragment fragment : fragments) {
+            String identifier = fragment.getName().getIdentifier();
+            begin = cu.getLineNumber(fragment.getStartPosition());
+            end = cu.getLineNumber(fragment.getStartPosition() + fragment.getLength());
+            languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end, identifier));
+
+        }
 
         return true;
     }
@@ -557,46 +621,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    @Override
-    public boolean visit(ArrayAccess node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("ArrayAccess", begin, end));
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(ArrayCreation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("ArrayCreation", begin, end));
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(ArrayInitializer node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("ArrayInitializer", begin, end));
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(ArrayType node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("ArrayType", begin, end));
-
-        return true;
-    }
-
     public boolean visit(Expression node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -621,6 +645,20 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         languageConstructs.add(new LanguageConstruct("QualifiedType", begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(SimpleName node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        String typeByIdentifier = getTypeByIdentifier(node.getIdentifier());
+
+        if (typeByIdentifier != null) {
+            languageConstructs.add(new LanguageConstruct(typeByIdentifier, begin, end, node.getIdentifier()));
+        }
 
         return true;
     }

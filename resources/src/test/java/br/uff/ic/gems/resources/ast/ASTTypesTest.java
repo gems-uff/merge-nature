@@ -12,11 +12,17 @@ package br.uff.ic.gems.resources.ast;
  */
 public class ASTTypesTest {
     
+    static int global;
+    
     public static void main(String[] args) {
         
-        int b = 0;
+        int b = 0, f, h, ghiotto;
         
-        int[] a = new int[5];
+        int[] a = {1,2,3,4,5};
+        
+        int[] c = new int[6];
+        
+        global = 30;
         
         a[0] = 1;
         a[1] = b;
@@ -24,6 +30,10 @@ public class ASTTypesTest {
         
         b = 5;
         
+        c[0] = 10;
+        
+        
+        //Comment
         a[3] = b;
         
         System.out.println(a[2]);
