@@ -125,6 +125,15 @@ public class Visitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(BreakStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.BREAK_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
     public boolean visit(CatchClause node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -151,10 +160,58 @@ public class Visitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(ConstructorInvocation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
+
+        return true;
+    }
+    
+    @Override
+    public boolean visit(ContinueStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.CONTINUE_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
     public boolean visit(EnhancedForStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnumConstantDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        Javadoc javadoc = node.getJavadoc();
+
+        if (javadoc != null) {
+
+            int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
+            int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
+
+            languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, endJavadoc + 1, end));
+        } else {
+            languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, begin, end));
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(EnumDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_DECLARATION, begin, end));
 
         return true;
     }
@@ -251,6 +308,16 @@ public class Visitor extends ASTVisitor {
     }
 
     @Override
+    public boolean visit(NormalAnnotation node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, begin, end));
+
+        return true;
+    }
+    
+    @Override
     public boolean visit(PackageDeclaration node) {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -284,6 +351,16 @@ public class Visitor extends ASTVisitor {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(SuperConstructorInvocation node) {
+
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
         return true;
     }
@@ -387,30 +464,6 @@ public class Visitor extends ASTVisitor {
      |                                  Tested                                |
      ***************************************************************************
      =========================================================================*/
-    /*>>>>>>>>>>>>>>>>>                   Annotation                          */
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           BreakStatement
-    @Override
-    public boolean visit(BreakStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct("BreakStatement", begin, end));
-
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           ContinueStatement
-    @Override
-    public boolean visit(ContinueStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct("ContinueStatement", begin, end));
-
-//        System.out.println("ContinueStatement (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    ////>>>>>>>>>>>>>>>>>>>>>>>>>>>           DoStatement
     @Override
     public boolean visit(DoStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -420,52 +473,6 @@ public class Visitor extends ASTVisitor {
         return true;
     }
 
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           Enum
-    @Override
-    public boolean visit(EnumConstantDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        Javadoc javadoc = node.getJavadoc();
-
-        if (javadoc != null) {
-
-            int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
-            int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
-
-            languageConstructs.add(new LanguageConstruct("EnumConstantDeclaration", endJavadoc + 1, end));
-        } else {
-            languageConstructs.add(new LanguageConstruct("EnumConstantDeclaration", begin, end));
-        }
-
-//        System.out.println("EnumConstantDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    @Override
-    public boolean visit(EnumDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct("EnumConstantDeclaration", begin, end));
-
-//        System.out.println("EnumConstantDeclaration (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>           SuperConstructorInvocation 
-    @Override
-    public boolean visit(SuperConstructorInvocation node) {
-
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct("SuperConstructorInvocation", begin, end));
-
-//        System.out.println("SuperConstructorInvocation (" + begin + ", " + end + ")");
-//        System.out.println(node.toString());
-        return true;
-    }
 
     /*
      */
@@ -480,27 +487,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         languageConstructs.add(new LanguageConstruct("AnnotationDifferent", begin, end));
-
-        return true;
-    }
-
-    //
-    @Override
-    public boolean visit(NormalAnnotation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("NormalAnnotation", begin, end));
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(ConstructorInvocation node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("ConstructorInvocation", begin, end));
 
         return true;
     }

@@ -14,9 +14,14 @@ public class ASTTypes {
     public static final String ANNOTATION = "Annotation";
     public static final String ANNOTATION_TYPE_MEMBER_DECLARATION = "AnnotationTypeMemberDeclaration";
     public static final String ATTRIBUTE = "Attribute";
+    public static final String BREAK_STATEMENT = "BreakStatement";
+    public static final String CASE_STATEMENT = "CaseStatement";
     public static final String CATCH_CLAUSE = "CatchClause";
     public static final String CLASS_DECLARATION = "ClassDeclaration";
     public static final String COMMENT = "Comment";
+    public static final String CONTINUE_STATEMENT = "ContinueStatement";
+    public static final String ENUM_DECLARATION = "EnumDeclaration";
+    public static final String ENUM_VALUE = "EnumValue";
     public static final String FOR_STATEMENT = "ForStatement";
     public static final String IF_STATEMENT = "IfStatement";
     public static final String IMPORT_DECLARATION = "ImportDeclaration";
@@ -32,5 +37,4 @@ public class ASTTypes {
     public static final String TRY_STATEMENT = "TryStatement";
     public static final String VARIABLE = "Variable";
     public static final String WHILE_STATEMENT = "WhileStatement";
-    public static final String CASE_STATEMENT = "CaseStatement";
 }
