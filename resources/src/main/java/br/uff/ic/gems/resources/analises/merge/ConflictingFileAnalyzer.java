@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jdt.core.dom.ThisExpression;
 
 /**
  *
@@ -94,20 +93,21 @@ public class ConflictingFileAnalyzer {
 
             String leftRelativePath = getMove(left);
             String rightRelativePath = getMove(right);
-            
 
-            if(leftRelativePath == null)
+            if (leftRelativePath == null) {
                 leftRelativePath = relativePath;
-            
-            if(rightRelativePath == null)
+            }
+
+            if (rightRelativePath == null) {
                 rightRelativePath = relativePath;
+            }
 
             String currentFile, leftFile, rightFile;
-            
+
             currentFile = repositoryPath + File.separator + relativePath;
             leftFile = leftRepository + File.separator + leftRelativePath;
             rightFile = rightRepository + File.separator + rightRelativePath;
-            
+
             if (conflictingFilePath.contains(".java")) {
                 try {
                     leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
@@ -210,7 +210,9 @@ public class ConflictingFileAnalyzer {
     }
 
     private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
-        List<ConflictingChunk> result = new ArrayList<>();
+        List<ConflictingChunk> result, aux;
+        result = new ArrayList<>();
+        aux = new ArrayList<>();
         ConflictingChunk conflictingChunk = new ConflictingChunk();
         int begin = 0, separator = 0, end = 0, identifier = 1;
 
@@ -236,16 +238,17 @@ public class ConflictingFileAnalyzer {
         }
 
         while (!(begins.isEmpty() || separators.isEmpty() || ends.isEmpty())) {
+            Integer b = 0, s = 0, e = 0;
 
             for (int i = begins.size() - 1; i >= 0; i--) {
-                Integer b = begins.get(i);
+                b = begins.get(i);
 
                 for (int j = 0; j < separators.size(); j++) {
-                    Integer s = separators.get(j);
+                    s = separators.get(j);
 
                     if (s > b) {
                         for (int k = 0; k < ends.size(); k++) {
-                            Integer e = ends.get(k);
+                            e = ends.get(k);
                             if (e > s) {
                                 ends.remove(e);
                                 break;
@@ -260,14 +263,22 @@ public class ConflictingFileAnalyzer {
             }
 
             conflictingChunk = new ConflictingChunk();
-            conflictingChunk.setBeginLine(begin);
-            conflictingChunk.setSeparatorLine(separator);
-            conflictingChunk.setEndLine(end);
+            conflictingChunk.setBeginLine(b);
+            conflictingChunk.setSeparatorLine(s);
+            conflictingChunk.setEndLine(e);
             conflictingChunk.setIdentifier("Case " + (identifier++));
 
-            result.add(conflictingChunk);
+            aux.add(conflictingChunk);
         }
 
+        int index = 1;
+        for (int i = aux.size() - 1; i >= 0; i--) {
+            ConflictingChunk cc = aux.get(i);
+            cc.setIdentifier("Conflicting chunk "+index++);
+            
+            result.add(cc);
+        }
+        
         return result;
     }
 
