@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.AssertStatement;
 import org.eclipse.jdt.core.dom.BlockComment;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -111,14 +112,48 @@ public class Visitor extends ASTVisitor {
         this.languageConstructs = languageConstructs;
     }
 
+    public int begin(BodyDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+
+        Javadoc javadoc = node.getJavadoc();
+        int javadocBegin = -1;
+
+        if (javadoc != null) {
+            javadocBegin = cu.getLineNumber(javadoc.getStartPosition());
+        }
+
+        if (begin == javadocBegin) {
+            begin = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength() + 1);
+        }
+
+        return begin;
+    }
+
+    public int begin(PackageDeclaration node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+
+        Javadoc javadoc = node.getJavadoc();
+        int javadocBegin = -1;
+
+        if (javadoc != null) {
+            javadocBegin = cu.getLineNumber(javadoc.getStartPosition());
+        }
+
+        if (begin == javadocBegin) {
+            begin = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength() + 1);
+        }
+
+        return begin;
+    }
     /*=========================================================================
      ***************************************************************************
      |                       Begin visitors selected                           |
      ***************************************************************************
      =========================================================================*/
+
     @Override
     public boolean visit(AnnotationTypeMemberDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION_TYPE_MEMBER_DECLARATION, begin, end));
 
@@ -172,7 +207,7 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(CatchClause node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -238,27 +273,19 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(EnumConstantDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         Javadoc javadoc = node.getJavadoc();
 
-        if (javadoc != null) {
-
-            int beginJavadoc = cu.getLineNumber(javadoc.getStartPosition());
-            int endJavadoc = cu.getLineNumber(javadoc.getStartPosition() + javadoc.getLength());
-
-            languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, endJavadoc + 1, end));
-        } else {
-            languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, begin, end));
-        }
+        languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, begin, end));
 
         return true;
     }
 
     @Override
     public boolean visit(EnumDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_DECLARATION, begin, end));
 
@@ -267,7 +294,7 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(FieldDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, begin, end));
 
@@ -303,7 +330,7 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(Initializer node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.INITIALIZER, begin, end));
 
@@ -339,7 +366,7 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(MethodDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_DECLARATION, begin, end));
@@ -368,7 +395,7 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(PackageDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.PACKAGE_DECLARATION, begin, end));
 
@@ -396,7 +423,6 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(SingleVariableDeclaration node) {
-
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, begin, end));
@@ -406,7 +432,6 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(SuperConstructorInvocation node) {
-
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
@@ -416,7 +441,6 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(SuperMethodInvocation node) {
-
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
@@ -451,7 +475,7 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
-    
+
     @Override
     public boolean visit(ThrowStatement node) {
         int begin = cu.getLineNumber(node.getStartPosition());
@@ -472,7 +496,7 @@ public class Visitor extends ASTVisitor {
 
     @Override
     public boolean visit(TypeDeclaration node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
+        int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         isInterface = node.isInterface();
@@ -520,7 +544,7 @@ public class Visitor extends ASTVisitor {
      =========================================================================*/
     /*=========================================================================
      ***************************************************************************
-     |                                  Untested                                |
+     |                                  Unexecuted                                |
      ***************************************************************************
      =========================================================================*/
     //Annotation
@@ -639,5 +663,10 @@ public class Visitor extends ASTVisitor {
 
         return true;
     }
+    /*=========================================================================
+     ***************************************************************************
+     |                                  Untested                                |
+     ***************************************************************************
+     =========================================================================*/
 
 }

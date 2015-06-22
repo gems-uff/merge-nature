@@ -26,5 +26,6 @@ public class ASTTypesTest {
         
         a[3] = b;
         
+        System.out.println(a[2]);
     }
 }
