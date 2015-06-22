@@ -20,6 +20,7 @@ public class ASTTypes {
     public static final String CLASS_DECLARATION = "ClassDeclaration";
     public static final String COMMENT = "Comment";
     public static final String CONTINUE_STATEMENT = "ContinueStatement";
+    public static final String DO_STATEMENT = "DoStatement";
     public static final String ENUM_DECLARATION = "EnumDeclaration";
     public static final String ENUM_VALUE = "EnumValue";
     public static final String FOR_STATEMENT = "ForStatement";

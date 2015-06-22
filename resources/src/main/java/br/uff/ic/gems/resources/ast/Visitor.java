@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.BreakStatement;
@@ -21,7 +20,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.ContinueStatement;
 import org.eclipse.jdt.core.dom.DoStatement;
-import org.eclipse.jdt.core.dom.EmptyStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
@@ -174,6 +172,15 @@ public class Visitor extends ASTVisitor {
         int begin = cu.getLineNumber(node.getStartPosition());
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.CONTINUE_STATEMENT, begin, end));
+
+        return true;
+    }
+    
+    @Override
+    public boolean visit(DoStatement node) {
+        int begin = cu.getLineNumber(node.getStartPosition());
+        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        languageConstructs.add(new LanguageConstruct(ASTTypes.DO_STATEMENT, begin, end));
 
         return true;
     }
@@ -459,23 +466,8 @@ public class Visitor extends ASTVisitor {
      |                         End visitors selected                           |
      ***************************************************************************
      =========================================================================*/
-    /*=========================================================================
-     ***************************************************************************
-     |                                  Tested                                |
-     ***************************************************************************
-     =========================================================================*/
-    @Override
-    public boolean visit(DoStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct("DoStatement", begin, end));
-
-        return true;
-    }
-
-
-    /*
-     */
+    
+    
     /*=========================================================================
      ***************************************************************************
      |                                  Untested                                |
@@ -487,16 +479,6 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
         languageConstructs.add(new LanguageConstruct("AnnotationDifferent", begin, end));
-
-        return true;
-    }
-
-    @Override
-    public boolean visit(EmptyStatement node) {
-        int begin = cu.getLineNumber(node.getStartPosition());
-        int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-
-        languageConstructs.add(new LanguageConstruct("EmptyStatement", begin, end));
 
         return true;
     }
