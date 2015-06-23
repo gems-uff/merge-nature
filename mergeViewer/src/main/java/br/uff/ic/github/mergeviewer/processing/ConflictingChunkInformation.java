@@ -5,6 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer.processing;
 
+import br.uff.ic.gems.resources.analises.merge.ConflictingFileAnalyzer;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.github.mergeviewer.ShowCase;
 import br.uff.ic.gems.resources.ast.ASTAuxiliar;
@@ -17,7 +18,6 @@ import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,21 +60,23 @@ public class ConflictingChunkInformation implements Runnable {
 
         String pathConflict = pathMergedRepository + pathRelativeFile;
         String pathSolution = pathDeveloperMergedRepository + pathRelativeFile;
+        String pathLeft = pathLeftRepository + pathRelativeFile;
+        String pathRight = pathRightRepository + pathRelativeFile;
 
         //Getting conflicting file
-        List fileConflict = null;
+        List<String> fileConflict = null;
         //Getting solution file
-        List fileSolution = null;
+        List<String> fileSolution = null;
         //Getting left file
-        List leftFile = null;
+        List<String> leftFile = null;
         //Getting Right file
-        List rightFile = null;
+        List<String> rightFile = null;
 
         try {
             fileConflict = FileUtils.readLines(new File(pathConflict));
             fileSolution = FileUtils.readLines(new File(pathSolution));
-            leftFile = FileUtils.readLines(new File(pathLeftRepository + pathRelativeFile));
-            rightFile = FileUtils.readLines(new File(pathRightRepository + pathRelativeFile));
+            leftFile = FileUtils.readLines(new File(pathLeft));
+            rightFile = FileUtils.readLines(new File(pathRight));
         } catch (IOException ex) {
             Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -89,37 +91,37 @@ public class ConflictingChunkInformation implements Runnable {
         ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
         cpe.extract();
 
-        
         KindConflict leftKindConflict = new KindConflict();
         KindConflict rightKindConflict = new KindConflict();
 
+        int beginLine = conflictChunk.getBeginLine() + 1;
+        int separatorLine = (conflictChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
+        int endLine = conflictChunk.getEndLine();
+
+        String left = fileConflict.get(beginLine - 1);
+        String right = fileConflict.get(endLine);
+
+        String leftRelativePath = ConflictingFileAnalyzer.getMove(left);
+        String rightRelativePath = ConflictingFileAnalyzer.getMove(right);
+
+        if (leftRelativePath == null) {
+            leftRelativePath = pathRelativeFile;
+        }
+
+        if (rightRelativePath == null) {
+            rightRelativePath = pathRelativeFile;
+        }
+
         if (pathRelativeFile.contains(".java")) {
             try {
-                int beginLine = conflictChunk.getBeginLine() + 1;
-                int separatorLine = (conflictChunk.getBeginLine() + 1) + (cpe.getSeparator() -cpe.getBegin());
-                int endLine = conflictChunk.getEndLine();
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, pathMergedRepository, pathLeftRepository, pathRelativeFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, pathMergedRepository, pathRightRepository, pathRelativeFile);
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, pathMergedRepository, pathConflict, pathLeft);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, pathMergedRepository, pathConflict, pathRight);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            String[] fileBroken = pathRelativeFile.split("\\.");
-
-            
-            List<LanguageConstruct> leftLanguageConstructs = new ArrayList<>();
-            leftLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));
-
-            leftKindConflict.setBeginLine(0);
-            leftKindConflict.setEndLine(leftFile.size());
-            leftKindConflict.setLanguageConstructs(leftLanguageConstructs);
-
-            List<LanguageConstruct> rightLanguageConstructs = new ArrayList<>();
-            rightLanguageConstructs.add(new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, 0));
-
-            rightKindConflict.setBeginLine(0);
-            rightKindConflict.setEndLine(rightFile.size());
-            rightKindConflict.setLanguageConstructs(rightLanguageConstructs);
+            leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, pathMergedRepository, pathConflict, pathLeft);
+            rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine - 1, pathMergedRepository, pathConflict, pathRight);
         }
 
         //Get the following data from the conflict:
@@ -129,7 +131,6 @@ public class ConflictingChunkInformation implements Runnable {
         //- initialVersion and finalVersion
         int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
         int separator, begin, end;
-        String initialFile, finalFile;
 
         context1bOriginal = beginConflict + 1;
         context1eOriginal = getConflictChunk().getBeginLine();
@@ -143,138 +144,24 @@ public class ConflictingChunkInformation implements Runnable {
         end = endConflict;
         separator = begin + cpe.getSeparator() - cpe.getBegin();
 
-        initialFile = pathConflict;
-        finalFile = pathSolution;
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
-        int context1 = -1, context2 = fileSolution.size() + 1;
-        int context1Original = -1, context2Original = fileConflict.size();
+        int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, repositioning, pathConflict, pathSolution, begin, separator, end);
 
-        //Context 1
-        boolean changed = false;
-        for (int i = context1bOriginal; i <= context1eOriginal; i++) {
-            context1 = repositioning.repositioning(initialFile, finalFile, i);
+        int context2 = ConflictingChunk.checkContext2(fileSolution, fileConflict, context2eOriginal, context2bOriginal, repositioning, pathConflict, pathSolution, separator, begin, end);
 
-            if (context1 != -1) {
-                context1Original = i;
-                changed = true;
-                break;
-            }
-        }
-
-        if (context1 == -1 && !changed) {
-            int c1a0 = -1, c1b0 = -1;
-            int c1a = -1, c1b = -1;
-
-            for (int i = begin; i < separator; i++) {
-                c1a = repositioning.repositioning(initialFile, finalFile, i);
-
-                if (c1a != -1) {
-                    c1a0 = i;
-                    break;
-                }
-            }
-
-            for (int i = separator + 1; i < end - 1; i++) {
-                c1b = repositioning.repositioning(initialFile, finalFile, i);
-
-                if (c1b != -1) {
-                    c1b0 = i;
-                    break;
-                }
-            }
-
-            if (c1a != -1 || c1b != -1) {
-                if (c1a == -1) {
-                    context1 = c1b;
-                    context1Original = c1b0;
-                } else if (c1b == -1) {
-                    context1 = c1a;
-                    context1Original = c1a0;
-                } else if (c1a < c1b) {
-                    context1 = c1a;
-                    context1Original = c1a0;
-                } else {
-                    context1 = c1b;
-                    context1Original = c1b0;
-                }
-            }
-
-        }
-
-        //Context 2
-        changed = false;
-        for (int i = context2eOriginal; i >= context2bOriginal; i--) {
-            context2 = repositioning.repositioning(initialFile, finalFile, i);
-
-            if (context2 != -1) {
-                context2Original = i;
-                changed = true;
-                break;
-            }
-        }
-
-        if (context2 == fileSolution.size() && !changed) {
-
-            int c2a0 = -1, c2b0 = -1;
-            int c2a = -1, c2b = -1;
-
-            for (int i = separator - 1; i > begin; i--) {
-                c2a = repositioning.repositioning(initialFile, finalFile, i);
-
-                if (c2a != -1) {
-                    c2a0 = i;
-                    break;
-                }
-            }
-
-            for (int i = end - 1; i > separator; i--) {
-                c2b = repositioning.repositioning(initialFile, finalFile, i);
-
-                if (c2b != -1) {
-                    c2b0 = i;
-                    break;
-                }
-            }
-
-            if (c2a != -1 || c2b != -1) {
-                if (c2a == -1) {
-                    context2 = c2b;
-                    context2Original = c2b0;
-                } else if (c2b == -1) {
-                    context2 = c2a;
-                    context2Original = c2a0;
-                } else if (c2a < c2b) {
-                    context2 = c2b;
-                    context2Original = c2b0;
-                } else {
-                    context2 = c2a;
-                    context2Original = c2a0;
-                }
-            }
-
-        }
-
-        //Treating exceptions
-        if (context1 < 1) {
-            context1 = 1;
-        }
-        if (context2 > fileSolution.size() || context2 < 1) {
-            context2 = fileSolution.size();
-        }
-
-        try {
-            System.out.println(context1Original + " => " + context1);
-            System.out.println("\t" + fileConflict.get(context1Original - 1));
-            System.out.println("\t" + fileSolution.get(context1 - 1));
-
-            System.out.println(context2Original + " => " + context2);
-            System.out.println("\t" + fileConflict.get(context2Original - 1));
-            System.out.println("\t" + fileSolution.get(context2 - 1));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.out.println(context1Original + " => " + context1);
+//            System.out.println("\t" + fileConflict.get(context1Original - 1));
+//            System.out.println("\t" + fileSolution.get(context1 - 1));
+//
+//            System.out.println(context2Original + " => " + context2);
+//            System.out.println("\t" + fileConflict.get(context2Original - 1));
+//            System.out.println("\t" + fileSolution.get(context2 - 1));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
