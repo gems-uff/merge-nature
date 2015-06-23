@@ -10,9 +10,6 @@ import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.KindConflict;
-import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
-import br.uff.ic.gems.resources.data.dao.KindConflictDAO;
-import br.uff.ic.gems.resources.data.dao.LanguageConstructDAO;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.utils.Information;
@@ -35,9 +32,6 @@ public class ConflictingFileAnalyzer {
 
         int context = 3;
         boolean hasSolution = true;
-        LanguageConstructDAO languageConstructDAO = new LanguageConstructDAO();
-        ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
-        KindConflictDAO kindConflictDAO = new KindConflictDAO();
 
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
@@ -74,8 +68,13 @@ public class ConflictingFileAnalyzer {
             int beginConflict, endConflict;
             beginConflict = ASTAuxiliar.getConflictLowerBound(conflictingChunk, context);
             endConflict = ASTAuxiliar.getConflictUpperBound(conflictingChunk, context, conflictingContent);
+            List<String> conflictingArea = null;
 
-            List<String> conflictingArea = conflictingContent.subList(beginConflict, endConflict);
+            if (conflictingContent.size() > endConflict) {
+                conflictingArea = conflictingContent.subList(beginConflict, endConflict + 1);
+            } else {
+                conflictingArea = conflictingContent.subList(beginConflict, endConflict);
+            }
 
             //Getting parts of conflict area
             ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
@@ -111,14 +110,14 @@ public class ConflictingFileAnalyzer {
             if (conflictingFilePath.contains(".java")) {
                 try {
                     leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine, repositoryPath, currentFile, rightFile);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, repositoryPath, currentFile, rightFile);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
 
                 leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, repositoryPath, currentFile, rightFile);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine - 1, repositoryPath, currentFile, rightFile);
 
             }
 
@@ -129,7 +128,6 @@ public class ConflictingFileAnalyzer {
             //- initialVersion and finalVersion
             int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
             int separator, begin, end;
-            String initialPath, finalPath;
 
             context1bOriginal = beginConflict + 1;
             context1eOriginal = conflictingChunk.getBeginLine();
@@ -143,25 +141,26 @@ public class ConflictingFileAnalyzer {
             end = endConflict;
             separator = begin + cpe.getSeparator() - cpe.getBegin();
 
-            initialPath = conflictingFilePath;
-            finalPath = solutionPath;
-
             Repositioning repositioning = new Repositioning(developerMergedRepository);
 
-            int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, repositioning, initialPath, finalPath, begin, separator, end);
+            int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, repositioning, conflictingFilePath, solutionPath, begin, separator, end);
 
-            int context2 = ConflictingChunk.checkContext2(solutionContent, conflictingContent, context2eOriginal, context2bOriginal, repositioning, initialPath, finalPath, separator, begin, end);
+            int context2 = ConflictingChunk.checkContext2(solutionContent, conflictingContent, context2eOriginal, context2bOriginal, repositioning, conflictingFilePath, solutionPath, separator, begin, end);
 
-            List<String> solutionArea = solutionContent.subList(context1 - 1, context2);
+            List<String> solutionArea;
+            if (context2 < solutionContent.size()) {
+                solutionArea = solutionContent.subList(context1 - 1, context2 + 1);
+            } else {
+                solutionArea = solutionContent.subList(context1 - 1, context2);
+            }
 
             String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
             DeveloperDecision developerDecision = DeveloperDecision.MANUAL;
-            if (hasSolution) {
-                //SetSolution
-                developerDecision = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context);
-                conflictingChunk.setDeveloperDecision(developerDecision);
-            }
+
+            //SetSolution
+            developerDecision = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context);
+            conflictingChunk.setDeveloperDecision(developerDecision);
 
 //            System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
 //            System.out.println("=================Conflicting area=================");
@@ -185,20 +184,11 @@ public class ConflictingFileAnalyzer {
 //            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
-//                for (LanguageConstruct leftLanguageConstruct : leftKindConflict.getLanguageConstructsJava()) {
-//                    languageConstructDAO.save(leftLanguageConstruct);
-//                }
-//                for (LanguageConstruct rightLanguageConstruct : rightKindConflict.getLanguageConstructsJava()) {
-//                    languageConstructDAO.save(rightLanguageConstruct);
-//                }
-//                kindConflictDAO.save(leftKindConflict);
-//                kindConflictDAO.save(rightKindConflict);
                 conflictingChunk.setLeftKindConflict(leftKindConflict);
                 conflictingChunk.setRightKindConflict(rightKindConflict);
                 conflictingChunk.setConflictingContent(conflictingArea);
                 conflictingChunk.setSolutionContent(solutionArea);
 
-//                conflictingChunkDAO.save(conflictingChunk);
             } catch (Exception ex) {
                 Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -274,15 +264,15 @@ public class ConflictingFileAnalyzer {
         int index = 1;
         for (int i = aux.size() - 1; i >= 0; i--) {
             ConflictingChunk cc = aux.get(i);
-            cc.setIdentifier("Conflicting chunk "+index++);
-            
+            cc.setIdentifier("Conflicting chunk " + index++);
+
             result.add(cc);
         }
-        
+
         return result;
     }
 
-    private static String getMove(String line) {
+    public static String getMove(String line) {
 
         if (line.contains(":")) {
             String[] split = line.split(":");
