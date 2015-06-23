@@ -120,7 +120,6 @@ public class Repositioning {
 
         for (Operation operation : operations) {
 
-
             if (operation.getLine() > line) {
                 return line - removeDisplacement + addDisplacement;
             }
@@ -136,6 +135,6 @@ public class Repositioning {
             }
         }
 
-        return result;
+        return result - removeDisplacement + addDisplacement;
     }
 }
