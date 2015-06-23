@@ -15,10 +15,12 @@ and open the template in the editor.
     alignment-baseline: central;
     text-align: left;
     background: #BBBBBB;
+    height: min-content;
+
 }
 
 .table>td{
-        padding:7px; border:#4e95f4 1px solid;
+    border:#4e95f4 1px solid;
 }
 .table>tbody>tr { 
     background: #AFAFAF;
@@ -41,6 +43,6 @@ and open the template in the editor.
 }
 
 .title{
-        font-size: 14px;
+    font-size: 14px;
 }
 
