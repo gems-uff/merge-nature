@@ -200,7 +200,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     @Override
@@ -266,7 +266,7 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     public boolean visit(Comment node) {
@@ -284,7 +284,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     @Override
@@ -432,7 +432,7 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     @Override
@@ -488,7 +488,7 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     @Override
@@ -497,7 +497,7 @@ public class Visitor extends ASTVisitor {
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, begin, end));
 
-        return true;
+        return false;
     }
 
     @Override

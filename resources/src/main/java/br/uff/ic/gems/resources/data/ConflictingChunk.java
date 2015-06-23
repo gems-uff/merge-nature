@@ -7,6 +7,7 @@ package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -18,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -169,6 +171,16 @@ public class ConflictingChunk implements Serializable {
         if (context2 > solutionContent.size() || context2 < 1) {
             context2 = solutionContent.size();
         }
+//        try {
+//            List fileConflict = FileUtils.readLines(new File(initialPath));
+//            List fileSolution = FileUtils.readLines(new File(finalPath));
+//            System.out.println(context2Original + " => " + context2);
+//            System.out.println("\t" + fileConflict.get(context2Original - 1));
+//            System.out.println("\t" + fileSolution.get(context2 - 1));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        
         return context2;
     }
 
@@ -222,6 +234,17 @@ public class ConflictingChunk implements Serializable {
         if (context1 < 1) {
             context1 = 1;
         }
+
+//        try {
+//            List fileConflict = FileUtils.readLines(new File(initialPath));
+//            List fileSolution = FileUtils.readLines(new File(finalPath));
+//            System.out.println(context1Original + " => " + context1);
+//            System.out.println("\t" + fileConflict.get(context1Original - 1));
+//            System.out.println("\t" + fileSolution.get(context1 - 1));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
         return context1;
     }
 

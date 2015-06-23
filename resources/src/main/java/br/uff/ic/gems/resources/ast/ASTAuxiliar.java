@@ -16,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -37,14 +35,14 @@ public class ASTAuxiliar {
             Git.clone(sourceRepository, sourceRepository, leftRepository);
         }
         if (!new File(rightRepository).isDirectory()) {
-            System.out.println("Cloning rifht repository...");
+            System.out.println("Cloning right repository...");
             Git.clone(sourceRepository, sourceRepository, rightRepository);
         }
     }
 
     public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
         int conflictingUpperBound;
-        conflictingUpperBound = conflictArea.getEndLine() + context + 1;////I don't want do exclude the last line
+        conflictingUpperBound = conflictArea.getEndLine() + context;////I don't want do exclude the last line
         if (conflictingUpperBound > fileConflict.size()) {
             conflictingUpperBound = fileConflict.size();
         }
@@ -92,6 +90,16 @@ public class ASTAuxiliar {
         return kindConflict;
     }
 
+    /**
+     * Method to get Java Language Constructs
+     * @param begin Beginning line 
+     * @param end ending line
+     * @param currentRepository Repository that the conflicting version is
+     * @param currentFile Current file
+     * @param baseFile Base file 
+     * @return
+     * @throws IOException 
+     */
     public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String currentFile, String baseFile) throws IOException {
 
         KindConflict kindConflict = new KindConflict();
