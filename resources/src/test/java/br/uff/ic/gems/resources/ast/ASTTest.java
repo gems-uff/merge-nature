@@ -6,7 +6,6 @@
 package br.uff.ic.gems.resources.ast;
 
 import br.uff.ic.gems.resources.data.LanguageConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import org.junit.After;
@@ -14,7 +13,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -45,7 +43,7 @@ public class ASTTest {
     public void test() throws IOException{
         ASTExtractor aSTExtractor = new ASTExtractor("src/test/java/br/uff/ic/gems/resources/ast/ASTTypesTest.java");
         aSTExtractor.parser();
-        List<LanguageConstruct> languageConstructs = aSTExtractor.getLanguageConstructs(0, 41);
+        List<LanguageConstruct> languageConstructs = aSTExtractor.getLanguageConstructs(0, 53);
         
         for (LanguageConstruct languageConstruct : languageConstructs) {
             System.out.println("languageConstruct = " + languageConstruct.toString());
