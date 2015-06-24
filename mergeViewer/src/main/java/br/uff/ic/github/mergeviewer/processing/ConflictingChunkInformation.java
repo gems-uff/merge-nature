@@ -14,6 +14,7 @@ import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
 import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
+import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
@@ -115,7 +116,6 @@ public class ConflictingChunkInformation implements Runnable {
 //        System.out.println(fileConflict.get(beginLine));//<<<<<<HEAD
 //        System.out.println(fileConflict.get(separatorLine));//===========
 //        System.out.println(fileConflict.get(endLine));//>>>>>>>>>
-
         if (pathRelativeFile.contains(".java")) {
             try {
                 leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft);
@@ -167,7 +167,14 @@ public class ConflictingChunkInformation implements Runnable {
 //        }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
-        String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
+//        String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
+        String dd;
+        try {
+            dd = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea).toString();
+        } catch (Exception ex) {
+            dd = DeveloperDecision.MANUAL.toString();
+            Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         ShowCase showCase = new ShowCase(conflictingArea, solutionArea, LanguageConstruct.toString(leftKindConflict.getLanguageConstructs()),
                 LanguageConstruct.toString(rightKindConflict.getLanguageConstructs()), dd);
