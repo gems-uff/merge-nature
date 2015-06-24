@@ -8,6 +8,7 @@ package br.uff.ic.gems.resources.data;
 import br.uff.ic.gems.resources.ast.ASTTypes;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -31,7 +32,7 @@ public class KindConflict implements Serializable {
     private int endLine;
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "KindConflict_LanguageConstruct", 
+    @JoinTable(name = "KindConflict_LanguageConstruct",
             joinColumns = @JoinColumn(name = "KindConflict_ID"),
             inverseJoinColumns = @JoinColumn(name = "LanguageConstruct_ID"))
     private List<LanguageConstruct> languageConstructs;
@@ -96,13 +97,17 @@ public class KindConflict implements Serializable {
         List<LanguageConstruct> result = new ArrayList<>();
         int currentIndex = this.beginLine;
 
+        String[] bodyASTTypes = {ASTTypes.CATCH_CLAUSE, ASTTypes.CLASS_DECLARATION, ASTTypes.DO_STATEMENT, ASTTypes.ENUM_DECLARATION,
+        ASTTypes.FOR_STATEMENT, ASTTypes.IF_STATEMENT, ASTTypes.INTERFACE_DECLARATION, ASTTypes.METHOD_DECLARATION, ASTTypes.STATIC_INITIALIZER,
+        ASTTypes.SWITCH_STATEMENT, ASTTypes.TRY_STATEMENT, ASTTypes.WHILE_STATEMENT};
+        List<String> bodyASTTypesList = Arrays.asList(bodyASTTypes);
         List<LanguageConstruct> copyLanguageConstructs = new ArrayList<>();
-        
+
         //Copying language constructs
         for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
             copyLanguageConstructs.add(languageConstruct);
         }
-        
+
         //Selecting language constructs
         while (currentIndex <= this.endLine) {
             int size = 0;
@@ -116,19 +121,104 @@ public class KindConflict implements Serializable {
             }
 
             if (currentLanguageConstruct.getId() == null) {
+                for (LanguageConstruct copyLanguageConstruct : copyLanguageConstructs) {
+                    if (copyLanguageConstruct.getBeginLine() <= currentIndex
+                            && currentIndex <= copyLanguageConstruct.getEndLine()
+                            && !bodyASTTypesList.contains(copyLanguageConstruct.getName())) {
+                        currentLanguageConstruct = copyLanguageConstruct;
+                        break;
+                    }
+
+                }
+            }
+
+            if (currentLanguageConstruct.getId() == null) {
                 currentIndex++;
             } else if (currentLanguageConstruct.getName().equals(ASTTypes.METHOD_DECLARATION)
-                    && currentLanguageConstruct.getEndLine() > this.endLine) {
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
                 currentLanguageConstruct = new LanguageConstruct(ASTTypes.METHOD_SIGNATURE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.CLASS_DECLARATION)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CLASS_SIGNATURE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.INTERFACE_DECLARATION)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.INTERFACE_SIGNATURE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.ENUM_DECLARATION)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.ENUM_SIGNATURE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.FOR_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.FOR_STATEMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.IF_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.IF_STATEMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.SWITCH_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.SWITCH_STATEMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.CATCH_CLAUSE)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CATCH_CLAUSE, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.COMMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.COMMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.DO_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.DO_STATEMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.STATIC_INITIALIZER)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.STATIC_INITIALIZER, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.TRY_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.TRY_STATEMENT, currentIndex, currentIndex);
+                result.add(currentLanguageConstruct);
+                currentIndex++;
+            } else if (currentLanguageConstruct.getName().equals(ASTTypes.WHILE_STATEMENT)
+                    && currentLanguageConstruct.getEndLine() > this.endLine
+                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.WHILE_STATEMENT, currentIndex, currentIndex);
                 result.add(currentLanguageConstruct);
                 currentIndex++;
             } else if (currentLanguageConstruct.getName().equals(ASTTypes.RETURN_STATEMENT)) {
                 result.add(currentLanguageConstruct);
                 copyLanguageConstructs.remove(currentLanguageConstruct);
-            } else if (currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() == 0){
+            } else if (currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() == 0) {
                 result.add(currentLanguageConstruct);
                 copyLanguageConstructs.remove(currentLanguageConstruct);
-            }else{
+            } else {
                 result.add(currentLanguageConstruct);
                 currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine();
             }

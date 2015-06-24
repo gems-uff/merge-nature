@@ -369,7 +369,7 @@ public class Visitor extends ASTVisitor {
     public boolean visit(Initializer node) {
         int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        languageConstructs.add(new LanguageConstruct(ASTTypes.INITIALIZER, begin, end));
+        languageConstructs.add(new LanguageConstruct(ASTTypes.STATIC_INITIALIZER, begin, end));
 
         return true;
     }
