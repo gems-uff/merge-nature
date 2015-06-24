@@ -17,6 +17,7 @@ public class ASTTypes {
     public static final String ARRAY_INITIALIZER = "ArrayInitializer";
     public static final String ASSERT_STATEMENT = "AssertStatement";
     public static final String ATTRIBUTE = "Attribute";
+    public static final String BLANK = "Blank";
     public static final String BREAK_STATEMENT = "BreakStatement";
     public static final String CASE_STATEMENT = "CaseStatement";
     public static final String CAST_EXPRESSION = "CastExpression";

@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.AssertStatement;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.BreakStatement;
@@ -87,22 +88,6 @@ public class Visitor extends ASTVisitor {
      * @return the languageConstructs
      */
     public List<LanguageConstruct> getLanguageConstructs() {
-
-        if (!processed) {
-
-            for (LanguageConstruct languageConstruct : languageConstructs) {
-                if (languageConstruct.getName().equals(ASTTypes.METHOD_DECLARATION)) {
-                    for (LanguageConstruct languageConstruct1 : languageConstructs) {
-                        if (languageConstruct1.getName().equals(ASTTypes.ANNOTATION)
-                                && languageConstruct.getBeginLine() == languageConstruct1.getBeginLine()) {
-                            languageConstruct.setBeginLine(languageConstruct.getBeginLine() + 1);
-                        }
-                    }
-                }
-            }
-
-        }
-
         return languageConstructs;
     }
 
@@ -421,6 +406,11 @@ public class Visitor extends ASTVisitor {
         int begin = begin(node);
         int end = cu.getLineNumber(node.getStartPosition() + node.getLength());
 
+        Block body = node.getBody();
+        if (body != null) {
+            begin = cu.getLineNumber(body.getStartPosition());
+            end = cu.getLineNumber(body.getStartPosition() + body.getLength());
+        }
         languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_DECLARATION, begin, end));
 
         return true;

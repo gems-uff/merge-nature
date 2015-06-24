@@ -83,11 +83,11 @@ public class ConflictingFileAnalyzer {
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
 
-            int beginLine = conflictingChunk.getBeginLine() + 1;
-            int separatorLine = (conflictingChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
+            int beginLine = conflictingChunk.getBeginLine();
+            int separatorLine = (conflictingChunk.getBeginLine()) + (cpe.getSeparator() - cpe.getBegin());
             int endLine = conflictingChunk.getEndLine();
 
-            String left = conflictingContent.get(beginLine - 1);
+            String left = conflictingContent.get(beginLine);
             String right = conflictingContent.get(endLine);
 
             String leftRelativePath = getMove(left);
@@ -107,17 +107,22 @@ public class ConflictingFileAnalyzer {
             leftFile = leftRepository + File.separator + leftRelativePath;
             rightFile = rightRepository + File.separator + rightRelativePath;
 
+//            List current = FileUtils.readLines(new File(currentFile));
+//            System.out.println(current.get(beginLine));//<<<<<<HEAD
+//            System.out.println(current.get(separatorLine));//===========
+//            System.out.println(current.get(endLine));//>>>>>>>>>
+
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, repositoryPath, currentFile, rightFile);
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, repositoryPath, currentFile, rightFile);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
 
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, repositoryPath, currentFile, leftFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine - 1, repositoryPath, currentFile, rightFile);
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine, endLine, repositoryPath, currentFile, rightFile);
 
             }
 
@@ -162,26 +167,6 @@ public class ConflictingFileAnalyzer {
             developerDecision = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context);
             conflictingChunk.setDeveloperDecision(developerDecision);
 
-//            System.out.println("=================" + conflictingChunk.getIdentifier() + "=================");
-//            System.out.println("=================Conflicting area=================");
-//            conflictingChunk.setConflictingContent(conflictingArea);
-//            for (String ca : conflictingArea) {
-//                System.out.println(ca);
-//            }
-//            System.out.println("=================Solution area=================");
-//            conflictingChunk.setSolutionContent(solutionArea);
-//            for (String sa : solutionArea) {
-//                System.out.println(sa);
-//            }
-//            System.out.println("=================Developers` decision=================");
-//            conflictingChunk.setDeveloperDecision(developerDecision);
-//            System.out.println(developerDecision.toString());
-//            System.out.println("=================Left language constructs=================");
-//            conflictingChunk.setLeftLanguageConstructs(leftLanguageConstructs);
-//            System.out.println(LanguageConstruct.toString(leftLanguageConstructs));
-//            System.out.println("=================Right language constructs=================");
-//            conflictingChunk.setRightLanguageConstructs(rightLanguageConstructs);
-//            System.out.println(LanguageConstruct.toString(rightLanguageConstructs));
             try {
 
                 conflictingChunk.setLeftKindConflict(leftKindConflict);

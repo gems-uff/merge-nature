@@ -92,66 +92,110 @@ public class ASTAuxiliar {
 
     /**
      * Method to get Java Language Constructs
-     * @param begin Beginning line 
+     *
+     * @param begin Beginning line
      * @param end ending line
      * @param currentRepository Repository that the conflicting version is
      * @param currentFile Current file
-     * @param baseFile Base file 
+     * @param baseFile Base file
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String currentFile, String baseFile) throws IOException {
-
         KindConflict kindConflict = new KindConflict();
 
-        Repositioning repositioning = new Repositioning(currentRepository);
-        int beginRepositioned = repositioning.repositioning(currentFile, baseFile, begin);
-        int endRepositioned = repositioning.repositioning(currentFile, baseFile, end);
+        if (end - begin > 1) {
+            int beginTextLine = begin + 1 + 1;//+1 - changing to file lines instead list - and +1 - line after the beginning/separator line 
+            int endTextLine = end + 1 - 1;//+1 - changing to file lines instead list - and 11 - line before the end/separator line 
 
-        //Dealing with AST
-        ASTExtractor ats = new ASTExtractor(baseFile);
-        ats.parser();
-        List<LanguageConstruct> languageConstructs = ats.getLanguageConstructs(beginRepositioned, endRepositioned);
+            Repositioning repositioning = new Repositioning(currentRepository);
+            int beginRepositioned = repositioning.repositioning(currentFile, baseFile, beginTextLine);
+            int endRepositioned = repositioning.repositioning(currentFile, baseFile, endTextLine);
 
-        kindConflict.setBeginLine(beginRepositioned);
-        kindConflict.setEndLine(endRepositioned);
-        kindConflict.setLanguageConstructs(languageConstructs);
+            if (beginRepositioned == -1 || endRepositioned == -1) {
+                List<String> currentFileContent = FileUtils.readLines(new File(currentFile));
+                List<String> baseFileContent = FileUtils.readLines(new File(baseFile));
+
+                List<String> conflictingContent;
+                if (end < currentFileContent.size()) {
+                    conflictingContent = currentFileContent.subList(begin + 1, end);
+                } else {
+                    conflictingContent = currentFileContent.subList(begin + 1, end);
+                }
+
+                for (int i = 0; i < baseFileContent.size() - conflictingContent.size() + 1; i++) {
+                    String currentValue = baseFileContent.get(i);
+                    if (currentValue.equals(conflictingContent.get(0))) {
+                        int counter = 1;
+                        for (int j = 1; j < conflictingContent.size(); j++) {
+                            if (!baseFileContent.get(i + j).equals(conflictingContent.get(j))) {
+                                break;
+                            } else {
+                                counter++;
+                            }
+                        }
+                        if(counter == conflictingContent.size()){
+                            beginRepositioned = i + 1;
+                            endRepositioned = beginRepositioned + conflictingContent.size() - 1;
+                        }
+                    }
+
+                }
+
+            }
+
+            //Dealing with AST
+            ASTExtractor ats = new ASTExtractor(baseFile);
+            ats.parser();
+            List<LanguageConstruct> languageConstructs = ats.getLanguageConstructs(beginRepositioned, endRepositioned);
+
+            kindConflict.setBeginLine(beginRepositioned);
+            kindConflict.setEndLine(endRepositioned);
+            kindConflict.setLanguageConstructs(languageConstructs);
+        } else {
+            int defaultValue = -1;
+            kindConflict.setBeginLine(defaultValue);
+            kindConflict.setEndLine(defaultValue);
+            List<LanguageConstruct> languageConstructs = new ArrayList<>();
+            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue));
+
+            kindConflict.setLanguageConstructs(languageConstructs);
+        }
 
         return kindConflict;
     }
 
-    public static KindConflict getLanguageConstructsAny(int begin, int end, String currentRepository, String baseRepository, String relativePath) {
+    public static KindConflict getLanguageConstructsAny(int begin, int end, String currentRepository, String currentFile, String baseFile) {
 
         KindConflict kindConflict = new KindConflict();
 
-        String currentFile = currentRepository + relativePath;
-        String baseFile = baseRepository + relativePath;
+        if (end - begin > 1) {
+            int beginTextLine = begin + 1 + 1;//+1 - changing to file lines instead list - and +1 - line after the beginning/separator line 
+            int endTextLine = end + 1 - 1;//+1 - changing to file lines instead list - and 11 - line before the end/separator line 
 
-        int beginRepositioned = 0, endRepositioned = 0, fileSize = 0;
-        List<String> file;
-
-        try {
             Repositioning repositioning = new Repositioning(currentRepository);
-            beginRepositioned = repositioning.repositioning(currentFile, baseFile, begin);
-            endRepositioned = repositioning.repositioning(currentFile, baseFile, end);
-            file = FileUtils.readLines(new File(baseFile));
-            fileSize = file.size();
-        } catch (Exception e) {
-            beginRepositioned = begin;
-            endRepositioned = end;
+            int beginRepositioned = repositioning.repositioning(currentFile, baseFile, beginTextLine);
+            int endRepositioned = repositioning.repositioning(currentFile, baseFile, endTextLine);
+
+            //Dealing with AST
+            List<LanguageConstruct> languageConstructs = new ArrayList<>();
+
+            String[] fileBroken = currentFile.split("\\.");
+            LanguageConstruct languageConstruct = new LanguageConstruct(fileBroken[fileBroken.length - 1], beginRepositioned, endRepositioned);
+            languageConstructs.add(languageConstruct);
+
+            kindConflict.setBeginLine(beginRepositioned);
+            kindConflict.setEndLine(endRepositioned);
+            kindConflict.setLanguageConstructs(languageConstructs);
+        } else {
+            int defaultValue = -1;
+            kindConflict.setBeginLine(defaultValue);
+            kindConflict.setEndLine(defaultValue);
+            List<LanguageConstruct> languageConstructs = new ArrayList<>();
+            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue));
+
+            kindConflict.setLanguageConstructs(languageConstructs);
         }
-
-
-        //Dealing with AST
-        List<LanguageConstruct> languageConstructs = new ArrayList<>();
-
-        String[] fileBroken = relativePath.split("\\.");
-        LanguageConstruct languageConstruct = new LanguageConstruct(fileBroken[fileBroken.length - 1], 0, fileSize);
-        languageConstructs.add(languageConstruct);
-
-        kindConflict.setBeginLine(beginRepositioned);
-        kindConflict.setEndLine(endRepositioned);
-        kindConflict.setLanguageConstructs(languageConstructs);
 
         return kindConflict;
     }
