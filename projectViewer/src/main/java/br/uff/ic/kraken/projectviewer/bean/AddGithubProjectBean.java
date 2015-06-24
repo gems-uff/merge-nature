@@ -39,8 +39,12 @@ public class AddGithubProjectBean implements Serializable {
         this.htmlURL = htmlURL;
     }
 
-    public String saveProject() {
+    public String saveProject() {//https://api.github.com/repos/yusuke/twitter4j
         String githubURL = htmlURL.replace("https://github.com/", "https://api.github.com/repos/");
+        
+        if(githubURL.endsWith("/"))
+           githubURL = githubURL.substring(0, githubURL.length() - 1);
+        
         ProjectDAO projectDAO = new ProjectDAO();
 
         Project project;
