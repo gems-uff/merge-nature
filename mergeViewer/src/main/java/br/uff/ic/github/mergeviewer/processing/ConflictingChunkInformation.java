@@ -94,11 +94,11 @@ public class ConflictingChunkInformation implements Runnable {
         KindConflict leftKindConflict = new KindConflict();
         KindConflict rightKindConflict = new KindConflict();
 
-        int beginLine = conflictChunk.getBeginLine() + 1;
-        int separatorLine = (conflictChunk.getBeginLine() + 1) + (cpe.getSeparator() - cpe.getBegin());
-        int endLine = conflictChunk.getEndLine();
+        int beginLine = conflictChunk.getBeginLine();
+        int separatorLine = (conflictChunk.getBeginLine()) + (cpe.getSeparator() - cpe.getBegin());
+        int endLine = conflictChunk.getEndLine() - 1;
 
-        String left = fileConflict.get(beginLine - 1);
+        String left = fileConflict.get(beginLine);
         String right = fileConflict.get(endLine);
 
         String leftRelativePath = ConflictingFileAnalyzer.getMove(left);
@@ -112,16 +112,20 @@ public class ConflictingChunkInformation implements Runnable {
             rightRelativePath = pathRelativeFile;
         }
 
+//        System.out.println(fileConflict.get(beginLine));//<<<<<<HEAD
+//        System.out.println(fileConflict.get(separatorLine));//===========
+//        System.out.println(fileConflict.get(endLine));//>>>>>>>>>
+
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine + 1, separatorLine - 1, pathMergedRepository, pathConflict, pathLeft);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine + 1, endLine - 1, pathMergedRepository, pathConflict, pathRight);
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, pathMergedRepository, pathConflict, pathRight);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, pathMergedRepository, pathConflict, pathLeft);
-            rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine - 1, pathMergedRepository, pathConflict, pathRight);
+            rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, pathMergedRepository, pathConflict, pathRight);
         }
 
         //Get the following data from the conflict:
@@ -143,7 +147,6 @@ public class ConflictingChunkInformation implements Runnable {
         begin = beginConflict;
         end = endConflict;
         separator = begin + cpe.getSeparator() - cpe.getBegin();
-
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
