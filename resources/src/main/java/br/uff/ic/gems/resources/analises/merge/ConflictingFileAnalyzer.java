@@ -159,12 +159,15 @@ public class ConflictingFileAnalyzer {
                 solutionArea = solutionContent.subList(context1 - 1, context2);
             }
 
-            String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
 
             DeveloperDecision developerDecision = DeveloperDecision.MANUAL;
 
-            //SetSolution
-            developerDecision = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context);
+            try {
+                //SetSolution
+                developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea);
+            } catch (Exception ex) {
+                Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+            }
             conflictingChunk.setDeveloperDecision(developerDecision);
 
             try {

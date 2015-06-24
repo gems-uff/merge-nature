@@ -15,9 +15,9 @@ import java.util.List;
  * @author gleiph
  */
 public class DeveloperDecisionAnalyzer {
-    
+
     public static int countBegin;
-    
+
     public static DeveloperDecision getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
 
         if (solution == null) {
@@ -153,7 +153,7 @@ public class DeveloperDecisionAnalyzer {
         int result = -1;
 
         countBegin = 0;
-        
+
         for (int j = 0; j < context.size() && j < text.size(); j++) {
             for (int k = 0; k < j + 1; k++) {
                 if (context.get(j).equals(text.get(k))) {
@@ -186,5 +186,174 @@ public class DeveloperDecisionAnalyzer {
         } else {
             return i;
         }
+    }
+
+    public static DeveloperDecision developerDevision(List<String> conflictingChunkContent, List<String> solutionContent) throws Exception {
+        final String beginMark = "<<<<<<< HEAD";
+        final String separatorMark = "=======";
+        final String endMark = ">>>>>>>";
+
+        List<String> context1, version1, version2, context2, solutionClean;
+        int begin = -1, separator = -1, end = -1;
+        int solutionCleanBegin = 0, solutionCleanEnd = solutionContent.size() - 1;
+
+        //Pre processing
+        int counter = 0;
+        for (String line : conflictingChunkContent) {
+            if (line.contains(beginMark)) {
+                begin = counter;
+            } else if (line.contains(separatorMark)) {
+                separator = counter;
+            } else if (line.contains(endMark)) {
+                end = counter;
+            }
+
+            counter++;
+        }
+
+        if (begin == -1 || separator == -1 || end == -1) {
+            throw new Exception("Invalid conflicting chunk content!");
+        } else if (begin > separator || separator > end) {
+            throw new Exception("Invalid conflicting chunk content!");
+        }
+
+        context1 = conflictingChunkContent.subList(0, begin);
+        version1 = conflictingChunkContent.subList(begin + 1, separator);
+        version2 = conflictingChunkContent.subList(separator + 1, end);
+        context2 = conflictingChunkContent.subList(end + 1, conflictingChunkContent.size());
+
+        context1 = cleanFormatList(context1);
+        version1 = cleanFormatList(version1);
+        version2 = cleanFormatList(version2);
+        context2 = cleanFormatList(context2);
+        solutionContent = cleanFormatList(solutionContent);
+
+        //Finding the range of cleansolution
+        for (int i = 0; i < context1.size(); i++) {
+            for (int j = i; j < context1.size(); j++) {
+                if (i >= solutionContent.size() - 1 || j >= solutionContent.size() - 1) {
+                    break;
+                } else if (context1.get(i).equals(solutionContent.get(j))) {
+                    if (j > solutionCleanBegin) {
+                        solutionCleanBegin = j;
+                    }
+                }
+            }
+        }
+
+        for (int i = context2.size() - 1; i >= 0; i--) {
+            for (int j = solutionContent.size() - 1; j >= solutionContent.size() - context2.size(); j--) {
+                if (i < 0 || j < 0) {
+                    break;
+                } else if (context2.get(i).equals(solutionContent.get(j))) {
+                    if (j < solutionCleanEnd) {
+                        solutionCleanEnd = j;
+                    }
+                }
+            }
+        }
+
+        if (solutionCleanBegin > solutionCleanEnd) {
+            throw new Exception("Invalid conflicting chunk content!");
+        }
+
+        //Cleaning the solution 
+        if (solutionContent.size() >= solutionCleanEnd + 1) {
+            solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
+        } else {
+            solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
+        }
+
+        //Decising developer decision
+        if (isEqual(version1, solutionClean)) {
+            return DeveloperDecision.VERSION1;
+        } else if (isEqual(version2, solutionClean)) {
+            return DeveloperDecision.VERSION2;
+        } else if (isCleanConcatenation(version1, version2, solutionClean)) {
+            return DeveloperDecision.CONCATENATION;
+        } else if (isCleanCombination(version1, version2, solutionClean)) {
+            return DeveloperDecision.COMBINATION;
+        } else {
+            return DeveloperDecision.MANUAL;
+        }
+    }
+
+    public static boolean isCleanCombination(List<String> content1, List<String> content2, List<String> solution) {
+        List<String> union = new ArrayList<>();
+        union.addAll(content1);
+        union.addAll(content2);
+
+        return union.containsAll(solution);
+    }
+
+    public static boolean isCleanConcatenation(List<String> content1, List<String> content2, List<String> solution) {
+        List<String> aux1 = new ArrayList<>();
+        List<String> aux2 = new ArrayList<>();
+
+        aux1.addAll(content1);
+        aux1.addAll(content2);
+
+        aux2.addAll(content2);
+        aux2.addAll(content1);
+
+        if (isEqual(aux1, solution)) {
+            return true;
+        } else if (isEqual(aux2, solution)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isEqual(List<String> content1, List<String> content2) {
+        String stringContent1 = listTostring(content1);
+        String stringContent2 = listTostring(content2);
+
+        return stringContent1.equals(stringContent2);
+
+    }
+
+    public static String listTostring(List<String> list) {
+        StringBuilder result = new StringBuilder();
+
+        for (String line : list) {
+            result.append(line);
+        }
+
+        return result.toString().replaceAll("\n", "");
+    }
+
+    public static String cleanFormat(String line) {
+
+        String lineChanged = line;
+
+        lineChanged = lineChanged.trim();
+        lineChanged = lineChanged.replaceAll(" ", "");
+        lineChanged = lineChanged.replaceAll("\t", "");
+
+        return lineChanged;
+    }
+
+    public static List<String> cleanFormatList(List<String> list) {
+        List<String> clone = new ArrayList<>(list);
+        List<String> result = new ArrayList<>();
+
+        for (String line : clone) {
+            result.add(cleanFormat(line));
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        String line = " gleiph  ghiotto lima    de Menezes"
+                + "é legal";
+
+        System.out.println("line = " + line);
+
+        line = cleanFormat(line);
+
+        System.out.println("line = " + line);
+
     }
 }
