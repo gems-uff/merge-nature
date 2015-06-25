@@ -258,7 +258,9 @@ public class DeveloperDecisionAnalyzer {
         }
 
         //Cleaning the solution 
-        if (solutionContent.size() >= solutionCleanEnd + 1) {
+        if (solutionCleanBegin == 0 && solutionCleanEnd == solutionContent.size() - 1) {
+            solutionClean = solutionContent;
+        } else if (solutionContent.size() >= solutionCleanEnd + 1) {
             solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
         } else {
             solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
