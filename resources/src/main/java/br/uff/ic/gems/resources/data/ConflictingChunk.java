@@ -7,7 +7,6 @@ package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
-import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -19,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
-import org.apache.commons.io.FileUtils;
 
 /**
  *

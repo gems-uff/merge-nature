@@ -32,6 +32,7 @@ public class ConflictingFile implements Serializable {
     private String name;
     private String fileType;
     private String path;
+    private boolean removed;
 
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "ConflictingFile_ConflictingChunk", 
@@ -128,6 +129,20 @@ public class ConflictingFile implements Serializable {
      */
     public void setConflictingChunks(List<ConflictingChunk> conflictingChunks) {
         this.conflictingChunks = conflictingChunks;
+    }
+
+    /**
+     * @return the removed
+     */
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    /**
+     * @param removed the removed to set
+     */
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
     }
 
 }
