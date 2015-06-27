@@ -33,7 +33,7 @@ public class Git {
         if (file.startsWith("/")) {
             file = file.replaceFirst("/", "");
         }
-        
+
         String command = "git diff " + initialVersion + " " + finalVersion + " " + file;
 
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
@@ -51,9 +51,9 @@ public class Git {
 
     public String fileDiff(String initialFile, String finalFile) {
         StringBuilder result = new StringBuilder();
-        
+
         String command = "git diff " + initialFile + " " + finalFile;
-        
+
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
         if (cmdOutput.getErrors().isEmpty()) {
 
@@ -66,14 +66,14 @@ public class Git {
             return null;
         }
     }
-    
+
     public String clone(String url) {
         StringBuilder result = new StringBuilder();
-        
+
         String command = "git clone " + url;
-        
+
         System.out.println(command);
-        
+
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
         if (cmdOutput.getErrors().isEmpty()) {
 
@@ -86,7 +86,7 @@ public class Git {
             return null;
         }
     }
-    
+
     /**
      * @return the repository
      */
@@ -101,17 +101,15 @@ public class Git {
         this.repository = repository;
     }
 
-    
     /*-------------------------------------------------------------------------------------------
     
-                                               COMMANDS
+     COMMANDS
     
      ----------------------------------------------------------------------------------------------*/
-    
-    public static List<String> fileDiff(String repository, String file, String sourceSHA, String targetSHA){
+    public static List<String> fileDiff(String repository, String file, String sourceSHA, String targetSHA) {
         List<String> result = new ArrayList<String>();
-        String command = "git diff " + sourceSHA+ " "+ targetSHA+ " "+ file;
-        
+        String command = "git diff " + sourceSHA + " " + targetSHA + " " + file;
+
         CMDOutput cmdOutput = CMD.cmd(repository, command);
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput();
@@ -119,10 +117,10 @@ public class Git {
             return null;
         }
     }
-    
+
     /*-------------------------------------------------------------------------------------------
     
-                                               LOG BASED
+     LOG BASED
     
      ----------------------------------------------------------------------------------------------*/
     public static List<String> revList(String repository, String since, String until) {
@@ -180,14 +178,13 @@ public class Git {
             return null;
         }
     }
-    
+
     /*-------------------------------------------------------------------------------------------
     
-                                                 STATUS BASED
+     STATUS BASED
     
      ----------------------------------------------------------------------------------------------*/
-   
-        public static List<String> status(String repositoryPath) {
+    public static List<String> status(String repositoryPath) {
         String command = "git status ";
 
         List<String> output = new ArrayList<String>();
@@ -251,10 +248,9 @@ public class Git {
 
     /*-------------------------------------------------------------------------------------------
     
-                                                 UNCLASSIFIED
+     UNCLASSIFIED
     
      ----------------------------------------------------------------------------------------------*/
-    
     private static boolean filter(String currentCommit, List<String> commits, List<String> result, String repositoryPath) {
 
         if (currentCommit.equals(commits.get(commits.size() - 1))) {
@@ -712,6 +708,56 @@ public class Git {
         return output;
     }
 
+    public static List<String> removedFiles(String repositoryPath, String sha1, String sha2) {
+        List<String> result = new ArrayList<>();
+
+        String command = "git diff " + sha1 + " " + sha2 + " --name-status";
+
+        List<String> output = new ArrayList<String>();
+
+        try {
+            Process exec = Runtime.getRuntime().exec(command, null, new File(repositoryPath));
+
+            String s;
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+
+            // read the output from the command
+            while ((s = stdInput.readLine()) != null) {
+                output.add(s);
+            }
+
+            // read any errors from the attempted command
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Git.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        for (String line : output) {
+            if (line.startsWith("D")) {
+                line = line.replaceFirst("D", "");
+                while (line.startsWith(" ")) {
+                    line = line.replaceFirst(" ", "");
+                }
+
+                while (line.startsWith("\t")) {
+                    line = line.replaceFirst("\t", "");
+                }
+                
+                line = line.replaceAll("\\\\", File.separator);
+                line = line.replaceAll("/", File.separator);
+
+                result.add(line);
+            }
+        }
+
+        return result;
+    }
 
     public static List<String> conflictedFiles(String repositoryPath) {
 
