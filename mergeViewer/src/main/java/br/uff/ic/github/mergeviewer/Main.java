@@ -5,6 +5,7 @@
  */
 package br.uff.ic.github.mergeviewer;
 
+import br.uff.ic.gems.resources.analises.merge.ConflictingFileAnalyzer;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.github.mergeviewer.processing.ConflictingChunkInformation;
@@ -464,9 +465,9 @@ public class Main extends javax.swing.JFrame {
             }
 
             String currentLocalFile = cbFiles.getSelectedItem().toString();
-            List<String> file = null;
+            List<String> conflictingFileList = null;
             try {
-                file = FileUtils.readLines(new File(currentLocalFile));
+                conflictingFileList = FileUtils.readLines(new File(currentLocalFile));
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -475,18 +476,19 @@ public class Main extends javax.swing.JFrame {
 
             int id = 1;
 
-            for (String line : file) {
-                if (line.contains("<<<<<<<")) {
-                    conflictingChunk = new ConflictingChunk();
-                    conflictingChunk.setBeginLine(lineNumber);
-                } else if (line.contains(">>>>>>>")) {
-                    conflictingChunk.setEndLine(lineNumber + 1);//Why?
-                    conflictingChunk.setIdentifier("Case " + id++);
-
-                    conflicts.add(conflictingChunk);
-                }
-                lineNumber++;
-            }
+//            for (String line : conflictingFileList) {
+//                if (line.contains("<<<<<<<")) {
+//                    conflictingChunk = new ConflictingChunk();
+//                    conflictingChunk.setBeginLine(lineNumber);
+//                } else if (line.contains(">>>>>>>")) {
+//                    conflictingChunk.setEndLine(lineNumber + 1);//Why?
+//                    conflictingChunk.setIdentifier("Case " + id++);
+//
+//                    conflicts.add(conflictingChunk);
+//                }
+//                lineNumber++;
+//            }
+            conflicts = ConflictingFileAnalyzer.getConflictingChunks(conflictingFileList);
             jCbxConflicts.removeAllItems();
 
             for (ConflictingChunk conflict : conflicts) {
