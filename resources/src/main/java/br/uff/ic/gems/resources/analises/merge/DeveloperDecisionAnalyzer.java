@@ -188,39 +188,19 @@ public class DeveloperDecisionAnalyzer {
         }
     }
 
-    public static DeveloperDecision developerDevision(List<String> conflictingChunkContent, List<String> solutionContent) throws Exception {
-        final String beginMark = "<<<<<<< HEAD";
-        final String separatorMark = "=======";
-        final String endMark = ">>>>>>>";
+    public static DeveloperDecision developerDevision(List<String> conflictingChunkContent, List<String> solutionContent, int beginLine, int separatorLine, int endLine) throws Exception {
 
         List<String> context1, version1, version2, context2, solutionClean;
-        int begin = -1, separator = -1, end = -1;
-        int solutionCleanBegin = 0, solutionCleanEnd = solutionContent.size() - 1;
+        int solutionCleanBegin = 0, solutionCleanEnd = solutionContent.size();
 
-        //Pre processing
-        int counter = 0;
-        for (String line : conflictingChunkContent) {
-            if (line.contains(beginMark)) {
-                begin = counter;
-            } else if (line.contains(separatorMark)) {
-                separator = counter;
-            } else if (line.contains(endMark)) {
-                end = counter;
-            }
-
-            counter++;
-        }
-
-        if (begin == -1 || separator == -1 || end == -1) {
-            throw new Exception("Invalid conflicting chunk content!");
-        } else if (begin > separator || separator > end) {
+        if (beginLine > separatorLine || separatorLine > endLine) {
             throw new Exception("Invalid conflicting chunk content!");
         }
 
-        context1 = conflictingChunkContent.subList(0, begin);
-        version1 = conflictingChunkContent.subList(begin + 1, separator);
-        version2 = conflictingChunkContent.subList(separator + 1, end);
-        context2 = conflictingChunkContent.subList(end + 1, conflictingChunkContent.size());
+        context1 = conflictingChunkContent.subList(0, beginLine);
+        version1 = conflictingChunkContent.subList(beginLine + 1, separatorLine);
+        version2 = conflictingChunkContent.subList(separatorLine + 1, endLine);
+        context2 = conflictingChunkContent.subList(endLine + 1, conflictingChunkContent.size());
 
         context1 = cleanFormatList(context1);
         version1 = cleanFormatList(version1);
@@ -258,8 +238,14 @@ public class DeveloperDecisionAnalyzer {
         }
 
         //Cleaning the solution 
-        if (solutionCleanBegin == 0 && solutionCleanEnd == solutionContent.size() - 1) {
+        if(solutionCleanBegin == solutionCleanEnd){
+            solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
+        }else if (context1.isEmpty() && context2.isEmpty()) {
             solutionClean = solutionContent;
+        } else if (context1.isEmpty()) {
+            solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
+        } else if (context2.isEmpty()) {
+            solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
         } else if (solutionContent.size() >= solutionCleanEnd + 1) {
             solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
         } else {
@@ -345,17 +331,5 @@ public class DeveloperDecisionAnalyzer {
         }
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        String line = " gleiph  ghiotto lima    de Menezes"
-                + "é legal";
-
-        System.out.println("line = " + line);
-
-        line = cleanFormat(line);
-
-        System.out.println("line = " + line);
-
     }
 }

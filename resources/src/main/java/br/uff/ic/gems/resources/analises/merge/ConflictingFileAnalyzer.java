@@ -11,7 +11,6 @@ import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
-import br.uff.ic.gems.resources.utils.ConflictPartsExtractor;
 import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
@@ -32,7 +31,6 @@ public class ConflictingFileAnalyzer {
 
         int context = 3;
         boolean hasSolution = true;
-
         ConflictingFile conflictingFile = new ConflictingFile(conflictingFilePath);
 
         List<String> conflictingFileList;
@@ -59,9 +57,22 @@ public class ConflictingFileAnalyzer {
         String conflictPath = repositoryPath + relativePath;
 
         //Files contenct
-        List<String> conflictingContent = FileUtils.readLines(new File(conflictPath));
-        List<String> solutionContent = FileUtils.readLines(new File(solutionPath));
+        List<String> conflictingContent = null;
+        List<String> solutionContent = null;
 
+        try {
+            conflictingContent = FileUtils.readLines(new File(conflictPath));
+            solutionContent = FileUtils.readLines(new File(solutionPath));
+        } catch (Exception e) {
+            List<String> removedFiles = Git.removedFiles(repositoryPath, leftSHA, developerSolutionSHA);
+            String replaceFirst = relativePath.replaceFirst(File.separator, "");
+            if (removedFiles.contains(replaceFirst)) {
+                conflictingFile.setRemoved(true);
+            }
+
+            return conflictingFile;
+
+        }
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
             //Getting conflict area
@@ -76,15 +87,11 @@ public class ConflictingFileAnalyzer {
                 conflictingArea = conflictingContent.subList(beginConflict, endConflict);
             }
 
-            //Getting parts of conflict area
-            ConflictPartsExtractor cpe = new ConflictPartsExtractor(conflictingArea);
-            cpe.extract();
-
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
 
             int beginLine = conflictingChunk.getBeginLine();
-            int separatorLine = (conflictingChunk.getBeginLine()) + (cpe.getSeparator() - cpe.getBegin());
+            int separatorLine = conflictingChunk.getSeparatorLine();
             int endLine = conflictingChunk.getEndLine();
 
             String left = conflictingContent.get(beginLine);
@@ -111,7 +118,6 @@ public class ConflictingFileAnalyzer {
 //            System.out.println(current.get(beginLine));//<<<<<<HEAD
 //            System.out.println(current.get(separatorLine));//===========
 //            System.out.println(current.get(endLine));//>>>>>>>>>
-
             if (conflictingFilePath.contains(".java")) {
                 try {
                     leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
@@ -132,7 +138,6 @@ public class ConflictingFileAnalyzer {
             //- separator (?)
             //- initialVersion and finalVersion
             int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
-            int separator, begin, end;
 
             context1bOriginal = beginConflict + 1;
             context1eOriginal = conflictingChunk.getBeginLine();
@@ -142,29 +147,33 @@ public class ConflictingFileAnalyzer {
             if (context2bOriginal > context2eOriginal) {
                 context2bOriginal = context2eOriginal;
             }
-            begin = beginConflict;
-            end = endConflict;
-            separator = begin + cpe.getSeparator() - cpe.getBegin();
 
             Repositioning repositioning = new Repositioning(developerMergedRepository);
 
-            int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, repositioning, conflictingFilePath, solutionPath, begin, separator, end);
+            int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal,
+                    repositioning, conflictingFilePath, solutionPath, beginLine, separatorLine, endLine);
 
-            int context2 = ConflictingChunk.checkContext2(solutionContent, conflictingContent, context2eOriginal, context2bOriginal, repositioning, conflictingFilePath, solutionPath, separator, begin, end);
+            int context2 = ConflictingChunk.checkContext2(solutionContent, conflictingContent, context2eOriginal,
+                    context2bOriginal, repositioning, conflictingFilePath, solutionPath, separatorLine, beginLine, endLine);
 
             List<String> solutionArea;
-            if (context2 < solutionContent.size()) {
-                solutionArea = solutionContent.subList(context1 - 1, context2 + 1);
-            } else {
-                solutionArea = solutionContent.subList(context1 - 1, context2);
-            }
+            solutionArea = solutionContent.subList(context1 - 1, context2);
 
+
+            /*
+             Calculating values of begin, separator and end mark in the conflicting area
+             */
+            int beginConflictingArea, separatorConflictingArea, endConflictingArea;
+            beginConflictingArea = beginLine - beginConflict;
+            separatorConflictingArea = separatorLine - beginConflict;
+            endConflictingArea = endLine - beginConflict;
 
             DeveloperDecision developerDecision = DeveloperDecision.MANUAL;
 
             try {
                 //SetSolution
-                developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea);
+                developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea, 
+                        beginConflictingArea, separatorConflictingArea, endConflictingArea);
             } catch (Exception ex) {
                 Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -187,10 +196,9 @@ public class ConflictingFileAnalyzer {
         return conflictingFile;
     }
 
-    private static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
-        List<ConflictingChunk> result, aux;
-        result = new ArrayList<>();
-        aux = new ArrayList<>();
+    public static List<ConflictingChunk> getConflictingChunks(List<String> fileList) {
+
+        List<ConflictingChunk> result = new ArrayList<>();
         ConflictingChunk conflictingChunk = new ConflictingChunk();
         int begin = 0, separator = 0, end = 0, identifier = 1;
 
@@ -218,43 +226,28 @@ public class ConflictingFileAnalyzer {
         while (!(begins.isEmpty() || separators.isEmpty() || ends.isEmpty())) {
             Integer b = 0, s = 0, e = 0;
 
-            for (int i = begins.size() - 1; i >= 0; i--) {
+            for (int i = 0; i < begins.size(); i++) {
                 b = begins.get(i);
 
-                for (int j = 0; j < separators.size(); j++) {
-                    s = separators.get(j);
+                if (isNextSeparator(b, begins, separators, ends)) {
+                    s = nextValue(b, begins, separators, ends);
+                    e = nextValue(s, begins, separators, ends);
 
-                    if (s > b) {
-                        for (int k = 0; k < ends.size(); k++) {
-                            e = ends.get(k);
-                            if (e > s) {
-                                ends.remove(e);
-                                break;
-                            }
-                        }
-                        separators.remove(s);
-                        break;
-                    }
+                    begins.remove(b);
+                    separators.remove(s);
+                    ends.remove(e);
+
+                    break;
                 }
-                begins.remove(b);
-                break;
             }
 
             conflictingChunk = new ConflictingChunk();
             conflictingChunk.setBeginLine(b);
             conflictingChunk.setSeparatorLine(s);
             conflictingChunk.setEndLine(e);
-            conflictingChunk.setIdentifier("Case " + (identifier++));
+            conflictingChunk.setIdentifier("Conflicting chunk " + (identifier++));
 
-            aux.add(conflictingChunk);
-        }
-
-        int index = 1;
-        for (int i = aux.size() - 1; i >= 0; i--) {
-            ConflictingChunk cc = aux.get(i);
-            cc.setIdentifier("Conflicting chunk " + index++);
-
-            result.add(cc);
+            result.add(conflictingChunk);
         }
 
         return result;
@@ -270,4 +263,103 @@ public class ConflictingFileAnalyzer {
         return null;
 
     }
+
+    private static final String BEGIN = "b";
+    private static final String SEPARATOR = "s";
+    private static final String END = "e";
+
+    private static Boolean isNextBegin(int line, List<Integer> begin, List<Integer> separator, List<Integer> end) {
+        String whatsNext = whatsNext(line, begin, separator, end);
+
+        if (whatsNext == null) {
+            return false;
+        } else {
+            return whatsNext.equals(BEGIN);
+        }
+    }
+
+    private static Boolean isNextSeparator(int line, List<Integer> begin, List<Integer> separator, List<Integer> end) {
+        String whatsNext = whatsNext(line, begin, separator, end);
+
+        if (whatsNext == null) {
+            return false;
+        } else {
+            return whatsNext.equals(SEPARATOR);
+        }
+    }
+
+    private static Boolean isNextEnd(int line, List<Integer> begin, List<Integer> separator, List<Integer> end) {
+        String whatsNext = whatsNext(line, begin, separator, end);
+
+        if (whatsNext == null) {
+            return false;
+        } else {
+            return whatsNext.equals(END);
+        }
+    }
+
+    private static String whatsNext(int line, List<Integer> begin, List<Integer> separator, List<Integer> end) {
+        int next = Integer.MAX_VALUE;
+        String result = null;
+
+        for (Integer b : begin) {
+            if (b > line && b < next) {
+                next = b;
+                result = BEGIN;
+            } else if (b >= next) {
+                break;
+            }
+        }
+
+        for (Integer s : separator) {
+            if (s > line && s < next) {
+                next = s;
+                result = SEPARATOR;
+            } else if (s >= next) {
+                break;
+            }
+        }
+
+        for (Integer e : end) {
+            if (e > line && e < next) {
+                next = e;
+                result = END;
+            } else if (e >= next) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private static Integer nextValue(int line, List<Integer> begin, List<Integer> separator, List<Integer> end) {
+        Integer result = Integer.MAX_VALUE;
+
+        for (Integer b : begin) {
+            if (b > line && b < result) {
+                result = b;
+            } else if (b >= result) {
+                break;
+            }
+        }
+
+        for (Integer s : separator) {
+            if (s > line && s < result) {
+                result = s;
+            } else if (s >= result) {
+                break;
+            }
+        }
+
+        for (Integer e : end) {
+            if (e > line && e < result) {
+                result = e;
+            } else if (e >= result) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
 }
