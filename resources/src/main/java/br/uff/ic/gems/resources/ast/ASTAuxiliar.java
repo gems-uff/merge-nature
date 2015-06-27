@@ -42,7 +42,7 @@ public class ASTAuxiliar {
 
     public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
         int conflictingUpperBound;
-        conflictingUpperBound = conflictArea.getEndLine() + context;////I don't want do exclude the last line
+        conflictingUpperBound = conflictArea.getEndLine() + context + 1;////I don't want do exclude the last line, because sublist excludes the last line
         if (conflictingUpperBound > fileConflict.size()) {
             conflictingUpperBound = fileConflict.size();
         }
