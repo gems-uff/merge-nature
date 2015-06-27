@@ -156,6 +156,9 @@
 
                         <h:outputText value="Conflicting chunks: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.conflictingFile.conflictingChunks.size()}" styleClass="tableContent"/>
+                        
+                        <h:outputText value="Removed: " styleClass="tableContent" style="font-weight: bold"/>
+                        <h:outputText value="#{showConflictsBean.conflictingFile.removed}" styleClass="tableContent"/>
                     </h:panelGrid>
                 </div>
                 <!-- End conflicting file-->
