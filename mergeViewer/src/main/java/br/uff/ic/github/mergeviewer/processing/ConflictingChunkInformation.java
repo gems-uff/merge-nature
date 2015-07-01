@@ -54,6 +54,10 @@ public class ConflictingChunkInformation implements Runnable {
 
         ASTAuxiliar.cloneRepositories(pathMergedRepository, pathDeveloperMergedRepository, pathLeftRepository, pathRightRepository);
 
+        int beginLine = conflictChunk.getBeginLine();
+        int separatorLine = conflictChunk.getSeparatorLine();
+        int endLine = conflictChunk.getEndLine();
+        
         //Checking out revisions
         Git.checkout(pathDeveloperMergedRepository, Information.DEVELOPER_MERGE_REVISION);
         Git.checkout(pathLeftRepository, Information.LEFT_REVISION);
@@ -88,16 +92,16 @@ public class ConflictingChunkInformation implements Runnable {
 
         //Getting conflict area
         int beginConflict, endConflict;
-        beginConflict = ASTAuxiliar.getConflictLowerBound(getConflictChunk(), context);
-        endConflict = ASTAuxiliar.getConflictUpperBound(getConflictChunk(), context, fileConflict);
+        beginConflict = ASTAuxiliar.getConflictLowerBound(beginLine, context);
+        endConflict = ASTAuxiliar.getConflictUpperBound(endLine, context, fileConflict);
         List<String> conflictingArea = fileConflict.subList(beginConflict, endConflict);
 
+        
+        //Gettign remane
         KindConflict leftKindConflict = new KindConflict();
         KindConflict rightKindConflict = new KindConflict();
 
-        int beginLine = conflictChunk.getBeginLine();
-        int separatorLine = conflictChunk.getSeparatorLine();
-        int endLine = conflictChunk.getEndLine();
+        
 
         String left = fileConflict.get(beginLine);
         String right = fileConflict.get(endLine);
@@ -148,16 +152,13 @@ public class ConflictingChunkInformation implements Runnable {
         
         //Changing to file reference( lines from 1 to n) instead of list reference (0..n-1)
         context1bOriginal = beginConflict + 1;
-        context1eOriginal = getConflictChunk().getBeginLine();
+        context1eOriginal = getConflictChunk().getBeginLine();//+ 1 - 1
         context2bOriginal = getConflictChunk().getEndLine() + 1;
-        context2eOriginal = endConflict;
+        context2eOriginal = endConflict;//+ 1 - 1
 
         if (context2bOriginal > context2eOriginal) {
             context2bOriginal = context2eOriginal;
         }
-//        begin = beginConflict;
-//        end = endConflict;
-//        separator = begin + (separatorLine - beginLine);
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
@@ -167,17 +168,6 @@ public class ConflictingChunkInformation implements Runnable {
         int context2 = ConflictingChunk.checkContext2(fileSolution, fileConflict, context2eOriginal, 
                 context2bOriginal, repositioning, pathConflict, pathSolution, separatorLine, beginLine, endLine);
 
-//        try {
-//            System.out.println(context1Original + " => " + context1);
-//            System.out.println("\t" + fileConflict.get(context1Original - 1));
-//            System.out.println("\t" + fileSolution.get(context1 - 1));
-//
-//            System.out.println(context2Original + " => " + context2);
-//            System.out.println("\t" + fileConflict.get(context2Original - 1));
-//            System.out.println("\t" + fileSolution.get(context2 - 1));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
 
         int beginConflictingArea, separatorConflictingArea, endConflictingArea;
