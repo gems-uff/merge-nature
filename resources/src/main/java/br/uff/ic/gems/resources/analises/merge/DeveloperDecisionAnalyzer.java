@@ -210,7 +210,7 @@ public class DeveloperDecisionAnalyzer {
 
         //Finding the range of cleansolution
         for (int i = 0; i < context1.size(); i++) {
-            for (int j = i; j < context1.size(); j++) {
+            for (int j = 0; j < context1.size(); j++) {
                 if (i >= solutionContent.size() - 1 || j >= solutionContent.size() - 1) {
                     break;
                 } else if (context1.get(i).equals(solutionContent.get(j))) {

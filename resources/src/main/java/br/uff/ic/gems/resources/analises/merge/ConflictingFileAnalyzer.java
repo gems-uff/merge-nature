@@ -75,10 +75,15 @@ public class ConflictingFileAnalyzer {
         }
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
+            //Marks from conflicting chunks
+            int beginLine = conflictingChunk.getBeginLine();
+            int separatorLine = conflictingChunk.getSeparatorLine();
+            int endLine = conflictingChunk.getEndLine();
+
             //Getting conflict area
             int beginConflict, endConflict;
-            beginConflict = ASTAuxiliar.getConflictLowerBound(conflictingChunk, context);
-            endConflict = ASTAuxiliar.getConflictUpperBound(conflictingChunk, context, conflictingContent);
+            beginConflict = ASTAuxiliar.getConflictLowerBound(beginLine, context);
+            endConflict = ASTAuxiliar.getConflictUpperBound(endLine, context, conflictingContent);
             List<String> conflictingArea = null;
 
             if (conflictingContent.size() > endConflict) {
@@ -89,10 +94,6 @@ public class ConflictingFileAnalyzer {
 
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
-
-            int beginLine = conflictingChunk.getBeginLine();
-            int separatorLine = conflictingChunk.getSeparatorLine();
-            int endLine = conflictingChunk.getEndLine();
 
             String left = conflictingContent.get(beginLine);
             String right = conflictingContent.get(endLine);
@@ -114,10 +115,6 @@ public class ConflictingFileAnalyzer {
             leftFile = leftRepository + File.separator + leftRelativePath;
             rightFile = rightRepository + File.separator + rightRelativePath;
 
-//            List current = FileUtils.readLines(new File(currentFile));
-//            System.out.println(current.get(beginLine));//<<<<<<HEAD
-//            System.out.println(current.get(separatorLine));//===========
-//            System.out.println(current.get(endLine));//>>>>>>>>>
             if (conflictingFilePath.contains(".java")) {
                 try {
                     leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
@@ -172,7 +169,7 @@ public class ConflictingFileAnalyzer {
 
             try {
                 //SetSolution
-                developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea, 
+                developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea,
                         beginConflictingArea, separatorConflictingArea, endConflictingArea);
             } catch (Exception ex) {
                 Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);

@@ -5,7 +5,6 @@
  */
 package br.uff.ic.gems.resources.ast;
 
-import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
@@ -40,18 +39,18 @@ public class ASTAuxiliar {
         }
     }
 
-    public static int getConflictUpperBound(ConflictingChunk conflictArea, int context, List<String> fileConflict) {
+    public static int getConflictUpperBound(int endLine, int context, List<String> fileConflict) {
         int conflictingUpperBound;
-        conflictingUpperBound = conflictArea.getEndLine() + context + 1;////I don't want do exclude the last line, because sublist excludes the last line
+        conflictingUpperBound = endLine + context + 1;////I don't want do exclude the last line, because sublist excludes the last line
         if (conflictingUpperBound > fileConflict.size()) {
             conflictingUpperBound = fileConflict.size();
         }
         return conflictingUpperBound;
     }
 
-    public static int getConflictLowerBound(ConflictingChunk conflictArea, int context) {
+    public static int getConflictLowerBound(int beginLine, int context) {
         int conflictLowerBound;
-        conflictLowerBound = conflictArea.getBeginLine() - context;
+        conflictLowerBound = beginLine - context;
         if (conflictLowerBound < 0) {
             conflictLowerBound = 0;
         }
