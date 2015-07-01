@@ -85,7 +85,7 @@ public class AnalysisViewerBean implements Serializable{
                     TreeNode cf = new DefaultTreeNode(new TreeTableNode(conflictingFile.getName(), conflictingFile.getId(), DataTypes.CONFLICTING_FILE), rev);
 
                     for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier(), conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
+                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier() +"("+conflictingChunk.getDeveloperDecision().toString()+")", conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
                     }
                 }
             }
