@@ -97,10 +97,11 @@ public class ASTAuxiliar {
      * @param currentRepository Repository that the conflicting version is
      * @param currentFile Current file
      * @param baseFile Base file
+     * @param ast
      * @return
      * @throws IOException
      */
-    public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String currentFile, String baseFile) throws IOException {
+    public static KindConflict getLanguageConstructsJava(int begin, int end, String currentRepository, String currentFile, String baseFile, ASTExtractor ast) throws IOException {
         KindConflict kindConflict = new KindConflict();
 
         if (end - begin > 1) {
@@ -144,9 +145,7 @@ public class ASTAuxiliar {
             }
 
             //Dealing with AST
-            ASTExtractor ats = new ASTExtractor(baseFile);
-            ats.parser();
-            List<LanguageConstruct> languageConstructs = ats.getLanguageConstructs(beginRepositioned, endRepositioned);
+            List<LanguageConstruct> languageConstructs = ast.getLanguageConstructs(beginRepositioned, endRepositioned);
 
             kindConflict.setBeginLine(beginRepositioned);
             kindConflict.setEndLine(endRepositioned);

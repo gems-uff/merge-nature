@@ -6,6 +6,7 @@
 package br.uff.ic.gems.resources.analises.merge;
 
 import br.uff.ic.gems.resources.ast.ASTAuxiliar;
+import br.uff.ic.gems.resources.ast.ASTExtractor;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
@@ -64,6 +65,8 @@ public class ConflictingFileAnalyzer {
             conflictingContent = FileUtils.readLines(new File(conflictPath));
             solutionContent = FileUtils.readLines(new File(solutionPath));
         } catch (Exception e) {
+            //If there is no solution
+
             List<String> removedFiles = Git.removedFiles(repositoryPath, leftSHA, developerSolutionSHA);
             String replaceFirst = relativePath.replaceFirst(File.separator, "");
             if (removedFiles.contains(replaceFirst)) {
@@ -73,12 +76,54 @@ public class ConflictingFileAnalyzer {
             return conflictingFile;
 
         }
+
+        //If there is solution
+        //Marks from conflicting chunks
+        int beginLine = -1;
+        int separatorLine = -1;
+        int endLine = -1;
+
+        String leftRelativePath = relativePath;
+        String rightRelativePath = relativePath;
+        
+        if (conflictingChunks != null && !conflictingChunks.isEmpty()) {
+            beginLine = conflictingChunks.get(0).getBeginLine();
+            separatorLine = conflictingChunks.get(0).getSeparatorLine();
+            endLine = conflictingChunks.get(0).getEndLine();
+
+            String left = conflictingContent.get(beginLine);
+            String right = conflictingContent.get(endLine);
+
+            leftRelativePath = getMove(left);
+            rightRelativePath = getMove(right);
+
+            if (leftRelativePath == null) {
+                leftRelativePath = relativePath;
+            }
+
+            if (rightRelativePath == null) {
+                rightRelativePath = relativePath;
+            }
+        }
+
+        String currentFile, leftFile, rightFile;
+
+        currentFile = repositoryPath + File.separator + relativePath;
+        leftFile = leftRepository + File.separator + leftRelativePath;
+        rightFile = rightRepository + File.separator + rightRelativePath;
+
+        ASTExtractor leftAST = new ASTExtractor(leftFile);
+        leftAST.parser();
+
+        ASTExtractor rightAST = new ASTExtractor(rightFile);
+        rightAST.parser();
+
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
             //Marks from conflicting chunks
-            int beginLine = conflictingChunk.getBeginLine();
-            int separatorLine = conflictingChunk.getSeparatorLine();
-            int endLine = conflictingChunk.getEndLine();
+            beginLine = conflictingChunk.getBeginLine();
+            separatorLine = conflictingChunk.getSeparatorLine();
+            endLine = conflictingChunk.getEndLine();
 
             //Getting conflict area
             int beginConflict, endConflict;
@@ -95,30 +140,10 @@ public class ConflictingFileAnalyzer {
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
 
-            String left = conflictingContent.get(beginLine);
-            String right = conflictingContent.get(endLine);
-
-            String leftRelativePath = getMove(left);
-            String rightRelativePath = getMove(right);
-
-            if (leftRelativePath == null) {
-                leftRelativePath = relativePath;
-            }
-
-            if (rightRelativePath == null) {
-                rightRelativePath = relativePath;
-            }
-
-            String currentFile, leftFile, rightFile;
-
-            currentFile = repositoryPath + File.separator + relativePath;
-            leftFile = leftRepository + File.separator + leftRelativePath;
-            rightFile = rightRepository + File.separator + rightRelativePath;
-
             if (conflictingFilePath.contains(".java")) {
                 try {
-                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
-                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, repositoryPath, currentFile, rightFile);
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile, leftAST);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, repositoryPath, currentFile, rightFile, rightAST);
                 } catch (IOException ex) {
                     Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                 }

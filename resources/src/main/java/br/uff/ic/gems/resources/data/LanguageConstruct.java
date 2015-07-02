@@ -192,5 +192,20 @@ public class LanguageConstruct implements Serializable {
         return true;
     }
 
-    
+    @Override
+    public LanguageConstruct clone(){
+
+        if(this == null)
+            return null;
+        
+        LanguageConstruct result = new LanguageConstruct();
+        
+        result.setBeginLine(this.getBeginLine());
+        result.setEndLine(this.getEndLine());
+        result.setId(this.getId());
+        result.setIdentifier(this.getIdentifier());
+        result.setName(this.getName());
+        
+        return result;
+    }
 }

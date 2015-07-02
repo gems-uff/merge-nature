@@ -8,6 +8,7 @@ package br.uff.ic.gems.resources.ast;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -65,7 +66,15 @@ public class ASTExtractor {
     }
 
     public List<LanguageConstruct> getLanguageConstructs(int begin, int end) {
-        return LanguageConstruct.getLanguageConstructs(begin, end, languageConstructs);
+        List<LanguageConstruct> lcs = LanguageConstruct.getLanguageConstructs(begin, end, languageConstructs);
+        
+        List<LanguageConstruct> result = new ArrayList<>();
+        
+        for (LanguageConstruct lc : lcs) {
+            result.add(lc.clone());
+        }
+        
+        return result;
     }
 
     public String toString(List<String> input) {

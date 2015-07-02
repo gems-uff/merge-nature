@@ -120,7 +120,9 @@ public class Repositioning {
 
         for (Operation operation : operations) {
 
-            if (operation.getLine() > line) {
+            if (operation.getType().equals(OperationType.ADD) && operation.getLine() > line + addDisplacement) {
+                return line - removeDisplacement + addDisplacement;
+            } else if (operation.getType().equals(OperationType.REMOVE) && operation.getLine() > line) {
                 return line - removeDisplacement + addDisplacement;
             }
 
