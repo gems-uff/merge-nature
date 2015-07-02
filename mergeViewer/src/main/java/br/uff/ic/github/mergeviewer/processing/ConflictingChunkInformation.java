@@ -11,6 +11,7 @@ import br.uff.ic.github.mergeviewer.ShowCase;
 import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
+import br.uff.ic.gems.resources.ast.ASTExtractor;
 import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
@@ -125,10 +126,22 @@ public class ConflictingChunkInformation implements Runnable {
         /*----------------------------------------------------------------------
                        Getting language constructs
         ----------------------------------------------------------------------*/
+        
+        ASTExtractor leftAST = new ASTExtractor(pathLeft);
+        
+        
+        ASTExtractor rightAST = new ASTExtractor(pathRight);
+        try {
+            leftAST.parser();
+            rightAST.parser();
+        } catch (IOException ex) {
+            Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         if (pathRelativeFile.contains(".java")) {
             try {
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, pathMergedRepository, pathConflict, pathRight);
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft, leftAST);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, pathMergedRepository, pathConflict, pathRight, rightAST);
             } catch (IOException ex) {
                 Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
             }
