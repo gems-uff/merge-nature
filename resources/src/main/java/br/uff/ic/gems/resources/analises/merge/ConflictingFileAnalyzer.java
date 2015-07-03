@@ -85,7 +85,7 @@ public class ConflictingFileAnalyzer {
 
         String leftRelativePath = relativePath;
         String rightRelativePath = relativePath;
-        
+
         if (conflictingChunks != null && !conflictingChunks.isEmpty()) {
             beginLine = conflictingChunks.get(0).getBeginLine();
             separatorLine = conflictingChunks.get(0).getSeparatorLine();
@@ -131,11 +131,7 @@ public class ConflictingFileAnalyzer {
             endConflict = ASTAuxiliar.getConflictUpperBound(endLine, context, conflictingContent);
             List<String> conflictingArea = null;
 
-            if (conflictingContent.size() > endConflict) {
-                conflictingArea = conflictingContent.subList(beginConflict, endConflict + 1);
-            } else {
-                conflictingArea = conflictingContent.subList(beginConflict, endConflict);
-            }
+            conflictingArea = conflictingContent.subList(beginConflict, endConflict);
 
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();

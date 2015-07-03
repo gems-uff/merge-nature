@@ -193,6 +193,8 @@ public class DeveloperDecisionAnalyzer {
         List<String> context1, version1, version2, context2, solutionClean;
         int solutionCleanBegin = 0, solutionCleanEnd = solutionContent.size();
 
+        boolean passBegin = false, passEnd = false;
+        
         if (beginLine > separatorLine || separatorLine > endLine) {
             throw new Exception("Invalid conflicting chunk content!");
         }
@@ -214,8 +216,9 @@ public class DeveloperDecisionAnalyzer {
                 if (i >= solutionContent.size() - 1 || j >= solutionContent.size() - 1) {
                     break;
                 } else if (context1.get(i).equals(solutionContent.get(j))) {
-                    if (j > solutionCleanBegin) {
+                    if (j >= solutionCleanBegin) {
                         solutionCleanBegin = j;
+                        passBegin = true;
                     }
                 }
             }
@@ -226,8 +229,9 @@ public class DeveloperDecisionAnalyzer {
                 if (i < 0 || j < 0) {
                     break;
                 } else if (context2.get(i).equals(solutionContent.get(j))) {
-                    if (j < solutionCleanEnd) {
+                    if (j <= solutionCleanEnd) {
                         solutionCleanEnd = j;
+                        passEnd = true;
                     }
                 }
             }
@@ -238,13 +242,13 @@ public class DeveloperDecisionAnalyzer {
         }
 
         //Cleaning the solution 
-        if(solutionCleanBegin == solutionCleanEnd){
+        if (solutionCleanBegin == solutionCleanEnd) {
             solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
-        }else if (context1.isEmpty() && context2.isEmpty()) {
+        } else if (!passBegin && !passEnd) {
             solutionClean = solutionContent;
-        } else if (context1.isEmpty()) {
+        } else if (!passBegin) {
             solutionClean = solutionContent.subList(solutionCleanBegin, solutionCleanEnd);
-        } else if (context2.isEmpty()) {
+        } else if (!passEnd) {
             solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
         } else if (solutionContent.size() >= solutionCleanEnd + 1) {
             solutionClean = solutionContent.subList(solutionCleanBegin + 1, solutionCleanEnd);
