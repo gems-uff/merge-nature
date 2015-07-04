@@ -275,7 +275,14 @@ public class DeveloperDecisionAnalyzer {
         union.addAll(content1);
         union.addAll(content2);
 
-        return union.containsAll(solution);
+        for (String line : solution) {
+            if(!union.contains(line))
+                return false;
+            else
+                union.remove(line);
+        }
+        
+        return true;
     }
 
     public static boolean isCleanConcatenation(List<String> content1, List<String> content2, List<String> solution) {
