@@ -40,7 +40,7 @@ public class GitTranslator {
         //-----------------------------------------------
         String filename = "";
         List<Operation> result = new ArrayList<>();
-        int initialline, iteratorAdd = 0, iteratorRemove = 0;
+        int initialline, iteratorRemove = 0;
 
         //-----------------------------------------------
         //Breaking the input string (delta) into lines
@@ -63,13 +63,13 @@ public class GitTranslator {
                 if (initialline == 0) {//it is a added file
                     initialline = 1;
                 }
-                iteratorAdd = initialline;
+//                iteratorAdd = initialline;
                 iteratorRemove = initialline;
 
             } else if (isAddedLine(line)) {
-                Operation operation = getOperation(line, OperationType.ADD, iteratorAdd);
+                Operation operation = getOperation(line, OperationType.ADD, iteratorRemove);
                 result.add(operation);
-                iteratorAdd++;
+//                iteratorAdd++;
 
             } else if (isRemovedLine(line)) {
                 Operation operation = getOperation(line, OperationType.REMOVE, iteratorRemove);
@@ -78,7 +78,7 @@ public class GitTranslator {
 
             } else {
 
-                iteratorAdd++;
+//                iteratorAdd++;
                 iteratorRemove++;
 
             }
