@@ -13,10 +13,11 @@
 
         <h:panelGroup>
 
-            <h:commandButton value="Add project" id="button" action="#{projectBean.add}"/>
 
             <f:view>
                 <h:form>
+                    <h:commandButton value="Add project" action="#{projectBean.githubProject}"/>
+
                     <h:dataTable value="#{projectBean.projects}" var="item"
                                  styleClass="order-table"
                                  headerClass="order-table-header"

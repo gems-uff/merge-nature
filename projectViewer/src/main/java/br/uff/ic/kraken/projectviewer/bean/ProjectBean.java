@@ -104,7 +104,7 @@ public class ProjectBean implements Serializable {
         this.repositoryUrl = repositoryUrl;
     }
 
-    public String add() {
+    public String githubProject() {
         System.out.println("Passei...");
         return PagesName.addGithubProject;
     }
