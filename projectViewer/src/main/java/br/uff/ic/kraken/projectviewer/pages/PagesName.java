@@ -10,9 +10,10 @@ package br.uff.ic.kraken.projectviewer.pages;
  * @author gleiph
  */
 public class PagesName {
-    
+
     public static final String addGithubProject = "addGithubProject";
     public static final String index = "index";
+    public static final String projectOverview = "projectOverview";
     public static final String projects = "projects";
     public static final String showConflicts = "showConflicts";
 

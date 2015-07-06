@@ -15,8 +15,10 @@ import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DataTypes;
 import br.uff.ic.kraken.projectviewer.utils.ProjectAnalyses;
+import br.uff.ic.kraken.projectviewer.utils.ProjectOverview;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
@@ -29,7 +31,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "analysisViewerBean")
 @RequestScoped
-public class AnalysisViewerBean implements Serializable{
+public class AnalysisViewerBean implements Serializable {
 
     private Long projectId;
     private List<Revision> revisions;
@@ -38,6 +40,9 @@ public class AnalysisViewerBean implements Serializable{
     private String selectedId;
     private String dataType;
     private ConflictingChunk selectedConflictingChunk;
+
+    private List<ProjectOverview> projectSummarization;
+    private String projectName;
     
     /**
      * @return the projectId
@@ -85,7 +90,7 @@ public class AnalysisViewerBean implements Serializable{
                     TreeNode cf = new DefaultTreeNode(new TreeTableNode(conflictingFile.getName(), conflictingFile.getId(), DataTypes.CONFLICTING_FILE), rev);
 
                     for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier() +"("+conflictingChunk.getDeveloperDecision().toString()+")", conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
+                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier() + "(" + conflictingChunk.getDeveloperDecision().toString() + ")", conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
                     }
                 }
             }
@@ -96,20 +101,66 @@ public class AnalysisViewerBean implements Serializable{
         }
     }
 
-    public String analyze(){
-        
+    public String analyze() {
+
         ProjectDAO projectDAO = new ProjectDAO();
         Project project = projectDAO.getById(projectId);
 
         String repositoriesPath = "/Users/gleiph/Desktop/repositories";
 //        String repositoriesPath = "/home/gmenezes/repositories";
-        
+
         ProjectAnalyses projectAnalyses = new ProjectAnalyses();
         projectAnalyses.analyze(repositoriesPath, project);
-        
+
         return null;
     }
-    
+
+    public String overview() {
+
+        ProjectDAO projectDAO = new ProjectDAO();
+        Project project = projectDAO.getById(projectId);
+
+        projectSummarization = new ArrayList<>();
+
+        projectName = project.getName();
+        String sha1 = "";
+        String fileName = "";
+        String ccIdentifier = "";
+        String developerDecision = "";
+        String kindConflict = "";
+
+        for (Revision revision : project.getRevisions()) {
+            sha1 = revision.getSha();
+
+            for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
+                fileName = conflictingFile.getName();
+
+                for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+                    ccIdentifier = conflictingChunk.getIdentifier();
+                    developerDecision = conflictingChunk.getDeveloperDecision().toString();
+                    List<String> generalKindConflict = conflictingChunk.getGeneralKindConflict();
+
+                    kindConflict = "";
+
+                    for (int i = 0; i < generalKindConflict.size(); i++) {
+                        String get = generalKindConflict.get(i);
+
+                        if (i < generalKindConflict.size() - 1) {
+                            kindConflict += get + ", ";
+                        } else {
+                            kindConflict += get;
+                        }
+                    }
+
+                    projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision));
+                }
+            }
+
+        }
+
+        return PagesName.projectOverview;
+    }
+
     public String getStyle(MergeStatus mergeStatus) {
         if (mergeStatus == MergeStatus.CONFLICTING) {
             return "color: red";
@@ -193,6 +244,34 @@ public class AnalysisViewerBean implements Serializable{
      */
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    /**
+     * @return the projectSummarization
+     */
+    public List<ProjectOverview> getProjectSummarization() {
+        return projectSummarization;
+    }
+
+    /**
+     * @param projectSummarization the projectSummarization to set
+     */
+    public void setProjectSummarization(List<ProjectOverview> projectSummarization) {
+        this.projectSummarization = projectSummarization;
+    }
+
+    /**
+     * @return the projectName
+     */
+    public String getProjectName() {
+        return projectName;
+    }
+
+    /**
+     * @param projectName the projectName to set
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
 }

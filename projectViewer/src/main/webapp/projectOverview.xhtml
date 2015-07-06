@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>#{analysisViewerBean.projectName}</title>
+        <h:outputStylesheet library="css" name="layout.css"  />
+    </h:head>
+    <h:body>
+
+        <h:panelGroup>
+            <f:view>
+                <h:form>
+                    <h:dataTable value="#{analysisViewerBean.projectSummarization}" var="data"
+                                 styleClass="order-table"
+                                 headerClass="order-table-header"
+                                 rowClasses="order-table-odd-row,order-table-even-row"
+                                 >
+
+                        <h:column>
+                            <f:facet name="header">Revision sha </f:facet>
+                                #{data.sha1}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">File name </f:facet>
+                                #{data.fileName}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">CC Identifier </f:facet>
+                                #{data.conflictingChunkIdentifier}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Kind of conflict </f:facet>
+                                #{data.kindConflict}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Developer decision </f:facet>
+                                #{data.developerDecision}
+                        </h:column>
+                    </h:dataTable>
+                </h:form>
+            </f:view>
+        </h:panelGroup>
+    </h:body>
+</html>
+
