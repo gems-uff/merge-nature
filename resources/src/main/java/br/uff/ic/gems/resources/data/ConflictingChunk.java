@@ -8,6 +8,8 @@ package br.uff.ic.gems.resources.data;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -260,5 +262,30 @@ public class ConflictingChunk implements Serializable {
 
     public void setRightKindConflict(KindConflict rightKindConflict) {
         this.rightKindConflict = rightKindConflict;
+    }
+    
+    public List<String> getGeneralKindConflict(){
+        
+        List<LanguageConstruct> leftFiltered = this.getLeftKindConflict().getFilteredLanguageConstructs();
+        List<LanguageConstruct> rightFiltered = this.getRightKindConflict().getFilteredLanguageConstructs();
+        
+        if(leftFiltered == null || rightFiltered == null)
+            return new ArrayList<>();
+        
+        List<String> result = new ArrayList<>();
+        
+        for (LanguageConstruct lf : leftFiltered) {
+            if(!result.contains(lf.getName()))
+                result.add(lf.getName());
+        }
+        
+        for (LanguageConstruct rf : rightFiltered) {
+            if(!result.contains(rf.getName()))
+                result.add(rf.getName());
+        }
+
+        Collections.sort(result);
+        
+        return result;
     }
 }
