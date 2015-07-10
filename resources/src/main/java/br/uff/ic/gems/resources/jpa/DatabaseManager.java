@@ -23,8 +23,10 @@ public class DatabaseManager {
     public static EntityManager getManager() {
         if (instance == null) {
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Test");
-             instance = factory.createEntityManager();
+//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Test");
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Analyses");
+
+            instance = factory.createEntityManager();
         }
 
         return instance;
