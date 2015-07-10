@@ -155,7 +155,7 @@ public class ASTAuxiliar {
             kindConflict.setBeginLine(defaultValue);
             kindConflict.setEndLine(defaultValue);
             List<LanguageConstruct> languageConstructs = new ArrayList<>();
-            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue));
+            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue, defaultValue, defaultValue));
 
             kindConflict.setLanguageConstructs(languageConstructs);
         }
@@ -179,7 +179,7 @@ public class ASTAuxiliar {
             List<LanguageConstruct> languageConstructs = new ArrayList<>();
 
             String[] fileBroken = currentFile.split("\\.");
-            LanguageConstruct languageConstruct = new LanguageConstruct(fileBroken[fileBroken.length - 1], beginRepositioned, endRepositioned);
+            LanguageConstruct languageConstruct = new LanguageConstruct(fileBroken[fileBroken.length - 1], beginRepositioned, endRepositioned, 0, 0);
             languageConstructs.add(languageConstruct);
 
             kindConflict.setBeginLine(beginRepositioned);
@@ -190,7 +190,7 @@ public class ASTAuxiliar {
             kindConflict.setBeginLine(defaultValue);
             kindConflict.setEndLine(defaultValue);
             List<LanguageConstruct> languageConstructs = new ArrayList<>();
-            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue));
+            languageConstructs.add(new LanguageConstruct(ASTTypes.BLANK, defaultValue, defaultValue, defaultValue, defaultValue));
 
             kindConflict.setLanguageConstructs(languageConstructs);
         }

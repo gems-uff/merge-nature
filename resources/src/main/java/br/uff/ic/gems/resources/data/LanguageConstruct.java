@@ -27,26 +27,51 @@ public class LanguageConstruct implements Serializable {
     private String name;
     private int beginLine;
     private int endLine;
+    private int beginColumn;
+    private int endColumn;
+    private boolean hasBlock;
+    private int beginLineBlock;
+    private int endLineBlock;
+    private int beginColumnBlock;
+    private int endColumnBlock;
     @Transient
     private String identifier;
 
     public LanguageConstruct() {
     }
 
-    public LanguageConstruct(String name, int beginLine, int endLine) {
+    public LanguageConstruct(String name, int beginLine, int endLine, int beginColumn, int endColumn) {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
         this.identifier = null;
+        this.hasBlock = false;
     }
 
-    public LanguageConstruct(String name, int beginLine, int endLine, String identifier) {
+    public LanguageConstruct(String name, int beginLine, int endLine, int beginColumn, int endColumn, String identifier) {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
         this.identifier = identifier;
+        this.hasBlock = false;
     }
 
+    public LanguageConstruct(String name, int beginLine, int endLine, int beginColumn, int endColumn, int beginLineBlock, int endLineBlock, int beginColumnBlock, int endColumnBlock, String identifier) {
+        this.name = name;
+        this.beginLine = beginLine;
+        this.endLine = endLine;
+        this.beginColumn = beginColumn;
+        this.endColumn = endColumn;
+        this.hasBlock = true;
+        this.beginLineBlock = beginLineBlock;
+        this.endLineBlock = endLineBlock;
+        this.beginColumnBlock = beginColumnBlock;
+        this.endColumnBlock = endColumnBlock;
+        this.identifier = identifier;
+    }
+
+    
+    
     /**
      * @return the id
      */
@@ -207,5 +232,103 @@ public class LanguageConstruct implements Serializable {
         result.setName(this.getName());
         
         return result;
+    }
+
+    /**
+     * @return the beginColumn
+     */
+    public int getBeginColumn() {
+        return beginColumn;
+    }
+
+    /**
+     * @param beginColumn the beginColumn to set
+     */
+    public void setBeginColumn(int beginColumn) {
+        this.beginColumn = beginColumn;
+    }
+
+    /**
+     * @return the endColumn
+     */
+    public int getEndColumn() {
+        return endColumn;
+    }
+
+    /**
+     * @param endColumn the endColumn to set
+     */
+    public void setEndColumn(int endColumn) {
+        this.endColumn = endColumn;
+    }
+
+    /**
+     * @return the beginLineBlock
+     */
+    public int getBeginLineBlock() {
+        return beginLineBlock;
+    }
+
+    /**
+     * @param beginLineBlock the beginLineBlock to set
+     */
+    public void setBeginLineBlock(int beginLineBlock) {
+        this.beginLineBlock = beginLineBlock;
+    }
+
+    /**
+     * @return the endLineBlock
+     */
+    public int getEndLineBlock() {
+        return endLineBlock;
+    }
+
+    /**
+     * @param endLineBlock the endLineBlock to set
+     */
+    public void setEndLineBlock(int endLineBlock) {
+        this.endLineBlock = endLineBlock;
+    }
+
+    /**
+     * @return the beginColumnBlock
+     */
+    public int getBeginColumnBlock() {
+        return beginColumnBlock;
+    }
+
+    /**
+     * @param beginColumnBlock the beginColumnBlock to set
+     */
+    public void setBeginColumnBlock(int beginColumnBlock) {
+        this.beginColumnBlock = beginColumnBlock;
+    }
+
+    /**
+     * @return the endColumnBlock
+     */
+    public int getEndColumnBlock() {
+        return endColumnBlock;
+    }
+
+    /**
+     * @param endColumnBlock the endColumnBlock to set
+     */
+    public void setEndColumnBlock(int endColumnBlock) {
+        this.endColumnBlock = endColumnBlock;
+    }
+
+    /**
+     * @return the hasBlock
+     */
+    public boolean isHasBlock() {
+        return hasBlock;
+    }
+
+    /**
+     * @param hasBlock the hasBlock to set
+     */
+    public void setHasBlock(boolean hasBlock) {
+        this.hasBlock = hasBlock;
     }
 }
