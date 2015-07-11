@@ -63,30 +63,6 @@
                 <!--Right--> 
                 <div style="overflow:auto; width: 14%; height: 100vh; position: fixed; top: 0%; 
                      left: 85.5%; visibility: #{showConflictsBean.conflictingChunkVisibility}">
-<!--                    <p:dataTable value="#{showConflictsBean.conflictingChunk.leftKindConflict.languageConstructs}" var="lc">
-                        <f:facet name="header">  
-                            <h:outputText value="Left Language Constructs (#{showConflictsBean.conflictingChunk.leftKindConflict.beginLine}
-                                          , #{showConflictsBean.conflictingChunk.leftKindConflict.endLine})" styleClass="title"/>  
-                        </f:facet>
-                        <p:column>
-                            <h:outputText value="#{lc}" styleClass="tableContent"/>
-                        </p:column>
-                    </p:dataTable> 
-                    <br/>
-
-                    <p:dataTable value="#{showConflictsBean.conflictingChunk.rightKindConflict.languageConstructs}" var="lc">
-                        <f:facet name="header">  
-                            <h:outputText value="Right Language Constructs (#{showConflictsBean.conflictingChunk.rightKindConflict.beginLine}
-                                          , #{showConflictsBean.conflictingChunk.rightKindConflict.endLine})" styleClass="title"/>  
-                        </f:facet>
-                        <p:column>
-                            
-                            <h:outputText value="#{lc}" styleClass="tableContent"/>
-                            
-                        </p:column>
-                    </p:dataTable> 
-                    <br/>-->
-
                     <p:dataTable value="#{showConflictsBean.conflictingChunk.developerDecision}" var="cc">
                         <f:facet name="header">  
                             <h:outputText value="Developer's decision" styleClass="title"/>  
