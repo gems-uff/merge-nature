@@ -30,7 +30,7 @@ public class ASTTypes {
     public static final String ENUM_DECLARATION = "Enum declaration";
     public static final String ENUM_SIGNATURE = "Enum signature";
     public static final String ENUM_VALUE = "Enum value";
-    public static final String FOR_STATEMENT = "ForStatement";
+    public static final String FOR_STATEMENT = "For statement";
     public static final String IF_STATEMENT = "If statement";
     public static final String IMPORT_DECLARATION = "Import";
     public static final String INTERFACE_DECLARATION = "Interface declaration";
