@@ -330,23 +330,20 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        int beginLineBody = 0;
-        int endLineBody = 0;
-        int beginColumnBody = 0;
-        int endColumnBody = 0;
-
         Block body = node.getBody();
 
         if (body != null) {
-            beginLineBody = cu.getLineNumber(body.getStartPosition());
-            endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-            beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-            endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
         }
-
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
-
         return true;
     }
 
@@ -405,14 +402,19 @@ public class Visitor extends ASTVisitor {
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
         Statement body = node.getBody();
-        int beginLineBody = cu.getLineNumber(body.getStartPosition());
-        int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-        int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-        int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        if (body != null) {
 
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
         return true;
     }
 
@@ -424,13 +426,18 @@ public class Visitor extends ASTVisitor {
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
         Statement body = node.getBody();
-        int beginLineBody = cu.getLineNumber(body.getStartPosition());
-        int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-        int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-        int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+        if (body != null) {
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
 
         return true;
     }
@@ -485,14 +492,18 @@ public class Visitor extends ASTVisitor {
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
         Statement body = node.getBody();
-        int beginLineBody = cu.getLineNumber(body.getStartPosition());
-        int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-        int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-        int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+        if (body != null) {
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
         return true;
     }
 
@@ -528,22 +539,20 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        int beginLineBody = 0;
-        int endLineBody = 0;
-        int beginColumnBody = 0;
-        int endColumnBody = 0;
-
         Block body = node.getBody();
 
         if (body != null) {
-            beginLineBody = cu.getLineNumber(body.getStartPosition());
-            endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-            beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-            endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
-        }
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
-                beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
 
         return true;
     }
@@ -592,21 +601,20 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        int beginLineBody = 0;
-        int endLineBody = 0;
-        int beginColumnBody = 0;
-        int endColumnBody = 0;
-
         Block body = node.getBody();
 
         if (body != null) {
-            beginLineBody = cu.getLineNumber(body.getStartPosition());
-            endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-            beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-            endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
         }
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
-                beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
     }
@@ -654,7 +662,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, beginColumn + "return".length() - 1));
 
         return true;
     }
@@ -738,23 +746,20 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        int beginLineBody = 0;
-        int endLineBody = 0;
-        int beginColumnBody = 0;
-        int endColumnBody = 0;
-
         Block body = node.getBody();
 
         if (body != null) {
-            beginLineBody = cu.getLineNumber(body.getStartPosition());
-            endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-            beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-            endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
         }
-
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
-                beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
-
         return true;
     }
 
@@ -777,22 +782,20 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        int beginLineBody = 0;
-        int endLineBody = 0;
-        int beginColumnBody = 0;
-        int endColumnBody = 0;
-
         Block body = node.getBody();
 
         if (body != null) {
-            beginLineBody = cu.getLineNumber(body.getStartPosition());
-            endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-            beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-            endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
-        }
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
 
         return true;
     }
@@ -858,13 +861,18 @@ public class Visitor extends ASTVisitor {
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
         Statement body = node.getBody();
-        int beginLineBody = cu.getLineNumber(body.getStartPosition());
-        int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
-        int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
-        int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+        if (body != null) {
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
-                beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+            int beginLineBody = cu.getLineNumber(body.getStartPosition());
+            int endLineBody = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
+            int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
 
         return true;
     }
