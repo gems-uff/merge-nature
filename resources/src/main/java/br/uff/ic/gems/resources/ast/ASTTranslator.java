@@ -5,6 +5,8 @@
  */
 package br.uff.ic.gems.resources.ast;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
@@ -41,6 +43,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchCase;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -57,6 +60,206 @@ public class ASTTranslator {
 
     private static final String CLASS = "Class";
     private static final String INTERFACE = "Interface";
+
+    public static List<String> ANNOTATION_TYPE_MEMBER_DECLARATION = new ArrayList<>();
+
+    {
+        ANNOTATION_TYPE_MEMBER_DECLARATION.add(AnnotationTypeMemberDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> CLASS_DECLARATION = new ArrayList<>();
+
+    {
+        CLASS_DECLARATION.add(AnonymousClassDeclaration.class.getSimpleName());
+        CLASS_DECLARATION.add(TypeDeclaration.class.getSimpleName() + CLASS);
+    }
+
+    public static List<String> ARRAY_ACCESS = new ArrayList<>();
+
+    {
+        ARRAY_ACCESS.add(ArrayAccess.class.getSimpleName());
+    }
+
+    public static List<String> METHOD_INVOCATION = new ArrayList<>();
+
+    {
+        METHOD_INVOCATION.add(ArrayCreation.class.getSimpleName());
+        METHOD_INVOCATION.add(ClassInstanceCreation.class.getSimpleName());
+        METHOD_INVOCATION.add(ConstructorInvocation.class.getSimpleName());
+        METHOD_INVOCATION.add(MethodInvocation.class.getSimpleName());
+        METHOD_INVOCATION.add(SuperConstructorInvocation.class.getSimpleName());
+        METHOD_INVOCATION.add(SuperMethodInvocation.class.getSimpleName());
+    }
+
+    public static List<String> ARRAY_INITIALIZER = new ArrayList<>();
+
+    {
+        ARRAY_INITIALIZER.add(ArrayInitializer.class.getSimpleName());
+    }
+
+    public static List<String> ASSERT_STATEMENT = new ArrayList<>();
+
+    {
+        ASSERT_STATEMENT.add(AssertStatement.class.getSimpleName());
+    }
+
+    public static List<String> COMMENT = new ArrayList<>();
+
+    {
+        COMMENT.add(BlockComment.class.getSimpleName());
+        COMMENT.add(Comment.class.getSimpleName());
+        COMMENT.add(Javadoc.class.getSimpleName());
+        COMMENT.add(LineComment.class.getSimpleName());
+    }
+
+    public static List<String> BREAK_STATEMENT = new ArrayList<>();
+
+    {
+        BREAK_STATEMENT.add(BreakStatement.class.getSimpleName());
+    }
+
+    public static List<String> CAST_EXPRESSION = new ArrayList<>();
+
+    {
+        CAST_EXPRESSION.add(CastExpression.class.getSimpleName());
+    }
+
+    public static List<String> CATCH_CLAUSE = new ArrayList<>();
+
+    {
+        CATCH_CLAUSE.add(CatchClause.class.getSimpleName());
+    }
+
+    public static List<String> CONTINUE_STATEMENT = new ArrayList<>();
+
+    {
+        CONTINUE_STATEMENT.add(ContinueStatement.class.getSimpleName());
+    }
+
+    public static List<String> DO_STATEMENT = new ArrayList<>();
+
+    {
+        DO_STATEMENT.add(DoStatement.class.getSimpleName());
+    }
+
+    public static List<String> FOR_STATEMENT = new ArrayList<>();
+
+    {
+        FOR_STATEMENT.add(EnhancedForStatement.class.getSimpleName());
+        FOR_STATEMENT.add(ForStatement.class.getSimpleName());
+    }
+
+    public static List<String> ENUM_VALUE = new ArrayList<>();
+
+    {
+        ENUM_VALUE.add(EnumConstantDeclaration.class.getSimpleName());
+    }
+    
+    public static List<String> ENUM_DECLARATION = new ArrayList<>();
+
+    {
+        ENUM_DECLARATION.add(EnumDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> ATTRIBUTE = new ArrayList<>();
+
+    {
+        ATTRIBUTE.add(FieldDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> IF_STATEMENT = new ArrayList<>();
+
+    {
+        ATTRIBUTE.add(IfStatement.class.getSimpleName());
+    }
+
+    public static List<String> IMPORT_DECLARATION = new ArrayList<>();
+
+    {
+        IMPORT_DECLARATION.add(ImportDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> STATIC_INITIALIZER = new ArrayList<>();
+
+    {
+        STATIC_INITIALIZER.add(Initializer.class.getSimpleName());
+    }
+
+    public static List<String> ANNOTATION = new ArrayList<>();
+
+    {
+        ANNOTATION.add(MarkerAnnotation.class.getSimpleName());
+        ANNOTATION.add(NormalAnnotation.class.getSimpleName());
+        ANNOTATION.add(SingleMemberAnnotation.class.getSimpleName());
+    }
+
+    public static List<String> METHOD_DECLARATION = new ArrayList<>();
+
+    {
+        METHOD_DECLARATION.add(MethodDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> PACKAGE_DECLARATION = new ArrayList<>();
+
+    {
+        PACKAGE_DECLARATION.add(PackageDeclaration.class.getSimpleName());
+    }
+
+    public static List<String> RETURN_STATEMENT = new ArrayList<>();
+
+    {
+        RETURN_STATEMENT.add(ReturnStatement.class.getSimpleName());
+    }
+
+    public static List<String> VARIABLE = new ArrayList<>();
+
+    {
+        VARIABLE.add(SingleVariableDeclaration.class.getSimpleName());
+        VARIABLE.add(VariableDeclarationExpression.class.getSimpleName());
+        VARIABLE.add(VariableDeclarationStatement.class.getSimpleName());
+    }
+
+    public static List<String> CASE_STATEMENT = new ArrayList<>();
+
+    {
+        SWITCH_STATEMENT.add(SwitchCase.class.getSimpleName());
+    }
+    
+    public static List<String> SWITCH_STATEMENT = new ArrayList<>();
+
+    {
+        SWITCH_STATEMENT.add(SwitchStatement.class.getSimpleName());
+    }
+
+    public static List<String> SYNCHRONIZED_STATEMENT = new ArrayList<>();
+
+    {
+        SYNCHRONIZED_STATEMENT.add(SynchronizedStatement.class.getSimpleName());
+    }
+
+    public static List<String> THROW_STATEMENT = new ArrayList<>();
+
+    {
+        THROW_STATEMENT.add(ThrowStatement.class.getSimpleName());
+    }
+
+    public static List<String> TRY_STATEMENT = new ArrayList<>();
+
+    {
+        TRY_STATEMENT.add(TryStatement.class.getSimpleName());
+    }
+
+    public static List<String> INTERFACE_DECLARATION = new ArrayList<>();
+
+    {
+        INTERFACE_DECLARATION.add(TypeDeclaration.class.getSimpleName() + INTERFACE);
+    }
+
+    public static List<String> WHILE_STATEMENT = new ArrayList<>();
+
+    {
+        WHILE_STATEMENT.add(WhileStatement.class.getSimpleName() + INTERFACE);
+    }
 
     public static String translate(String name) {
 
