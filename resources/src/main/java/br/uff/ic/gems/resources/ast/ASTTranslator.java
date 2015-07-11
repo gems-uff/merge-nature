@@ -170,7 +170,7 @@ public class ASTTranslator {
     public static List<String> IF_STATEMENT = new ArrayList<>();
 
     static {
-        ATTRIBUTE.add(IfStatement.class.getSimpleName());
+        IF_STATEMENT.add(IfStatement.class.getSimpleName());
     }
 
     public static List<String> IMPORT_DECLARATION = new ArrayList<>();
