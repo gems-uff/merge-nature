@@ -8,7 +8,6 @@ package br.uff.ic.gems.resources.ast;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -82,6 +81,9 @@ public class Visitor extends ASTVisitor {
     private final int INVALID_LINE = -1;
     private final int INVALID_COLUMN = -2;
     private final int INVALID_JAVADOC = -3;
+
+    private final String CLASS = "Class";
+    private final String INTERFACE = "Interface";
 
     public Visitor(CompilationUnit cuArg) {
         languageConstructs = new ArrayList<>();
@@ -220,7 +222,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION_TYPE_MEMBER_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -232,7 +234,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CLASS_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -244,7 +246,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ARRAY_ACCESS, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -256,7 +258,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -268,7 +270,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ARRAY_INITIALIZER, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -280,7 +282,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ASSERT_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -292,7 +294,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -304,7 +306,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.BREAK_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -316,7 +318,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CAST_EXPRESSION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -342,7 +344,7 @@ public class Visitor extends ASTVisitor {
             endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
         }
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CATCH_CLAUSE, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -355,7 +357,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -366,7 +368,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -378,7 +380,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -390,7 +392,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CONTINUE_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -408,7 +410,7 @@ public class Visitor extends ASTVisitor {
         int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
         int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.DO_STATEMENT, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -427,7 +429,7 @@ public class Visitor extends ASTVisitor {
         int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
         int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -440,7 +442,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_VALUE, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -452,7 +454,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ENUM_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -468,7 +470,7 @@ public class Visitor extends ASTVisitor {
             int beginColumn = beginColunm(node);
             int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-            languageConstructs.add(new LanguageConstruct(ASTTypes.ATTRIBUTE, beginLine, endLine, beginColumn, endColumn, fragment.getName().getIdentifier()));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, fragment.getName().getIdentifier()));
 
         }
 
@@ -488,7 +490,7 @@ public class Visitor extends ASTVisitor {
         int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
         int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.FOR_STATEMENT, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -501,7 +503,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.IF_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -513,7 +515,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.IMPORT_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -540,7 +542,7 @@ public class Visitor extends ASTVisitor {
             endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
         }
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.STATIC_INITIALIZER, beginLine, endLine,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
                 beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -553,7 +555,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -565,7 +567,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.COMMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -577,7 +579,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -603,7 +605,7 @@ public class Visitor extends ASTVisitor {
             beginColumnBody = cu.getColumnNumber(body.getStartPosition());
             endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
         }
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_DECLARATION, beginLine, endLine,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
                 beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -616,7 +618,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -628,7 +630,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -640,7 +642,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = beginColunm(node);
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.PACKAGE_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -652,7 +654,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.RETURN_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -664,7 +666,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.ANNOTATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -676,7 +678,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, beginLine, endLine, beginColumn, endColumn, node.getName().getIdentifier()));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, node.getName().getIdentifier()));
 
         return true;
     }
@@ -688,7 +690,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -700,7 +702,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.METHOD_INVOCATION, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return false;
     }
@@ -712,7 +714,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.CASE_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -724,7 +726,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.SWITCH_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -750,7 +752,7 @@ public class Visitor extends ASTVisitor {
             endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
         }
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.SYNCHRONIZED_STATEMENT, beginLine, endLine,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine,
                 beginColumn, endColumn, beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -763,7 +765,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.THROW_STATEMENT, beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -789,7 +791,7 @@ public class Visitor extends ASTVisitor {
             endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
         }
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.TRY_STATEMENT, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -805,9 +807,9 @@ public class Visitor extends ASTVisitor {
         isInterface = node.isInterface();
 
         if (isInterface) {
-            languageConstructs.add(new LanguageConstruct(ASTTypes.INTERFACE_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName() + INTERFACE, beginLine, endLine, beginColumn, endColumn));
         } else {
-            languageConstructs.add(new LanguageConstruct(ASTTypes.CLASS_DECLARATION, beginLine, endLine, beginColumn, endColumn));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName() + CLASS, beginLine, endLine, beginColumn, endColumn));
         }
 
         return true;
@@ -823,7 +825,7 @@ public class Visitor extends ASTVisitor {
             int beginColumn = cu.getColumnNumber(node.getStartPosition());
             int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-            languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, beginLine, endLine, beginColumn, endColumn, fragment.getName().getIdentifier()));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, fragment.getName().getIdentifier()));
         }
 
         return true;
@@ -841,7 +843,7 @@ public class Visitor extends ASTVisitor {
             int beginColumn = cu.getColumnNumber(node.getStartPosition());
             int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-            languageConstructs.add(new LanguageConstruct(ASTTypes.VARIABLE, beginLine, endLine, beginColumn, endColumn, identifier));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, identifier));
 
         }
 
@@ -861,7 +863,7 @@ public class Visitor extends ASTVisitor {
         int beginColumnBody = cu.getColumnNumber(body.getStartPosition());
         int endColumnBody = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-        languageConstructs.add(new LanguageConstruct(ASTTypes.WHILE_STATEMENT, beginLine, endLine, beginColumn, endColumn,
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                 beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
 
         return true;
@@ -884,7 +886,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("AnnotationDifferent", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -895,7 +897,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("Expression", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -906,7 +908,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("Name", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -918,7 +920,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("QualifiedType", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -945,7 +947,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("Statement", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -956,7 +958,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("Type", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -969,7 +971,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("TypeDeclarationStatement", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
@@ -981,7 +983,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct("VariableDeclaration", beginLine, endLine, beginColumn, endColumn));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }

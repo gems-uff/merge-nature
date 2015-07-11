@@ -5,6 +5,7 @@
  */
 package br.uff.ic.gems.resources.data;
 
+import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
@@ -275,13 +276,19 @@ public class ConflictingChunk implements Serializable {
         List<String> result = new ArrayList<>();
         
         for (LanguageConstruct lf : leftFiltered) {
-            if(!result.contains(lf.getName()))
-                result.add(lf.getName());
+            String translatedName = ASTTranslator.translate(lf.getName());
+            if (!result.contains(translatedName)) {
+                result.add(translatedName);
+            }
         }
-        
+
         for (LanguageConstruct rf : rightFiltered) {
-            if(!result.contains(rf.getName()))
-                result.add(rf.getName());
+            
+            String translatedName = ASTTranslator.translate(rf.getName());
+
+            if (!result.contains(translatedName)) {
+                result.add(translatedName);
+            }
         }
 
         Collections.sort(result);
