@@ -5,6 +5,7 @@
  */
 package br.uff.ic.gems.resources.data;
 
+import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.ast.ASTTypes;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -95,13 +96,25 @@ public class KindConflict implements Serializable {
 
     public List<LanguageConstruct> getFilteredLanguageConstructs() {
         List<LanguageConstruct> result = new ArrayList<>();
-        int currentIndex = this.beginLine;
+        int currentLine = this.beginLine;
+        int currentColumn = 0;
         int beginColumn = 0, endColumn = 0;
 
-        String[] bodyASTTypes = {ASTTypes.CATCH_CLAUSE, ASTTypes.CLASS_DECLARATION, ASTTypes.DO_STATEMENT, ASTTypes.ENUM_DECLARATION,
-            ASTTypes.FOR_STATEMENT, ASTTypes.IF_STATEMENT, ASTTypes.INTERFACE_DECLARATION, ASTTypes.METHOD_DECLARATION, ASTTypes.STATIC_INITIALIZER,
-            ASTTypes.SWITCH_STATEMENT, ASTTypes.TRY_STATEMENT, ASTTypes.WHILE_STATEMENT};
-        List<String> bodyASTTypesList = Arrays.asList(bodyASTTypes);
+        List<String> bodyASTTypes = new ArrayList<>();
+
+        bodyASTTypes.addAll(ASTTranslator.CATCH_CLAUSE);
+        bodyASTTypes.addAll(ASTTranslator.CLASS_DECLARATION);
+        bodyASTTypes.addAll(ASTTranslator.DO_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.ENUM_DECLARATION);
+        bodyASTTypes.addAll(ASTTranslator.FOR_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.IF_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.INTERFACE_DECLARATION);
+        bodyASTTypes.addAll(ASTTranslator.METHOD_DECLARATION);
+        bodyASTTypes.addAll(ASTTranslator.STATIC_INITIALIZER);
+        bodyASTTypes.addAll(ASTTranslator.SWITCH_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.TRY_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.WHILE_STATEMENT);
+
         List<LanguageConstruct> copyLanguageConstructs = new ArrayList<>();
 
         //Copying language constructs
@@ -111,13 +124,14 @@ public class KindConflict implements Serializable {
 
         //Selecting language constructs
         boolean hasLanguageConstruct = false;
-        while (currentIndex <= this.endLine) {
+        while (currentLine <= this.endLine) {
             int size = 0;
 
+            
             LanguageConstruct currentLanguageConstruct = new LanguageConstruct();
 
             for (LanguageConstruct languageConstruct : copyLanguageConstructs) {
-                if (languageConstruct.getBeginLine() == currentIndex
+                if (languageConstruct.getBeginLine() == currentLine
                         && size < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1) {
                     currentLanguageConstruct = languageConstruct;
                     size = languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1;
@@ -127,9 +141,9 @@ public class KindConflict implements Serializable {
 
             if (currentLanguageConstruct.getId() == null && !hasLanguageConstruct) {
                 for (LanguageConstruct copyLanguageConstruct : copyLanguageConstructs) {
-                    if (copyLanguageConstruct.getBeginLine() <= currentIndex
-                            && currentIndex <= copyLanguageConstruct.getEndLine()
-                            && !bodyASTTypesList.contains(copyLanguageConstruct.getName())) {
+                    if (copyLanguageConstruct.getBeginLine() <= currentLine
+                            && currentLine <= copyLanguageConstruct.getEndLine()
+                            && !bodyASTTypes.contains(copyLanguageConstruct.getName())) {
                         currentLanguageConstruct = copyLanguageConstruct;
                         break;
                     }
@@ -137,104 +151,104 @@ public class KindConflict implements Serializable {
             }
 
             if (currentLanguageConstruct.getId() == null) {
-                currentIndex++;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.METHOD_DECLARATION)
+                currentLine++;
+            } else if (ASTTranslator.METHOD_DECLARATION.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.METHOD_SIGNATURE, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.METHOD_SIGNATURE, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.CLASS_DECLARATION)
+            } else if (ASTTranslator.CLASS_DECLARATION.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CLASS_SIGNATURE, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CLASS_SIGNATURE, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.INTERFACE_DECLARATION)
+            } else if (ASTTranslator.INTERFACE_DECLARATION.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.INTERFACE_SIGNATURE, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.INTERFACE_SIGNATURE, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.ENUM_DECLARATION)
+            } else if (ASTTranslator.ENUM_DECLARATION.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.ENUM_SIGNATURE, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.ENUM_SIGNATURE, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.FOR_STATEMENT)
+            } else if (ASTTranslator.FOR_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.FOR_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.FOR_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.IF_STATEMENT)
+            } else if (ASTTranslator.IF_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.IF_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.IF_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.SWITCH_STATEMENT)
+            } else if (ASTTranslator.SWITCH_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.SWITCH_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.SWITCH_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.CATCH_CLAUSE)
+            } else if (ASTTranslator.CATCH_CLAUSE.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CATCH_CLAUSE, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.CATCH_CLAUSE, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.COMMENT)
+            } else if (ASTTranslator.COMMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.COMMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.COMMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.DO_STATEMENT)
+            } else if (ASTTranslator.DO_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.DO_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.DO_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.STATIC_INITIALIZER)
+            } else if (ASTTranslator.STATIC_INITIALIZER.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.STATIC_INITIALIZER, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.STATIC_INITIALIZER, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.TRY_STATEMENT)
+            } else if (ASTTranslator.TRY_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.TRY_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.TRY_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
-            } else if (currentLanguageConstruct.getName().equals(ASTTypes.WHILE_STATEMENT)
+            } else if (ASTTranslator.WHILE_STATEMENT.contains(currentLanguageConstruct.getName())
                     && currentLanguageConstruct.getEndLine() > this.endLine
-                    && currentLanguageConstruct.getBeginLine() == currentIndex) {
-                currentLanguageConstruct = new LanguageConstruct(ASTTypes.WHILE_STATEMENT, currentIndex, currentIndex, beginColumn, endColumn);
+                    && currentLanguageConstruct.getBeginLine() == currentLine) {
+                currentLanguageConstruct = new LanguageConstruct(ASTTypes.WHILE_STATEMENT, currentLine, currentLine, beginColumn, endColumn);
                 result.add(currentLanguageConstruct);
-                currentIndex++;
+                currentLine++;
                 hasLanguageConstruct = false;
             } else if (currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() == 0) {
                 result.add(currentLanguageConstruct);
                 copyLanguageConstructs.remove(currentLanguageConstruct);
             } else {
                 result.add(currentLanguageConstruct);
-                currentIndex += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine();
+                currentLine += currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine();
                 hasLanguageConstruct = false;
             }
         }
