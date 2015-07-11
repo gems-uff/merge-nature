@@ -5,6 +5,7 @@
  */
 package br.uff.ic.kraken.projectviewer.bean;
 
+import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.kraken.projectviewer.utils.Navigation;
 import java.io.Serializable;
@@ -21,7 +22,7 @@ import javax.inject.Named;
 @Named(value = "showConflictsBean")
 @RequestScoped
 public class ShowConflictsBean extends Navigation implements Serializable {
- 
+
     private Long id;
     private String dataType;
 
@@ -52,30 +53,37 @@ public class ShowConflictsBean extends Navigation implements Serializable {
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
-    
-    public String navigate(){
+
+    public String navigate() {
         return super.dataNavigation(id, dataType);
     }
-    
-    public List<String> getGeneralKindOfConflict(List<LanguageConstruct> leftFiltered, List<LanguageConstruct> rightFiltered){
-        
-        if(leftFiltered == null || rightFiltered == null)
+
+    public List<String> getGeneralKindOfConflict(List<LanguageConstruct> leftFiltered, List<LanguageConstruct> rightFiltered) {
+
+        if (leftFiltered == null || rightFiltered == null) {
             return new ArrayList<>();
-        
-        List<String> result = new ArrayList<>();
-        
-        for (LanguageConstruct lf : leftFiltered) {
-            if(!result.contains(lf.getName()))
-                result.add(lf.getName());
         }
-        
+
+        List<String> result = new ArrayList<>();
+
+        for (LanguageConstruct lf : leftFiltered) {
+            String translatedName = ASTTranslator.translate(lf.getName());
+            if (!result.contains(translatedName)) {
+                result.add(translatedName);
+            }
+        }
+
         for (LanguageConstruct rf : rightFiltered) {
-            if(!result.contains(rf.getName()))
-                result.add(rf.getName());
+            
+            String translatedName = ASTTranslator.translate(rf.getName());
+
+            if (!result.contains(translatedName)) {
+                result.add(translatedName);
+            }
         }
 
         Collections.sort(result);
-        
+
         return result;
     }
 }

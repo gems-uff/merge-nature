@@ -118,7 +118,7 @@
                         </p:column>
                     </p:dataTable> 
                     <br/>
-                    
+
                     <p:dataTable value="#{showConflictsBean.getGeneralKindOfConflict(
                                           showConflictsBean.conflictingChunk.leftKindConflict.filteredLanguageConstructs,
                                           showConflictsBean.conflictingChunk.rightKindConflict.filteredLanguageConstructs)}" var="lc">
@@ -156,7 +156,7 @@
 
                         <h:outputText value="Conflicting chunks: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.conflictingFile.conflictingChunks.size()}" styleClass="tableContent"/>
-                        
+
                         <h:outputText value="Removed: " styleClass="tableContent" style="font-weight: bold"/>
                         <h:outputText value="#{showConflictsBean.conflictingFile.removed}" styleClass="tableContent"/>
                     </h:panelGrid>

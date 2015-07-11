@@ -43,7 +43,7 @@ public class AnalysisViewerBean implements Serializable {
 
     private List<ProjectOverview> projectSummarization;
     private String projectName;
-    
+
     /**
      * @return the projectId
      */
