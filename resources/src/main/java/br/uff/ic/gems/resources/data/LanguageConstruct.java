@@ -44,6 +44,8 @@ public class LanguageConstruct implements Serializable {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
+        this.beginColumn = beginColumn;
+        this.endColumn = endColumn;
         this.identifier = null;
         this.hasBlock = false;
     }
@@ -52,11 +54,14 @@ public class LanguageConstruct implements Serializable {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
+        this.beginColumn = beginColumn;
+        this.endColumn = endColumn;
         this.identifier = identifier;
         this.hasBlock = false;
     }
 
-    public LanguageConstruct(String name, int beginLine, int endLine, int beginColumn, int endColumn, int beginLineBlock, int endLineBlock, int beginColumnBlock, int endColumnBlock, String identifier) {
+    public LanguageConstruct(String name, int beginLine, int endLine, int beginColumn, int endColumn, int beginLineBlock, 
+            int endLineBlock, int beginColumnBlock, int endColumnBlock, String identifier) {
         this.name = name;
         this.beginLine = beginLine;
         this.endLine = endLine;
@@ -165,75 +170,6 @@ public class LanguageConstruct implements Serializable {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return this.name + " (" + this.beginLine + ", " + this.endLine + ")";
-    }
-
-    public static String toString(List<LanguageConstruct> languageConstructs) {
-        List<String> result = new ArrayList<>();
-
-        for (LanguageConstruct languageConstruct : languageConstructs) {
-            if (!result.contains(languageConstruct.getName())) {
-                result.add(languageConstruct.getName());
-            }
-        }
-
-        return result.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 29 * hash + Objects.hashCode(this.id);
-        hash = 29 * hash + Objects.hashCode(this.name);
-        hash = 29 * hash + this.beginLine;
-        hash = 29 * hash + this.endLine;
-        hash = 29 * hash + Objects.hashCode(this.identifier);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final LanguageConstruct other = (LanguageConstruct) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (this.beginLine != other.beginLine) {
-            return false;
-        }
-        if (this.endLine != other.endLine) {
-            return false;
-        }
-        if (!Objects.equals(this.identifier, other.identifier)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public LanguageConstruct clone(){
-
-        if(this == null)
-            return null;
-        
-        LanguageConstruct result = new LanguageConstruct();
-        
-        result.setBeginLine(this.getBeginLine());
-        result.setEndLine(this.getEndLine());
-        result.setId(this.getId());
-        result.setIdentifier(this.getIdentifier());
-        result.setName(this.getName());
-        
-        return result;
-    }
-
     /**
      * @return the beginColumn
      */
@@ -330,5 +266,83 @@ public class LanguageConstruct implements Serializable {
      */
     public void setHasBlock(boolean hasBlock) {
         this.hasBlock = hasBlock;
+    }
+    
+    @Override
+    public LanguageConstruct clone(){
+
+        if(this == null)
+            return null;
+        
+        
+        
+        LanguageConstruct result = new LanguageConstruct();
+   
+        result.setBeginColumn(this.beginColumn);
+        result.setBeginColumnBlock(this.beginColumnBlock);
+        result.setBeginLine(this.getBeginLine());
+        result.setBeginLineBlock(this.beginLineBlock);
+        result.setEndColumn(this.endColumn);
+        result.setEndColumnBlock(this.endColumnBlock);
+        result.setEndLine(this.getEndLine());
+        result.setEndLineBlock(this.endLineBlock);
+        result.setHasBlock(this.hasBlock);
+        result.setId(this.getId());
+        result.setIdentifier(this.getIdentifier());
+        result.setName(this.getName());
+        
+        return result;
+    }
+    
+    @Override
+    public String toString() {
+        return this.name + " (" + this.beginLine + ", " + this.endLine + ")";
+    }
+
+    public static String toString(List<LanguageConstruct> languageConstructs) {
+        List<String> result = new ArrayList<>();
+
+        for (LanguageConstruct languageConstruct : languageConstructs) {
+            if (!result.contains(languageConstruct.getName())) {
+                result.add(languageConstruct.getName());
+            }
+        }
+
+        return result.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        hash = 29 * hash + Objects.hashCode(this.name);
+        hash = 29 * hash + this.beginLine;
+        hash = 29 * hash + this.endLine;
+        hash = 29 * hash + Objects.hashCode(this.identifier);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final LanguageConstruct other = (LanguageConstruct) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.beginLine != other.beginLine) {
+            return false;
+        }
+        if (this.endLine != other.endLine) {
+            return false;
+        }
+        if (!Objects.equals(this.identifier, other.identifier)) {
+            return false;
+        }
+        return true;
     }
 }
