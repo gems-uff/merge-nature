@@ -63,26 +63,26 @@ public class ASTTranslator {
 
     public static List<String> ANNOTATION_TYPE_MEMBER_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         ANNOTATION_TYPE_MEMBER_DECLARATION.add(AnnotationTypeMemberDeclaration.class.getSimpleName());
     }
 
     public static List<String> CLASS_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         CLASS_DECLARATION.add(AnonymousClassDeclaration.class.getSimpleName());
         CLASS_DECLARATION.add(TypeDeclaration.class.getSimpleName() + CLASS);
     }
 
     public static List<String> ARRAY_ACCESS = new ArrayList<>();
 
-    {
+    static {
         ARRAY_ACCESS.add(ArrayAccess.class.getSimpleName());
     }
 
     public static List<String> METHOD_INVOCATION = new ArrayList<>();
 
-    {
+    static {
         METHOD_INVOCATION.add(ArrayCreation.class.getSimpleName());
         METHOD_INVOCATION.add(ClassInstanceCreation.class.getSimpleName());
         METHOD_INVOCATION.add(ConstructorInvocation.class.getSimpleName());
@@ -93,19 +93,19 @@ public class ASTTranslator {
 
     public static List<String> ARRAY_INITIALIZER = new ArrayList<>();
 
-    {
+    static {
         ARRAY_INITIALIZER.add(ArrayInitializer.class.getSimpleName());
     }
 
     public static List<String> ASSERT_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         ASSERT_STATEMENT.add(AssertStatement.class.getSimpleName());
     }
 
     public static List<String> COMMENT = new ArrayList<>();
 
-    {
+    static {
         COMMENT.add(BlockComment.class.getSimpleName());
         COMMENT.add(Comment.class.getSimpleName());
         COMMENT.add(Javadoc.class.getSimpleName());
@@ -114,80 +114,80 @@ public class ASTTranslator {
 
     public static List<String> BREAK_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         BREAK_STATEMENT.add(BreakStatement.class.getSimpleName());
     }
 
     public static List<String> CAST_EXPRESSION = new ArrayList<>();
 
-    {
+    static {
         CAST_EXPRESSION.add(CastExpression.class.getSimpleName());
     }
 
     public static List<String> CATCH_CLAUSE = new ArrayList<>();
 
-    {
+    static {
         CATCH_CLAUSE.add(CatchClause.class.getSimpleName());
     }
 
     public static List<String> CONTINUE_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         CONTINUE_STATEMENT.add(ContinueStatement.class.getSimpleName());
     }
 
     public static List<String> DO_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         DO_STATEMENT.add(DoStatement.class.getSimpleName());
     }
 
     public static List<String> FOR_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         FOR_STATEMENT.add(EnhancedForStatement.class.getSimpleName());
         FOR_STATEMENT.add(ForStatement.class.getSimpleName());
     }
 
     public static List<String> ENUM_VALUE = new ArrayList<>();
 
-    {
+    static {
         ENUM_VALUE.add(EnumConstantDeclaration.class.getSimpleName());
     }
-    
+
     public static List<String> ENUM_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         ENUM_DECLARATION.add(EnumDeclaration.class.getSimpleName());
     }
 
     public static List<String> ATTRIBUTE = new ArrayList<>();
 
-    {
+    static {
         ATTRIBUTE.add(FieldDeclaration.class.getSimpleName());
     }
 
     public static List<String> IF_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         ATTRIBUTE.add(IfStatement.class.getSimpleName());
     }
 
     public static List<String> IMPORT_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         IMPORT_DECLARATION.add(ImportDeclaration.class.getSimpleName());
     }
 
     public static List<String> STATIC_INITIALIZER = new ArrayList<>();
 
-    {
+    static {
         STATIC_INITIALIZER.add(Initializer.class.getSimpleName());
     }
 
     public static List<String> ANNOTATION = new ArrayList<>();
 
-    {
+    static {
         ANNOTATION.add(MarkerAnnotation.class.getSimpleName());
         ANNOTATION.add(NormalAnnotation.class.getSimpleName());
         ANNOTATION.add(SingleMemberAnnotation.class.getSimpleName());
@@ -195,25 +195,25 @@ public class ASTTranslator {
 
     public static List<String> METHOD_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         METHOD_DECLARATION.add(MethodDeclaration.class.getSimpleName());
     }
 
     public static List<String> PACKAGE_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         PACKAGE_DECLARATION.add(PackageDeclaration.class.getSimpleName());
     }
 
     public static List<String> RETURN_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         RETURN_STATEMENT.add(ReturnStatement.class.getSimpleName());
     }
 
     public static List<String> VARIABLE = new ArrayList<>();
 
-    {
+    static {
         VARIABLE.add(SingleVariableDeclaration.class.getSimpleName());
         VARIABLE.add(VariableDeclarationExpression.class.getSimpleName());
         VARIABLE.add(VariableDeclarationStatement.class.getSimpleName());
@@ -221,121 +221,109 @@ public class ASTTranslator {
 
     public static List<String> CASE_STATEMENT = new ArrayList<>();
 
-    {
-        SWITCH_STATEMENT.add(SwitchCase.class.getSimpleName());
+    static {
+        CASE_STATEMENT.add(SwitchCase.class.getSimpleName());
     }
-    
+
     public static List<String> SWITCH_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         SWITCH_STATEMENT.add(SwitchStatement.class.getSimpleName());
     }
 
     public static List<String> SYNCHRONIZED_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         SYNCHRONIZED_STATEMENT.add(SynchronizedStatement.class.getSimpleName());
     }
 
     public static List<String> THROW_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         THROW_STATEMENT.add(ThrowStatement.class.getSimpleName());
     }
 
     public static List<String> TRY_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         TRY_STATEMENT.add(TryStatement.class.getSimpleName());
     }
 
     public static List<String> INTERFACE_DECLARATION = new ArrayList<>();
 
-    {
+    static {
         INTERFACE_DECLARATION.add(TypeDeclaration.class.getSimpleName() + INTERFACE);
     }
 
     public static List<String> WHILE_STATEMENT = new ArrayList<>();
 
-    {
+    static {
         WHILE_STATEMENT.add(WhileStatement.class.getSimpleName() + INTERFACE);
     }
 
     public static String translate(String name) {
 
-        if (name.equals(AnnotationTypeMemberDeclaration.class.getSimpleName())) {
+        if (ANNOTATION_TYPE_MEMBER_DECLARATION.contains(name)) {
             return ASTTypes.ANNOTATION_TYPE_MEMBER_DECLARATION;
-        } else if (name.equals(AnonymousClassDeclaration.class.getSimpleName())
-                || name.equals(TypeDeclaration.class.getSimpleName() + CLASS)) {
+        } else if (CLASS_DECLARATION.contains(name)) {
             return ASTTypes.CLASS_DECLARATION;
-        } else if (name.equals(ArrayAccess.class.getSimpleName())) {
+        } else if (ARRAY_ACCESS.contains(name)) {
             return ASTTypes.ARRAY_ACCESS;
-        } else if (name.equals(ArrayCreation.class.getSimpleName())
-                || name.equals(ClassInstanceCreation.class.getSimpleName())
-                || name.equals(ConstructorInvocation.class.getSimpleName())
-                || name.equals(MethodInvocation.class.getSimpleName())
-                || name.equals(SuperConstructorInvocation.class.getSimpleName())
-                || name.equals(SuperMethodInvocation.class.getSimpleName())) {
+        } else if (METHOD_INVOCATION.contains(name)) {
             return ASTTypes.METHOD_INVOCATION;
-        } else if (name.equals(ArrayInitializer.class.getSimpleName())) {
+        } else if (ARRAY_INITIALIZER.contains(name)) {
             return ASTTypes.ARRAY_INITIALIZER;
-        } else if (name.equals(AssertStatement.class.getSimpleName())) {
+        } else if (ASSERT_STATEMENT.contains(name)) {
             return ASTTypes.ASSERT_STATEMENT;
-        } else if (name.equals(BlockComment.class.getSimpleName())
-                || name.equals(Comment.class.getSimpleName())
-                || name.equals(Javadoc.class.getSimpleName())
-                || name.equals(LineComment.class.getSimpleName())) {
+        } else if (COMMENT.contains(name)) {
             return ASTTypes.COMMENT;
-        } else if (name.equals(BreakStatement.class.getSimpleName())) {
+        } else if (BREAK_STATEMENT.contains(name)) {
             return ASTTypes.BREAK_STATEMENT;
-        } else if (name.equals(CastExpression.class.getSimpleName())) {
+        } else if (CAST_EXPRESSION.contains(name)) {
             return ASTTypes.CAST_EXPRESSION;
-        } else if (name.equals(CatchClause.class.getSimpleName())) {
+        } else if (CATCH_CLAUSE.contains(name)) {
             return ASTTypes.CATCH_CLAUSE;
-        } else if (name.equals(ContinueStatement.class.getSimpleName())) {
+        } else if (CONTINUE_STATEMENT.contains(name)) {
             return ASTTypes.CONTINUE_STATEMENT;
-        } else if (name.equals(DoStatement.class.getSimpleName())) {
+        } else if (DO_STATEMENT.contains(name)) {
             return ASTTypes.DO_STATEMENT;
-        } else if (name.equals(EnhancedForStatement.class.getSimpleName())
-                || name.equals(ForStatement.class.getSimpleName())) {
+        } else if (FOR_STATEMENT.contains(name)) {
             return ASTTypes.FOR_STATEMENT;
-        } else if (name.equals(EnumConstantDeclaration.class.getSimpleName())) {
+        } else if (ENUM_VALUE.contains(name)) {
             return ASTTypes.ENUM_VALUE;
-        } else if (name.equals(EnumDeclaration.class.getSimpleName())) {
+        } else if (ENUM_DECLARATION.contains(name)) {
             return ASTTypes.ENUM_DECLARATION;
-        } else if (name.equals(FieldDeclaration.class.getSimpleName())) {
+        } else if (ATTRIBUTE.contains(name)) {
             return ASTTypes.ATTRIBUTE;
-        } else if (name.equals(IfStatement.class.getSimpleName())) {
+        } else if (IF_STATEMENT.contains(name)) {
             return ASTTypes.IF_STATEMENT;
-        } else if (name.equals(ImportDeclaration.class.getSimpleName())) {
+        } else if (IMPORT_DECLARATION.contains(name)) {
             return ASTTypes.IMPORT_DECLARATION;
-        } else if (name.equals(Initializer.class.getSimpleName())) {
+        } else if (STATIC_INITIALIZER.contains(name)) {
             return ASTTypes.STATIC_INITIALIZER;
-        } else if (name.equals(MarkerAnnotation.class.getSimpleName())
-                || name.equals(NormalAnnotation.class.getSimpleName())
-                || name.equals(SingleMemberAnnotation.class.getSimpleName())) {
+        } else if (ANNOTATION.contains(name)) {
             return ASTTypes.ANNOTATION;
-        } else if (name.equals(MethodDeclaration.class.getSimpleName())) {
+        } else if (METHOD_DECLARATION.contains(name)) {
             return ASTTypes.METHOD_DECLARATION;
-        } else if (name.equals(PackageDeclaration.class.getSimpleName())) {
+        } else if (PACKAGE_DECLARATION.contains(name)) {
             return ASTTypes.PACKAGE_DECLARATION;
-        } else if (name.equals(ReturnStatement.class.getSimpleName())) {
+        } else if (RETURN_STATEMENT.contains(name)) {
             return ASTTypes.RETURN_STATEMENT;
-        } else if (name.equals(SingleVariableDeclaration.class.getSimpleName())
-                || name.equals(VariableDeclarationExpression.class.getSimpleName())
-                || name.equals(VariableDeclarationStatement.class.getSimpleName())) {
+        } else if (VARIABLE.contains(name)) {
             return ASTTypes.VARIABLE;
-        } else if (name.equals(SwitchCase.class.getSimpleName())) {
+        } else if (CASE_STATEMENT.contains(name)) {
+            return ASTTypes.CASE_STATEMENT;
+        } else if (SWITCH_STATEMENT.contains(name)) {
             return ASTTypes.SWITCH_STATEMENT;
-        } else if (name.equals(SynchronizedStatement.class.getSimpleName())) {
+        } else if (SYNCHRONIZED_STATEMENT.contains(name)) {
             return ASTTypes.SYNCHRONIZED_STATEMENT;
-        } else if (name.equals(ThrowStatement.class.getSimpleName())) {
+        } else if (THROW_STATEMENT.contains(name)) {
             return ASTTypes.THROW_STATEMENT;
-        } else if (name.equals(TryStatement.class.getSimpleName())) {
+        } else if (TRY_STATEMENT.contains(name)) {
             return ASTTypes.TRY_STATEMENT;
-        } else if (name.equals(TypeDeclaration.class.getSimpleName() + INTERFACE)) {
+        } else if (INTERFACE_DECLARATION.contains(name)) {
             return ASTTypes.INTERFACE_DECLARATION;
-        } else if (name.equals(WhileStatement.class.getSimpleName())) {
+        } else if (WHILE_STATEMENT.contains(name)) {
             return ASTTypes.WHILE_STATEMENT;
         }
 
