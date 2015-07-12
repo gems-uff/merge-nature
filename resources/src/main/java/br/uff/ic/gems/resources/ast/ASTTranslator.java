@@ -258,7 +258,7 @@ public class ASTTranslator {
     public static List<String> WHILE_STATEMENT = new ArrayList<>();
 
     static {
-        WHILE_STATEMENT.add(WhileStatement.class.getSimpleName() + INTERFACE);
+        WHILE_STATEMENT.add(WhileStatement.class.getSimpleName());
     }
 
     public static String translate(String name) {
