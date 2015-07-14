@@ -521,7 +521,19 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        int beginLineBlock = 0;
+        int beginColumnBlock = 0;
+
+        Expression expression = node.getExpression();
+
+        if (expression != null) {
+            beginLineBlock = cu.getLineNumber(expression.getStartPosition() + expression.getLength());
+            beginColumnBlock = cu.getColumnNumber(expression.getStartPosition() + expression.getLength());
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
+                    beginLineBlock, endLine, beginColumnBlock, endColumn, null));
+        } else {
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+        }
 
         return true;
     }
@@ -693,6 +705,13 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
+        SimpleName name = node.getName();
+
+        if (name != null) {
+            endLine = cu.getLineNumber(name.getStartPosition() + name.getLength());
+            endColumn = cu.getColumnNumber(name.getStartPosition() + name.getLength());
+        }
+
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, node.getName().getIdentifier()));
 
         return true;
@@ -835,6 +854,13 @@ public class Visitor extends ASTVisitor {
             int beginColumn = cu.getColumnNumber(node.getStartPosition());
             int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
+            SimpleName name = fragment.getName();
+
+            if (name != null) {
+                endLine = cu.getLineNumber(name.getStartPosition() + name.getLength());
+                endColumn = cu.getColumnNumber(name.getStartPosition() + name.getLength());
+            }
+
             languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, fragment.getName().getIdentifier()));
         }
 
@@ -852,6 +878,13 @@ public class Visitor extends ASTVisitor {
             int endLine = cu.getLineNumber(fragment.getStartPosition() + fragment.getLength());
             int beginColumn = cu.getColumnNumber(node.getStartPosition());
             int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+            SimpleName name = fragment.getName();
+
+            if (name != null) {
+                endLine = cu.getLineNumber(name.getStartPosition() + name.getLength());
+                endColumn = cu.getColumnNumber(name.getStartPosition() + name.getLength());
+            }
 
             languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn, identifier));
 
