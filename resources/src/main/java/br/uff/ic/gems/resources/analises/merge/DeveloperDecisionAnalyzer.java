@@ -278,7 +278,8 @@ public class DeveloperDecisionAnalyzer {
         union.addAll(content2);
 
         for (String line : solution) {
-            if (!union.contains(line)) {
+            if(line.equals("")) {
+            } else if (!union.contains(line)) {
                 return false;
             } else {
                 union.remove(line);
