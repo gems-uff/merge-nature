@@ -308,41 +308,41 @@ public class DeveloperDecisionAnalyzer {
         aux2.addAll(content1);
 
         //Version 1 + end context 2 + end context 1 + version 2
-        if (context1 != null && context2 != null) {
+        if (!context1.isEmpty() && !context2.isEmpty()) {
             aux3.addAll(content1);
             aux3.add(context2.get(0));
             aux3.add(context1.get(context1.size() - 1));
             aux3.addAll(content2);
         }
         //Version 1 + end context 1 + version 2
-        if (context1 != null) {
+        if (!context1.isEmpty()) {
             aux4.addAll(content1);
             aux4.add(context1.get(context1.size() - 1));
             aux4.addAll(content2);
         }
 
         //Version 1 + end context 2 + version 2
-        if (context2 != null) {
+        if (!context2.isEmpty()) {
             aux5.addAll(content1);
             aux5.add(context2.get(0));
             aux5.addAll(content2);
         }
         
         //Version 2 + end context 2 + end context 1 + version 1
-        if (context1 != null && context2 != null) {
+        if (!context1.isEmpty() && !context2.isEmpty()) {
             aux6.addAll(content2);
             aux6.add(context2.get(0));
             aux6.add(context1.get(context1.size() - 1));
             aux6.addAll(content1);
         }
         //Version 2 + end context 1 + version 1
-        if (context1 != null) {
+        if (!context1.isEmpty()) {
             aux7.addAll(content2);
             aux7.add(context1.get(context1.size() - 1));
             aux7.addAll(content1);
         }
         //Version 2 + end context 2 + version 1
-        if (context2 != null) {
+        if (!context2.isEmpty()) {
             aux8.addAll(content2);
             aux8.add(context2.get(0));
             aux8.addAll(content1);
