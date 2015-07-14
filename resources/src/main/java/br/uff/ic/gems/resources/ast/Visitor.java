@@ -632,7 +632,7 @@ public class Visitor extends ASTVisitor {
             languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn,
                     beginLineBody, endLineBody, beginColumnBody, endColumnBody, null));
         } else {
-            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
+            languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName() + INTERFACE, beginLine, endLine, beginColumn, endColumn));
         }
 
         return true;

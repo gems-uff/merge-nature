@@ -36,8 +36,9 @@ public class ASTTypes {
     public static final String INTERFACE_DECLARATION = "Interface declaration";
     public static final String INTERFACE_SIGNATURE = "Interface signature";
     public static final String METHOD_DECLARATION = "Method declaration";
-    public static final String METHOD_SIGNATURE = "Method signature";
+    public static final String METHOD_INTERFACE = "Method interface";
     public static final String METHOD_INVOCATION = "Method invocation";
+    public static final String METHOD_SIGNATURE = "Method signature";
     public static final String PACKAGE_DECLARATION = "Package declaration";
     public static final String RETURN_STATEMENT = "Return statement";
     public static final String STATIC_INITIALIZER = "Static initializer";

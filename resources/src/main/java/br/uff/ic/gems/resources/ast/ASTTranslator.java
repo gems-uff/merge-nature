@@ -261,6 +261,13 @@ public class ASTTranslator {
         WHILE_STATEMENT.add(WhileStatement.class.getSimpleName());
     }
 
+    public static List<String> METHOD_INTERFACE = new ArrayList<>();
+
+    static {
+        METHOD_INTERFACE.add(MethodDeclaration.class.getSimpleName() + INTERFACE);
+    }
+    
+    
     public static String translate(String name) {
 
         if (ANNOTATION_TYPE_MEMBER_DECLARATION.contains(name)) {
@@ -325,6 +332,8 @@ public class ASTTranslator {
             return ASTTypes.INTERFACE_DECLARATION;
         } else if (WHILE_STATEMENT.contains(name)) {
             return ASTTypes.WHILE_STATEMENT;
+        }else if (METHOD_INTERFACE.contains(name)) {
+            return ASTTypes.METHOD_INTERFACE;
         }
 
         return name;
