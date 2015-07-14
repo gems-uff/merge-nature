@@ -11,7 +11,7 @@ package br.uff.ic.gems.resources.states;
  */
 public enum DeveloperDecision {
 
-    VERSION1, VERSION2, CONCATENATION, COMBINATION, MANUAL;
+    VERSION1, VERSION2, CONCATENATION, COMBINATION, MANUAL, NONE;
 
     @Override
     public String toString() {
@@ -26,6 +26,8 @@ public enum DeveloperDecision {
                 return "Combination";
             case MANUAL:
                 return "Manual";
+            case NONE:
+                return "None";
         }
 
         return null;

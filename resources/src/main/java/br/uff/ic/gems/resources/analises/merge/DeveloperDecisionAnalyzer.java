@@ -194,7 +194,7 @@ public class DeveloperDecisionAnalyzer {
         int solutionCleanBegin = 0, solutionCleanEnd = solutionContent.size();
 
         boolean passBegin = false, passEnd = false;
-        
+
         if (beginLine > separatorLine || separatorLine > endLine) {
             throw new Exception("Invalid conflicting chunk content!");
         }
@@ -261,6 +261,8 @@ public class DeveloperDecisionAnalyzer {
             return DeveloperDecision.VERSION1;
         } else if (isEqual(version2, solutionClean)) {
             return DeveloperDecision.VERSION2;
+        } else if (isNone(version1, version2, solutionClean)) {
+            return DeveloperDecision.NONE;
         } else if (isCleanConcatenation(version1, version2, solutionClean)) {
             return DeveloperDecision.CONCATENATION;
         } else if (isCleanCombination(version1, version2, solutionClean)) {
@@ -276,12 +278,13 @@ public class DeveloperDecisionAnalyzer {
         union.addAll(content2);
 
         for (String line : solution) {
-            if(!union.contains(line))
+            if (!union.contains(line)) {
                 return false;
-            else
+            } else {
                 union.remove(line);
+            }
         }
-        
+
         return true;
     }
 
@@ -342,5 +345,16 @@ public class DeveloperDecisionAnalyzer {
         }
 
         return result;
+    }
+
+    private static boolean isNone(List<String> version1, List<String> version2, List<String> solutionClean) {
+        String version1String = listTostring(version1);
+        String version2String = listTostring(version2);
+        String solutionCleanString = listTostring(solutionClean);
+
+        if(!version1String.equals("") && !version2String.equals("") && solutionCleanString.equals(""))
+            return true;
+        else
+            return false;
     }
 }
