@@ -16,24 +16,26 @@ public class ProjectOverview {
     private String conflictingChunkIdentifier;
     private String kindConflict;
     private String developerDecision;
+    private Long conflictingChunkId;
 
-    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision) {
+    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId) {
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
         this.kindConflict = kindConflict;
         this.developerDecision = developerDecision;
+        this.conflictingChunkId = conflictingChunkId;
     }
 
-    
-    public ProjectOverview() {
+        public ProjectOverview() {
         this.sha1 = "";
         this.fileName = "";
         this.conflictingChunkIdentifier = "";
         this.kindConflict = "";
         this.developerDecision = "";
+        this.conflictingChunkId = null;
     }
-    
+
     
     /**
      * @return the sha1
@@ -103,5 +105,19 @@ public class ProjectOverview {
      */
     public void setDeveloperDecision(String developerDecision) {
         this.developerDecision = developerDecision;
+    }
+
+    /**
+     * @return the conflictingChunkId
+     */
+    public Long getConflictingChunkId() {
+        return conflictingChunkId;
+    }
+
+    /**
+     * @param conflictingChunkId the conflictingChunkId to set
+     */
+    public void setConflictingChunkId(Long conflictingChunkId) {
+        this.conflictingChunkId = conflictingChunkId;
     }
 }

@@ -28,7 +28,9 @@
                         </h:column>
                         <h:column>
                             <f:facet name="header">CC Identifier </f:facet>
-                                #{data.conflictingChunkIdentifier}
+                            <h:commandLink value="#{data.conflictingChunkIdentifier}" action="#{analysisViewerBean.showConflictingChunk()}">
+                                <f:setPropertyActionListener target="#{analysisViewerBean.conflictingChunkId}" value="#{data.conflictingChunkId}"/>
+                            </h:commandLink>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Kind of conflict </f:facet>

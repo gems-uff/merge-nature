@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="table.css"/>
+    </h:head>
+    <h:body>
+        <f:view>
+            <h:form>
+                <!-- Begin conflicting chunk-->
+                <!--Middle content-->
+                <div style="overflow:auto; width: 80%; height: 100vh; position: fixed; top: 0%; 
+                     left: 1%;" >
+                    <div>
+                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.conflictingContent}" var="cc">
+                            <p:column>
+                                <f:facet name="header">  
+                                    <h:outputText value="Conflicting content" styleClass="title"/>  
+                                </f:facet>
+                                <h:outputText value="#{cc}" styleClass="tableContent"/>
+                            </p:column>
+                        </p:dataTable> 
+                    </div>
+                    <br/>
+                    <div>
+                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.solutionContent}" var="cc">
+                            <f:facet name="header">  
+                                <h:outputText value="Solution content" styleClass="title"/>  
+                            </f:facet>
+                            <p:column>
+                                <h:outputText value="#{cc}" styleClass="tableContent"/>
+                            </p:column>
+                        </p:dataTable> 
+                    </div>
+                </div>
+
+                <!--Right--> 
+                <div style="overflow:auto; width: 17.5%; height: 100vh; position: fixed; top: 0%; 
+                     left: 82%;">
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.developerDecision}" var="cc">
+                        <f:facet name="header">  
+                            <h:outputText value="Developer's decision" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{cc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.leftKindConflict.languageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Left Language Constructs (#{analysisViewerBean.selectedConflictingChunk.leftKindConflict.beginLine}
+                                          , #{analysisViewerBean.selectedConflictingChunk.leftKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.rightKindConflict.languageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Right Language Constructs (#{analysisViewerBean.selectedConflictingChunk.rightKindConflict.beginLine}
+                                          , #{analysisViewerBean.selectedConflictingChunk.rightKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.leftKindConflict.filteredLanguageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Left Language Constructs (#{analysisViewerBean.selectedConflictingChunk.leftKindConflict.beginLine}
+                                          , #{analysisViewerBean.selectedConflictingChunk.leftKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.rightKindConflict.filteredLanguageConstructs}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="Right Language Constructs (#{analysisViewerBean.selectedConflictingChunk.rightKindConflict.beginLine}
+                                          , #{analysisViewerBean.selectedConflictingChunk.rightKindConflict.endLine})" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.generalKindConflict()}" var="lc">
+                        <f:facet name="header">  
+                            <h:outputText value="General Language Constructs" styleClass="title"/>  
+                        </f:facet>
+                        <p:column>
+                            <h:outputText value="#{lc}" styleClass="tableContent"/>
+                        </p:column>
+                    </p:dataTable> 
+                    <br/>
+                </div>
+                <!-- End conflicting chunk-->
+
+            </h:form>
+        </f:view>
+    </h:body>
+</html>
+

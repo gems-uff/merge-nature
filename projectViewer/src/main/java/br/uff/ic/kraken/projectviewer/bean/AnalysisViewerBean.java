@@ -34,6 +34,7 @@ import org.primefaces.model.TreeNode;
 public class AnalysisViewerBean implements Serializable {
 
     private Long projectId;
+    private Long conflictingChunkId;
     private List<Revision> revisions;
     private TreeNode root;
 
@@ -101,6 +102,15 @@ public class AnalysisViewerBean implements Serializable {
         }
     }
 
+    public String showConflictingChunk() {
+        
+        ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
+        selectedConflictingChunk = conflictingChunkDAO.getById(conflictingChunkId);
+        
+        
+        return PagesName.showConflictingChunk;
+    }
+    
     public String analyze() {
 
         ProjectDAO projectDAO = new ProjectDAO();
@@ -138,7 +148,7 @@ public class AnalysisViewerBean implements Serializable {
                 for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
                     ccIdentifier = conflictingChunk.getIdentifier();
                     developerDecision = conflictingChunk.getDeveloperDecision().toString();
-                    List<String> generalKindConflict = conflictingChunk.getGeneralKindConflict();
+                    List<String> generalKindConflict = conflictingChunk.generalKindConflict();
 
                     kindConflict = "";
 
@@ -152,7 +162,7 @@ public class AnalysisViewerBean implements Serializable {
                         }
                     }
 
-                    projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision));
+                    projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId()));
                 }
             }
 
@@ -272,6 +282,20 @@ public class AnalysisViewerBean implements Serializable {
      */
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    /**
+     * @return the conflictingChunkId
+     */
+    public Long getConflictingChunkId() {
+        return conflictingChunkId;
+    }
+
+    /**
+     * @param conflictingChunkId the conflictingChunkId to set
+     */
+    public void setConflictingChunkId(Long conflictingChunkId) {
+        this.conflictingChunkId = conflictingChunkId;
     }
 
 }
