@@ -265,7 +265,7 @@ public class ConflictingChunk implements Serializable {
         this.rightKindConflict = rightKindConflict;
     }
     
-    public List<String> getGeneralKindConflict(){
+    public List<String> generalKindConflict(){
         
         List<LanguageConstruct> leftFiltered = this.getLeftKindConflict().getFilteredLanguageConstructs();
         List<LanguageConstruct> rightFiltered = this.getRightKindConflict().getFilteredLanguageConstructs();

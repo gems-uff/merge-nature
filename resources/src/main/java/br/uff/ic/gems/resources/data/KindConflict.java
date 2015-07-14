@@ -113,6 +113,7 @@ public class KindConflict implements Serializable {
         bodyASTTypes.addAll(ASTTranslator.SWITCH_STATEMENT);
         bodyASTTypes.addAll(ASTTranslator.TRY_STATEMENT);
         bodyASTTypes.addAll(ASTTranslator.WHILE_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.ARRAY_INITIALIZER);
 
         List<LanguageConstruct> copyLanguageConstructs = new ArrayList<>();
 
@@ -125,35 +126,26 @@ public class KindConflict implements Serializable {
         while (currentLine <= this.endLine && !copyLanguageConstructs.isEmpty()) {
             int lineSize = 0;
             int columnDistance = Integer.MAX_VALUE;
-            
-            LanguageConstruct currentLanguageConstruct = new LanguageConstruct();
+
+            LanguageConstruct currentLanguageConstruct = null;
 
             for (LanguageConstruct languageConstruct : copyLanguageConstructs) {
-                if (
-                        //Begin is in the current line
+                if ( //Begin is in the current line
                         languageConstruct.getBeginLine() == currentLine
-                        && 
-                        (//Next element
-                        languageConstruct.getBeginColumn() >= currentColumn  &&
-                        columnDistance > languageConstruct.getBeginColumn() - currentColumn 
-                        )
-                        && 
-                        (//greater number of lines
-                            (lineSize < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1)
-                        ||
-                        
-                            (lineSize == languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1
-                            &&
-                            languageConstruct.getEndColumn() > currentLanguageConstruct.getEndColumn())
-                        )
-                   ) {
+                        && (//Next element
+                        languageConstruct.getBeginColumn() >= currentColumn
+                        && columnDistance > languageConstruct.getBeginColumn() - currentColumn)
+                        && (//greater number of lines
+                        (lineSize < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1)
+                        || (lineSize == languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1
+                        && languageConstruct.getEndColumn() > currentLanguageConstruct.getEndColumn()))) {
                     currentLanguageConstruct = languageConstruct;
                     lineSize = languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1;
-                    columnDistance = languageConstruct.getBeginColumn() - currentColumn; 
+                    columnDistance = languageConstruct.getBeginColumn() - currentColumn;
                 }
             }
 
-            if (currentLanguageConstruct.getId() == null) {
+            if (currentLanguageConstruct == null) {
                 for (LanguageConstruct copyLanguageConstruct : copyLanguageConstructs) {
                     if (copyLanguageConstruct.getBeginLine() < currentLine
                             && currentLine < copyLanguageConstruct.getEndLine()
@@ -164,7 +156,7 @@ public class KindConflict implements Serializable {
                 }
             }
 
-            if (currentLanguageConstruct.getId() == null) {
+            if (currentLanguageConstruct == null) {
                 currentLine++;
                 currentColumn = 0;
             } else if (ASTTranslator.METHOD_DECLARATION.contains(currentLanguageConstruct.getName())
@@ -259,16 +251,15 @@ public class KindConflict implements Serializable {
                 result.add(currentLanguageConstruct);
                 currentLine = currentLanguageConstruct.getEndLine();
                 currentColumn = currentLanguageConstruct.getEndColumn();
-            } 
-//            else if (currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() == 0) {
-//                result.add(currentLanguageConstruct);
-//                copyLanguageConstructs.remove(currentLanguageConstruct);
-//            }
+            } //            else if (currentLanguageConstruct.getEndLine() - currentLanguageConstruct.getBeginLine() == 0) {
+            //                result.add(currentLanguageConstruct);
+            //                copyLanguageConstructs.remove(currentLanguageConstruct);
+            //            }
             else {
                 result.add(currentLanguageConstruct);
                 currentLine = currentLanguageConstruct.getEndLine();
                 currentColumn = currentLanguageConstruct.getEndColumn() + 1;
-                
+
             }
         }
 
