@@ -263,7 +263,7 @@ public class DeveloperDecisionAnalyzer {
             return DeveloperDecision.VERSION2;
         } else if (isNone(version1, version2, solutionClean)) {
             return DeveloperDecision.NONE;
-        } else if (isCleanConcatenation(version1, version2, solutionClean)) {
+        } else if (isCleanConcatenation(version1, version2, solutionClean, context1, context2)) {
             return DeveloperDecision.CONCATENATION;
         } else if (isCleanCombination(version1, version2, solutionClean)) {
             return DeveloperDecision.COMBINATION;
@@ -278,7 +278,7 @@ public class DeveloperDecisionAnalyzer {
         union.addAll(content2);
 
         for (String line : solution) {
-            if(line.equals("")) {
+            if (line.equals("")) {
             } else if (!union.contains(line)) {
                 return false;
             } else {
@@ -289,19 +289,79 @@ public class DeveloperDecisionAnalyzer {
         return true;
     }
 
-    public static boolean isCleanConcatenation(List<String> content1, List<String> content2, List<String> solution) {
+    public static boolean isCleanConcatenation(List<String> content1, List<String> content2, List<String> solution, List<String> context1, List<String> context2) {
         List<String> aux1 = new ArrayList<>();
         List<String> aux2 = new ArrayList<>();
+        List<String> aux3 = new ArrayList<>();
+        List<String> aux4 = new ArrayList<>();
+        List<String> aux5 = new ArrayList<>();
+        List<String> aux6 = new ArrayList<>();
+        List<String> aux7 = new ArrayList<>();
+        List<String> aux8 = new ArrayList<>();
 
+        //Version 1 + Version 2
         aux1.addAll(content1);
         aux1.addAll(content2);
 
+        //Version 2 + Version 1
         aux2.addAll(content2);
         aux2.addAll(content1);
 
+        //Version 1 + end context 2 + end context 1 + version 2
+        if (context1 != null && context2 != null) {
+            aux3.addAll(content1);
+            aux3.add(context2.get(0));
+            aux3.add(context1.get(context1.size() - 1));
+            aux3.addAll(content2);
+        }
+        //Version 1 + end context 1 + version 2
+        if (context1 != null) {
+            aux4.addAll(content1);
+            aux4.add(context1.get(context1.size() - 1));
+            aux4.addAll(content2);
+        }
+
+        //Version 1 + end context 2 + version 2
+        if (context2 != null) {
+            aux5.addAll(content1);
+            aux5.add(context2.get(0));
+            aux5.addAll(content2);
+        }
+        
+        //Version 2 + end context 2 + end context 1 + version 1
+        if (context1 != null && context2 != null) {
+            aux6.addAll(content2);
+            aux6.add(context2.get(0));
+            aux6.add(context1.get(context1.size() - 1));
+            aux6.addAll(content1);
+        }
+        //Version 2 + end context 1 + version 1
+        if (context1 != null) {
+            aux7.addAll(content2);
+            aux7.add(context1.get(context1.size() - 1));
+            aux7.addAll(content1);
+        }
+        //Version 2 + end context 2 + version 1
+        if (context2 != null) {
+            aux8.addAll(content2);
+            aux8.add(context2.get(0));
+            aux8.addAll(content1);
+        }
         if (isEqual(aux1, solution)) {
             return true;
         } else if (isEqual(aux2, solution)) {
+            return true;
+        } else if (isEqual(aux3, solution)) {
+            return true;
+        } else if (isEqual(aux4, solution)) {
+            return true;
+        } else if (isEqual(aux5, solution)) {
+            return true;
+        } else if (isEqual(aux6, solution)) {
+            return true;
+        } else if (isEqual(aux7, solution)) {
+            return true;
+        } else if (isEqual(aux8, solution)) {
             return true;
         } else {
             return false;
@@ -353,9 +413,10 @@ public class DeveloperDecisionAnalyzer {
         String version2String = listTostring(version2);
         String solutionCleanString = listTostring(solutionClean);
 
-        if(!version1String.equals("") && !version2String.equals("") && solutionCleanString.equals(""))
+        if (!version1String.equals("") && !version2String.equals("") && solutionCleanString.equals("")) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 }
