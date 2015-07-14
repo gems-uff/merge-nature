@@ -13,7 +13,6 @@ import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
 import br.uff.ic.gems.resources.ast.ASTExtractor;
 import br.uff.ic.gems.resources.data.KindConflict;
-import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.Information;
 import br.uff.ic.gems.resources.vcs.Git;
@@ -198,8 +197,8 @@ public class ConflictingChunkInformation implements Runnable {
             Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, LanguageConstruct.toString(leftKindConflict.getLanguageConstructs()),
-                LanguageConstruct.toString(rightKindConflict.getLanguageConstructs()), dd);
+        ShowCase showCase = new ShowCase(conflictingArea, solutionArea, leftKindConflict.getFilteredLanguageConstructs().toString(),
+                rightKindConflict.getFilteredLanguageConstructs().toString(), dd);
         showCase.setVisible(true);
     }
 
