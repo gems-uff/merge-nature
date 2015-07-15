@@ -135,19 +135,19 @@ public class ConflictingFileAnalyzer {
 
             KindConflict leftKindConflict = new KindConflict();
             KindConflict rightKindConflict = new KindConflict();
+            try {
 
-            if (conflictingFilePath.contains(".java")) {
-                try {
+                if (conflictingFilePath.endsWith(".java")) {
                     leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, repositoryPath, currentFile, leftFile, leftAST);
                     rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, repositoryPath, currentFile, rightFile, rightAST);
-                } catch (IOException ex) {
-                    Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+                } else {
+
+                    leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
+                    rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine, endLine, repositoryPath, currentFile, rightFile);
+
                 }
-            } else {
-
-                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine, separatorLine, repositoryPath, currentFile, leftFile);
-                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine, endLine, repositoryPath, currentFile, rightFile);
-
+            } catch (IOException ex) {
+                Logger.getLogger(ConflictingFileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             //Get the following data from the conflict:
