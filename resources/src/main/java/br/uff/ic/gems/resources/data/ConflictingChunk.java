@@ -6,6 +6,7 @@
 package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.ast.ASTTranslator;
+import br.uff.ic.gems.resources.ast.ASTTypes;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
@@ -291,6 +292,14 @@ public class ConflictingChunk implements Serializable {
             }
         }
 
+        while(result.contains(ASTTypes.BLANK) && result.size() > 1){
+            result.remove(ASTTypes.BLANK);
+        }
+        
+        while(result.contains(ASTTypes.OTHER) && result.size() > 1){
+            result.remove(ASTTypes.OTHER);
+        }
+        
         Collections.sort(result);
         
         return result;
