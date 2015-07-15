@@ -48,4 +48,5 @@ public class ASTTypes {
     public static final String TRY_STATEMENT = "Try statement";
     public static final String VARIABLE = "Variable";
     public static final String WHILE_STATEMENT = "While statement";
+    public static final String OTHER = "Other";
 }
