@@ -57,7 +57,7 @@ public class ConflictingChunkInformation implements Runnable {
         int beginLine = conflictChunk.getBeginLine();
         int separatorLine = conflictChunk.getSeparatorLine();
         int endLine = conflictChunk.getEndLine();
-        
+
         //Checking out revisions
         Git.checkout(pathDeveloperMergedRepository, Information.DEVELOPER_MERGE_REVISION);
         Git.checkout(pathLeftRepository, Information.LEFT_REVISION);
@@ -85,8 +85,9 @@ public class ConflictingChunkInformation implements Runnable {
         } catch (IOException ex) {
             List<String> removedFiles = Git.removedFiles(pathMergedRepository, Information.LEFT_REVISION, Information.DEVELOPER_MERGE_REVISION);
             String replaceFirst = pathRelativeFile.replaceFirst(File.separator, "");
-            if(removedFiles.contains(replaceFirst))
+            if (removedFiles.contains(replaceFirst)) {
                 JOptionPane.showMessageDialog(null, "The developer removed the solution file. Manual solution.");
+            }
             return;
         }
 
@@ -96,12 +97,9 @@ public class ConflictingChunkInformation implements Runnable {
         endConflict = ASTAuxiliar.getConflictUpperBound(endLine, context, fileConflict);
         List<String> conflictingArea = fileConflict.subList(beginConflict, endConflict);
 
-        
         //Gettign remane
         KindConflict leftKindConflict = new KindConflict();
         KindConflict rightKindConflict = new KindConflict();
-
-        
 
         String left = fileConflict.get(beginLine);
         String right = fileConflict.get(endLine);
@@ -117,18 +115,14 @@ public class ConflictingChunkInformation implements Runnable {
             rightRelativePath = pathRelativeFile;
         }
 
-        
-        
 //        System.out.println(fileConflict.get(beginLine));//<<<<<<HEAD
 //        System.out.println(fileConflict.get(separatorLine));//===========
 //        System.out.println(fileConflict.get(endLine));//>>>>>>>>>
         /*----------------------------------------------------------------------
-                       Getting language constructs
-        ----------------------------------------------------------------------*/
-        
+         Getting language constructs
+         ----------------------------------------------------------------------*/
         ASTExtractor leftAST = new ASTExtractor(pathLeft);
-        
-        
+
         ASTExtractor rightAST = new ASTExtractor(pathRight);
         try {
             leftAST.parser();
@@ -136,23 +130,22 @@ public class ConflictingChunkInformation implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        if (pathRelativeFile.contains(".java")) {
-            try {
+        try {
+
+            if (pathRelativeFile.endsWith(".java")) {
                 leftKindConflict = ASTAuxiliar.getLanguageConstructsJava(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft, leftAST);
                 rightKindConflict = ASTAuxiliar.getLanguageConstructsJava(separatorLine, endLine, pathMergedRepository, pathConflict, pathRight, rightAST);
-            } catch (IOException ex) {
-                Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
+            } else {
+                leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine, separatorLine, pathMergedRepository, pathConflict, pathLeft);
+                rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine, endLine, pathMergedRepository, pathConflict, pathRight);
             }
-        } else {
-            leftKindConflict = ASTAuxiliar.getLanguageConstructsAny(beginLine + 1, separatorLine - 1, pathMergedRepository, pathConflict, pathLeft);
-            rightKindConflict = ASTAuxiliar.getLanguageConstructsAny(separatorLine + 1, endLine, pathMergedRepository, pathConflict, pathRight);
+        } catch (IOException ex) {
+            Logger.getLogger(ConflictingChunkInformation.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         /*----------------------------------------------------------------------
-                       Getting solution area
-        ----------------------------------------------------------------------*/
-        
+         Getting solution area
+         ----------------------------------------------------------------------*/
         //Get the following data from the conflict:
         //- beginContext and endContext
         //- beginConflict and endConflict
@@ -161,7 +154,6 @@ public class ConflictingChunkInformation implements Runnable {
         int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
 //        int separator, begin, end;
 
-        
         //Changing to file reference( lines from 1 to n) instead of list reference (0..n-1)
         context1bOriginal = beginConflict + 1;
         context1eOriginal = getConflictChunk().getBeginLine();//+ 1 - 1
@@ -174,10 +166,10 @@ public class ConflictingChunkInformation implements Runnable {
 
         Repositioning repositioning = new Repositioning(pathMergedRepository);
 
-        int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal, 
+        int context1 = ConflictingChunk.checkContext1(context1bOriginal, context1eOriginal,
                 repositioning, pathConflict, pathSolution, beginLine, separatorLine, endLine);
 
-        int context2 = ConflictingChunk.checkContext2(fileSolution, fileConflict, context2eOriginal, 
+        int context2 = ConflictingChunk.checkContext2(fileSolution, fileConflict, context2eOriginal,
                 context2bOriginal, repositioning, pathConflict, pathSolution, separatorLine, beginLine, endLine);
 
         List<String> solutionArea = fileSolution.subList(context1 - 1, context2);
@@ -186,11 +178,11 @@ public class ConflictingChunkInformation implements Runnable {
         beginConflictingArea = beginLine - beginConflict;
         separatorConflictingArea = separatorLine - beginConflict;
         endConflictingArea = endLine - beginConflict;
-        
+
 //        String dd = DeveloperDecisionAnalyzer.getDeveloperDecision(cpe, solutionArea, context).toString();
         String dd;
         try {
-            dd = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea, 
+            dd = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea,
                     beginConflictingArea, separatorConflictingArea, endConflictingArea).toString();
         } catch (Exception ex) {
             dd = DeveloperDecision.MANUAL.toString();
