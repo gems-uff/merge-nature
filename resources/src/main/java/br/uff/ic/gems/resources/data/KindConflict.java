@@ -296,6 +296,14 @@ public class KindConflict implements Serializable {
                 }
                 currentLine = currentLanguageConstruct.getEndLine();
                 currentColumn = currentLanguageConstruct.getEndColumn();
+            } else if (ASTTranslator.RETURN_STATEMENT.contains(currentLanguageConstruct.getName())) {
+                currentLanguageConstruct.setEndLine(currentLanguageConstruct.getBeginLine());
+                currentLanguageConstruct.setEndColumn(currentLanguageConstruct.getBeginColumn() + "return".length() - 1);
+                
+                result.add(currentLanguageConstruct);
+                
+                currentLine = currentLanguageConstruct.getEndLine();
+                currentColumn = currentLanguageConstruct.getEndColumn();
             } else {
                 result.add(currentLanguageConstruct);
                 currentLine = currentLanguageConstruct.getEndLine();
@@ -323,6 +331,7 @@ public class KindConflict implements Serializable {
         return currentLanguageConstruct;
     }
 
+    @Deprecated
     public List<LanguageConstruct> getFilteredLanguageConstructsBackup() {
         List<LanguageConstruct> result = new ArrayList<>();
         int currentIndex = this.beginLine;

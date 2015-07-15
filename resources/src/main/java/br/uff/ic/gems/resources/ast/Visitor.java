@@ -681,7 +681,7 @@ public class Visitor extends ASTVisitor {
         int beginColumn = cu.getColumnNumber(node.getStartPosition());
         int endColumn = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, beginColumn + "return".length() - 1));
+        languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
         return true;
     }
