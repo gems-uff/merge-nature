@@ -260,7 +260,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     @Override
@@ -356,7 +356,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     public boolean visit(Comment node) {
@@ -379,7 +379,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     @Override
@@ -647,7 +647,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     @Override
@@ -726,7 +726,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     @Override
@@ -738,7 +738,7 @@ public class Visitor extends ASTVisitor {
 
         languageConstructs.add(new LanguageConstruct(node.getClass().getSimpleName(), beginLine, endLine, beginColumn, endColumn));
 
-        return false;
+        return true;
     }
 
     @Override
