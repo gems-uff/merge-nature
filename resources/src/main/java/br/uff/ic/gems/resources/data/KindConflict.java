@@ -115,6 +115,9 @@ public class KindConflict implements Serializable {
         bodyASTTypes.addAll(ASTTranslator.WHILE_STATEMENT);
         bodyASTTypes.addAll(ASTTranslator.ARRAY_INITIALIZER);
         bodyASTTypes.addAll(ASTTranslator.RETURN_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.SYNCHRONIZED_STATEMENT);
+        bodyASTTypes.addAll(ASTTranslator.METHOD_INTERFACE);
+        bodyASTTypes.addAll(ASTTranslator.METHOD_INVOCATION);
 
         List<LanguageConstruct> copyLanguageConstructs = new ArrayList<>();
 
@@ -264,8 +267,7 @@ public class KindConflict implements Serializable {
 
                 boolean insideComment = false;
                 for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
-                    if (ASTTranslator.COMMENT.contains(languageConstruct.getName())
-                            || ASTTranslator.METHOD_INVOCATION.contains(languageConstruct.getName())) {
+                    if (ASTTranslator.COMMENT.contains(languageConstruct.getName())) {
                         if (languageConstruct.getBeginLine() < currentLanguageConstruct.getBeginLine()
                                 && currentLanguageConstruct.getEndLine() <= languageConstruct.getEndLine()) {
                             insideComment = true;
@@ -282,8 +284,7 @@ public class KindConflict implements Serializable {
 
                 boolean insideComment = false;
                 for (LanguageConstruct languageConstruct : this.getLanguageConstructs()) {
-                    if (ASTTranslator.COMMENT.contains(languageConstruct.getName())
-                            || ASTTranslator.METHOD_INVOCATION.contains(languageConstruct.getName())) {
+                    if (ASTTranslator.COMMENT.contains(languageConstruct.getName())) {
                         if (languageConstruct.getBeginLine() < currentLanguageConstruct.getBeginLine()
                                 && currentLanguageConstruct.getEndLine() <= languageConstruct.getEndLine()) {
                             insideComment = true;
