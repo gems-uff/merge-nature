@@ -19,6 +19,7 @@ import br.uff.ic.kraken.projectviewer.utils.ProjectOverview;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
@@ -103,16 +104,16 @@ public class AnalysisViewerBean implements Serializable {
     }
 
     public String showConflictingChunk() {
-        
+
         ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
         selectedConflictingChunk = conflictingChunkDAO.getById(conflictingChunkId);
-        
-        
+
         return PagesName.showConflictingChunk;
     }
-    
+
     public String analyze() {
 
+        System.out.println("Begin: " + new Date());
         ProjectDAO projectDAO = new ProjectDAO();
         Project project = projectDAO.getById(projectId);
 
@@ -121,6 +122,8 @@ public class AnalysisViewerBean implements Serializable {
 
         ProjectAnalyses projectAnalyses = new ProjectAnalyses();
         projectAnalyses.analyze(repositoriesPath, project);
+
+        System.out.println("End: " + new Date());
 
         return null;
     }
