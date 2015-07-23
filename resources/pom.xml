@@ -132,5 +132,12 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <!--  Gson: Java to Json conversion -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -65,7 +65,7 @@ public class ProjectAnalyzer {
         return project;
     }
 
-    public Project analyze(Project project) {
+    public Project analyze(Project project, boolean persiste) {
 
         String repositoryPath = project.getRepositoryPath();
 
@@ -97,7 +97,9 @@ public class ProjectAnalyzer {
             }
 
             try {
-                revision = revisionDAO.save(revision);
+                if (persiste) {
+                    revision = revisionDAO.save(revision);
+                }
             } catch (Exception ex) {
                 Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -109,7 +111,9 @@ public class ProjectAnalyzer {
         project.setNumberConflictingMerges(conflictingMerges);
 
         try {
-            projectDAO.save(project);
+            if (persiste) {
+                projectDAO.save(project);
+            }
         } catch (Exception ex) {
             Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
         }

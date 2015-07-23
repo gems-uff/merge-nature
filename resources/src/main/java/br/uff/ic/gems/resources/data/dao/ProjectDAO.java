@@ -6,6 +6,7 @@
 package br.uff.ic.gems.resources.data.dao;
 
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.jpa.DatabaseManager;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -33,7 +34,7 @@ public class ProjectDAO {
         } catch (Exception e) {
             manager.getTransaction().rollback();
             throw e;
-        } 
+        }
 
         return project;
     }
@@ -60,7 +61,39 @@ public class ProjectDAO {
             manager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
-        } 
+        }
+
+        return project;
+    }
+
+    public Project importAutomaticAnalyses(Project project) throws Exception {
+        EntityManager manager = DatabaseManager.getManager();
+
+        try {
+            Project projectBD = this.getByURL(project.getHtmlUrl());
+
+            manager.getTransaction().begin();
+
+            if (projectBD == null) {
+                for (Revision revision : project.getRevisions()) {
+                    manager.persist(revision);
+                }
+
+                manager.persist(project);
+            } else {
+
+                for (Revision revision : project.getRevisions()) {
+                    manager.persist(revision);
+                }
+
+                project.setId(projectBD.getId());
+                project = manager.merge(project);
+            }
+
+            manager.getTransaction().commit();
+        } catch (Exception e) {
+            throw e;
+        }
 
         return project;
     }
@@ -77,7 +110,7 @@ public class ProjectDAO {
                 manager.getTransaction().commit();
             } catch (Exception e) {
                 throw e;
-            } 
+            }
         }
     }
 
@@ -89,7 +122,7 @@ public class ProjectDAO {
             project = manager.find(Project.class, id);
         } catch (Exception e) {
             throw e;
-        } 
+        }
 
         return project;
     }
@@ -112,6 +145,24 @@ public class ProjectDAO {
 
     }
 
+    public Project getByURL(String url) {
+
+        EntityManager manager = DatabaseManager.getManager();
+
+        //Jpa manager
+        String sql = "SELECT p FROM Project p WHERE p.htmlUrl = \'" + url + "\'";
+        Query query = manager.createQuery(sql);
+
+        List result = query.getResultList();
+
+        if (result != null && !result.isEmpty() && result.get(0) != null) {
+            return (Project) result.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
     public List<Project> getAll() {
         List<Project> projects = null;
         EntityManager manager = DatabaseManager.getManager();
@@ -121,7 +172,7 @@ public class ProjectDAO {
             projects = query.getResultList();
         } catch (Exception e) {
             throw e;
-        } 
+        }
 
         return projects;
     }
