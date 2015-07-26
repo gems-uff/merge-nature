@@ -24,10 +24,6 @@
                                  rowClasses="order-table-odd-row,order-table-even-row"
                                  >
                         <h:column>
-                            <f:facet name="header">Id </f:facet>
-                                #{item.id}
-                        </h:column>
-                        <h:column>
                             <f:facet name="header">Name </f:facet>
                                 #{item.name}
                         </h:column>
@@ -46,6 +42,14 @@
                         <h:column>
                             <f:facet name="header">Developers </f:facet>
                                 #{item.developers}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#Commits </f:facet>
+                                #{item.numberRevisions}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#Merges </f:facet>
+                                #{item.numberMergeRevisions}
                         </h:column>
                         <h:column>
                             <f:facet name="header">Detail </f:facet>

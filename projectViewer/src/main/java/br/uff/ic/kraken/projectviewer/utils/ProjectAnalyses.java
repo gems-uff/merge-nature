@@ -39,6 +39,6 @@ public class ProjectAnalyses {
 
         project.setRepositoryPath(projectPath);
         
-        return pa.analyze(project);
+        return pa.analyze(project, true);
     }
 }
