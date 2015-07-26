@@ -32,4 +32,8 @@ public class DatabaseManager {
 
         return instance;
     }
+    
+    public static void closeManager(){
+        instance.close();
+    }
 }
