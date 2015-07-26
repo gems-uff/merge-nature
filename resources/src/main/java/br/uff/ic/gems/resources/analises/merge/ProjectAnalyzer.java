@@ -74,7 +74,8 @@ public class ProjectAnalyzer {
         ProjectDAO projectDAO = new ProjectDAO();
 
         project.setRepositoryPath(repositoryPath);
-        List<String> allRevisions = Git.getMergeRevisions(repositoryPath);
+        List<String> allRevisions = Git.getAllRevisions(repositoryPath);
+        List<String> allMergeRevisions = Git.getMergeRevisions(repositoryPath);
         project.setRepositoryPath(repositoryPath);
 
         String[] split = repositoryPath.split(File.separator);
@@ -87,9 +88,9 @@ public class ProjectAnalyzer {
         int conflictingMerges = 0;
         int progress = 1;
 
-        for (String rev : allRevisions) {
+        for (String rev : allMergeRevisions) {
 
-            System.out.println((progress++) + "//" + allRevisions.size() + ": " + rev);
+            System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
             Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
 
             if (revision.isConflict()) {
@@ -109,6 +110,8 @@ public class ProjectAnalyzer {
 
         project.setRevisions(revisions);
         project.setNumberConflictingMerges(conflictingMerges);
+        project.setNumberRevisions(allRevisions.size());
+        project.setNumberMergeRevisions(allMergeRevisions.size());
 
         try {
             if (persiste) {
