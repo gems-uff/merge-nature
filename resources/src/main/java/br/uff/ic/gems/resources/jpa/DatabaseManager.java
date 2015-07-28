@@ -24,16 +24,17 @@ public class DatabaseManager {
         if (instance == null) {
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Local");
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Test");
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Analyses");
-//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("AnalysesTrue");
+//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Analyses");
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("krakenUpdated");
 
+//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("AnalysesTrue");
             instance = factory.createEntityManager();
         }
 
         return instance;
     }
-    
-    public static void closeManager(){
+
+    public static void closeManager() {
         instance.close();
     }
 }

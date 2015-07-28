@@ -176,4 +176,18 @@ public class ProjectDAO {
 
         return projects;
     }
+    
+    public List<Long> getIDs() {
+
+        EntityManager manager = DatabaseManager.getManager();
+
+        //Jpa manager
+        String sql = "SELECT p.id FROM Project p ORDER BY p.id";
+        Query query = manager.createQuery(sql);
+
+        List<Long> result = query.getResultList();
+
+        return result;
+
+    }
 }
