@@ -43,7 +43,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>br.uff.ic.kraken.extractdata.Extraction</mainClass>
+                            <mainClass>br.uff.ic.kraken.extractdata.bd.TreatOldProject</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
