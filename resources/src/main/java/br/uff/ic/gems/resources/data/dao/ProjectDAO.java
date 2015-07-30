@@ -176,7 +176,7 @@ public class ProjectDAO {
 
         return projects;
     }
-    
+
     public List<Long> getIDs() {
 
         EntityManager manager = DatabaseManager.getManager();
@@ -186,6 +186,26 @@ public class ProjectDAO {
         Query query = manager.createQuery(sql);
 
         List<Long> result = query.getResultList();
+
+        return result;
+
+    }
+
+    public List<Project> getJavaProjects() {
+
+        EntityManager manager = DatabaseManager.getManager();
+
+        //Jpa manager
+        String sql = "SELECT \n"
+                   + "          distinct(p)\n"
+                   + "FROM \n"
+                   + "          Project p join p.languages pl "                   
+                   + "WHERE \n"
+                   + "          UPPER(pl.name) = 'JAVA'";
+        
+        Query query = manager.createQuery(sql);
+
+        List<Project> result = query.getResultList();
 
         return result;
 
