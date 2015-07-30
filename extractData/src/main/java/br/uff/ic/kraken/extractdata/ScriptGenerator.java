@@ -33,7 +33,7 @@ public class ScriptGenerator {
 
         ProjectDAO projectDAO = new ProjectDAO();
         Date beginRecover = new Date();
-        List<Project> all = projectDAO.getAll();
+        List<Project> all = projectDAO.getJavaProjects();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date endRecover = new Date();
 
