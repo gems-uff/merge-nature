@@ -11,9 +11,13 @@ import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.gems.resources.vcs.Git;
 import com.google.gson.Gson;
 import java.io.File;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -74,6 +78,14 @@ public class AutomaticAnalysis {
         Writer writer = FileManager.createWriter(outputDirectory + project.getName());
         FileManager.write(toJson, writer);
         FileManager.closeWriter(writer);
+        
+        try {
+            //Removing repository
+            FileUtils.deleteDirectory(new File(projectPath));
+        } catch (IOException ex) {
+            Logger.getLogger(AutomaticAnalysis.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     
