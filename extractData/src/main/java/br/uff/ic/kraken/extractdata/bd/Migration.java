@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author gleiph
  */
-public class TreatOldProject {
+public class Migration {
 
     //Project
     private static final String ID = "id";
@@ -52,7 +52,7 @@ public class TreatOldProject {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TreatOldProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Migration.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         System.out.println("PostgreSQL JDBC Driver Registered!");
@@ -95,7 +95,7 @@ public class TreatOldProject {
                 project.setNumberMergeRevisions(0);
                 project.setNumberRevisions(0);
                 project.setPriva(result.getBoolean(PRIVATE));
-                project.setRepositoryPath(result.getString(REPOSITORY_PATH));
+                project.setRepositoryPath(null);
                 project.setRevisions(null);
                 project.setSearchUrl(result.getString(SEARCH_URL));
                 project.setUpdatedAt(result.getString(UPDATED_AT));
@@ -121,7 +121,7 @@ public class TreatOldProject {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(TreatOldProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Migration.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return projects;
@@ -192,7 +192,7 @@ public class TreatOldProject {
             project.setNumberMergeRevisions(0);
             project.setNumberRevisions(0);
             project.setPriva(result.getBoolean(PRIVATE));
-            project.setRepositoryPath(result.getString(REPOSITORY_PATH));
+            project.setRepositoryPath(null);
             project.setRevisions(null);
             project.setSearchUrl(result.getString(SEARCH_URL));
             project.setUpdatedAt(result.getString(UPDATED_AT));
@@ -234,7 +234,6 @@ public class TreatOldProject {
         while (result.next()) {
             Long id = result.getLong(ID);
             resultList.add(id);
-
         }
 
         return resultList;
@@ -246,7 +245,7 @@ public class TreatOldProject {
         Connection connection = null;
 
         connection = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/krakenBackup", "postgres",
+                "jdbc:postgresql://localhost:5432/krakenV2", "postgres",
                 "kraken");
 
         return connection;
@@ -314,9 +313,9 @@ public class TreatOldProject {
         try {
             migrate();
         } catch (SQLException ex) {
-            Logger.getLogger(TreatOldProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Migration.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(TreatOldProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Migration.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

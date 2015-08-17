@@ -8,7 +8,7 @@ package br.uff.ic.kraken.extractdata;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.utils.FileManager;
-import br.uff.ic.kraken.extractdata.bd.TreatOldProject;
+import br.uff.ic.kraken.extractdata.bd.Migration;
 import java.io.File;
 import java.io.Writer;
 import java.text.ParseException;
@@ -25,7 +25,7 @@ public class ScriptGenerator {
 
     public static void main(String[] args) throws ParseException {
 
-        String outputScripts = "/Users/gleiph/Desktop/scripts/";
+        String outputScripts = "/Users/gleiph/Desktop/scripts/v2/";
         File scriptsDir = new File(outputScripts);
         if (!scriptsDir.isDirectory()) {
             scriptsDir.mkdirs();
@@ -49,7 +49,7 @@ public class ScriptGenerator {
         for (Project project : all) {
             count++;
 
-            if (TreatOldProject.isMainJava(project)) {
+            if (Migration.isMainJava(project)) {
                 try {
                     String updatedAt = project.getUpdatedAt();
 
@@ -63,7 +63,7 @@ public class ScriptGenerator {
                         System.out.print(line);
                         result.add(project.getHtmlUrl());
 
-                        if (result.size() == 15) {
+                        if (result.size() == 100) {
                             writeScript(outputScripts + "script" + (scriptCount++) + ".sh", result);
 
                             result = new ArrayList<>();
