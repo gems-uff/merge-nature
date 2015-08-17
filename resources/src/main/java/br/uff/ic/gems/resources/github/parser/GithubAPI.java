@@ -35,7 +35,7 @@ public class GithubAPI {
 
     public static User init() {
         user = User.nextUser();
-        base = "curl -i -u " + user.getLogin() + ":" + user.getPassword() + " ";
+        base = "curl -i -k -u " + user.getLogin() + ":" + user.getPassword() + " ";
         return user;
     }
 
