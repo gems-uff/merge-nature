@@ -41,6 +41,21 @@ public class FileManager {
         return out;
     }
 
+    public static Writer createWriter(String path, boolean append) {
+
+        Writer out = null;
+        try {
+            FileOutputStream fileOutput = new FileOutputStream(path, append);
+            OutputStreamWriter outputWriter = new OutputStreamWriter(fileOutput, Charset.forName("UTF-8"));
+
+            out = new BufferedWriter(outputWriter);
+        } catch (IOException ex) {
+            Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return out;
+    }
+    
     public static boolean write(String text, Writer out) {
         try {
 
