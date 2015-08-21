@@ -17,23 +17,33 @@ import java.util.logging.Logger;
  * @author gleiph
  */
 public class ImportData {
-    
+
     public static void main(String[] args) {
         ProjectDAO projectDAO = new ProjectDAO();
-        
-        String dir = "/Users/gleiph/Desktop/outputJson";
-        
+
+        String dir = "/Users/gleiph/Desktop/automaticAnalyses/teste";
+
         File directory = new File(dir);
-        
+
         File[] listFiles = directory.listFiles();
-        
+
         for (File listFile : listFiles) {
             Project reader = AutomaticAnalysis.reader(listFile.getAbsolutePath());
             try {
-                projectDAO.importAutomaticAnalyses(reader);
+                if (reader != null && reader.getId() != null) {
+                    projectDAO.importAutomaticAnalyses(reader);
+                    System.out.println(reader.getName() + " imported...");
+
+                } else {
+                    System.out.println("Error while importing file : " + listFile.getAbsolutePath());
+                }
             } catch (Exception ex) {
                 Logger.getLogger(ImportData.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        System.out.println("Done!");
+        return;
+
     }
 }
