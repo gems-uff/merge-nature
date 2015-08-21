@@ -25,7 +25,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class AutomaticAnalysis {
 
-    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputDirectory) {
+    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputDirectory) throws Exception{
 
         String githubURL = projectURL.replace("https://github.com/", "https://api.github.com/repos/");
         ProjectAnalyzer projectAnalyzer = new ProjectAnalyzer();
@@ -81,7 +81,8 @@ public class AutomaticAnalysis {
         
         try {
             //Removing repository
-            FileUtils.deleteDirectory(new File(projectPath));
+            System.out.println("Deleting "+repositoriesDirectoryPath+"...");
+            FileUtils.deleteDirectory(new File(repositoriesDirectoryPath));
         } catch (IOException ex) {
             Logger.getLogger(AutomaticAnalysis.class.getName()).log(Level.SEVERE, null, ex);
         }
