@@ -6,6 +6,7 @@
 package br.uff.ic.gems.resources.analises.merge;
 
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.gems.resources.vcs.Git;
@@ -25,7 +26,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class AutomaticAnalysis {
 
-    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputDirectory) throws Exception{
+    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputProjectDirectory) throws Exception{
 
         String githubURL = projectURL.replace("https://github.com/", "https://api.github.com/repos/");
         ProjectAnalyzer projectAnalyzer = new ProjectAnalyzer();
@@ -56,8 +57,21 @@ public class AutomaticAnalysis {
 
         project.setRepositoryPath(projectPath);
 
+        outputProjectDirectory = outputProjectDirectory.concat(File.separator)
+                .concat(project.getName().concat(File.separator));
+        
+        if (!outputProjectDirectory.endsWith(File.separator)) {
+            outputProjectDirectory = outputProjectDirectory.concat(File.separator);
+        }
+
+        
+        File outputFileDirectory = new File(outputProjectDirectory);
+        if (!outputFileDirectory.isDirectory()) {
+            outputFileDirectory.mkdirs();
+        }
+        
         Date beginDate = new Date();
-        project = projectAnalyzer.analyze(project, false);
+        project = projectAnalyzer.analyze(project, false, outputProjectDirectory);
         Date endDate = new Date();
 
         System.out.println("Begin: " + beginDate + "\nEnd: " + endDate);
@@ -66,31 +80,28 @@ public class AutomaticAnalysis {
 
         String toJson = gson.toJson(project);
 
-        if (!outputDirectory.endsWith(File.separator)) {
-            outputDirectory = outputDirectory.concat(File.separator);
-        }
+        
 
-        File outputFileDirectory = new File(outputDirectory);
-        if (!outputFileDirectory.isDirectory()) {
-            outputFileDirectory.mkdirs();
-        }
-
-        Writer writer = FileManager.createWriter(outputDirectory + project.getName());
+        Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName());
         FileManager.write(toJson, writer);
         FileManager.closeWriter(writer);
         
         try {
             //Removing repository
             System.out.println("Deleting "+repositoriesDirectoryPath+"...");
-            FileUtils.deleteDirectory(new File(repositoriesDirectoryPath));
+            FileUtils.cleanDirectory(new File(repositoriesDirectoryPath));
         } catch (IOException ex) {
+            
+            System.out.println("Forcing deletion of "+repositoriesDirectoryPath+"...");
+            FileUtils.forceDelete(new File(repositoriesDirectoryPath));
+            
             Logger.getLogger(AutomaticAnalysis.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
 
     
-    public static Project reader(String JSONPath){
+    public static Project readeProject(String JSONPath){
         Project project = null;
         Reader reader = FileManager.createReader(JSONPath);
         
@@ -98,5 +109,15 @@ public class AutomaticAnalysis {
         project = gson.fromJson(reader, Project.class);
         
         return project;
+    }
+    
+    public static Revision readeRevision(String JSONPath){
+        Revision revision = null;
+        Reader reader = FileManager.createReader(JSONPath);
+        
+        Gson gson = new Gson();
+        revision = gson.fromJson(reader, Revision.class);
+        
+        return revision;
     }
 }

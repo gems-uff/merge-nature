@@ -9,8 +9,11 @@ import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.data.dao.RevisionDAO;
+import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.gems.resources.vcs.Git;
+import com.google.gson.Gson;
 import java.io.File;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -65,7 +68,7 @@ public class ProjectAnalyzer {
         return project;
     }
 
-    public Project analyze(Project project, boolean persiste) {
+    public Project analyze(Project project, boolean persiste, String outputProjectDirectory) {
 
         String repositoryPath = project.getRepositoryPath();
 
@@ -88,9 +91,10 @@ public class ProjectAnalyzer {
         int conflictingMerges = 0;
         int progress = 1;
 
+        Gson gson = new Gson();
+
         for (String rev : allMergeRevisions) {
 
-            System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
             Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
 
             if (revision.isConflict()) {
@@ -105,7 +109,16 @@ public class ProjectAnalyzer {
                 Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            revisions.add(revision);
+            if (persiste) {
+                revisions.add(revision);
+            } else {
+                String toJson = gson.toJson(revision);
+                Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName() + progress);
+                FileManager.write(toJson, writer);
+                FileManager.closeWriter(writer);
+            }
+            System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+
         }
 
         project.setRevisions(revisions);
