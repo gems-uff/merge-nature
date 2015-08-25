@@ -38,6 +38,10 @@ public class ConflictingFileAnalyzer {
         conflictingFileList = FileUtils.readLines(new File(conflictingFile.getPath()));
         List<ConflictingChunk> conflictingChunks = getConflictingChunks(conflictingFileList);
 
+        //Treating when conflict files does not have well-formed chunks
+        if(conflictingChunks == null)
+            return conflictingFile;
+        
         String relativePath = conflictingFilePath.replace(repositoryPath, "");
 
         //Paths to repositories
@@ -228,19 +232,22 @@ public class ConflictingFileAnalyzer {
         for (int i = 0; i < fileList.size(); i++) {
             String get = fileList.get(i);
 
-            if (get.contains("<<<<<<<")) {
+            if (get.startsWith("<<<<<<<")) {
                 begin = i;
                 begins.add(begin);
-            } else if (get.contains("=======")) {
+            } else if (get.startsWith("=======")) {
                 separator = i;
                 separators.add(separator);
-            } else if (get.contains(">>>>>>>")) {
+            } else if (get.startsWith(">>>>>>>")) {
                 end = i;
                 ends.add(end);
             }
 
         }
 
+        if(begins.size() != separators.size() || separators.size() != ends.size())
+            return null;
+        
         while (!(begins.isEmpty() || separators.isEmpty() || ends.isEmpty())) {
             Integer b = 0, s = 0, e = 0;
 
