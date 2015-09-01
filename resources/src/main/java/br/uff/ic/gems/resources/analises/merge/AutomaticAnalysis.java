@@ -82,6 +82,8 @@ public class AutomaticAnalysis {
 
         
 
+        //Saving project metadata
+        String directory = outputProjectDirectory + project.getName();
         Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName());
         FileManager.write(toJson, writer);
         FileManager.closeWriter(writer);

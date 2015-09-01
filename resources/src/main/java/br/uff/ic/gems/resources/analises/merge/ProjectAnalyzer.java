@@ -91,8 +91,6 @@ public class ProjectAnalyzer {
         int conflictingMerges = 0;
         int progress = 1;
 
-        Gson gson = new Gson();
-
         for (String rev : allMergeRevisions) {
 
             Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
@@ -110,12 +108,12 @@ public class ProjectAnalyzer {
             }
 
             if (persiste) {
+                //In case of persistence in the database
                 revisions.add(revision);
             } else {
-                String toJson = gson.toJson(revision);
-                Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName() + progress);
-                FileManager.write(toJson, writer);
-                FileManager.closeWriter(writer);
+                //Presisting the data using JSon files
+
+                saveRevision(outputProjectDirectory, project.getName(), progress, revision);
             }
             System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
 
@@ -127,6 +125,7 @@ public class ProjectAnalyzer {
         project.setNumberMergeRevisions(allMergeRevisions.size());
 
         try {
+            //Case we are persiting the data in the database
             if (persiste) {
                 projectDAO.save(project);
             }
@@ -135,5 +134,35 @@ public class ProjectAnalyzer {
         }
 
         return project;
+    }
+
+    public void saveRevision(String outputProjectDirectory, String name, int revisionNumber, Revision revision) {
+
+        Gson gson = new Gson();
+
+        String content = gson.toJson(revision);
+
+        int sizeDirectory = 1000;
+
+        if (!outputProjectDirectory.endsWith(File.separator)) {
+            outputProjectDirectory += outputProjectDirectory + File.separator;
+        }
+
+        String path = outputProjectDirectory;
+
+        int directoryNumber = revisionNumber / sizeDirectory;
+
+        path += directoryNumber;
+        
+        //Creating director, if it sdoes not exist 
+        File directory = new File(path);
+        if(!directory.isDirectory())
+            directory.mkdirs();
+        
+        path += File.separator + name + revisionNumber;
+
+        Writer writer = FileManager.createWriter(path);
+        FileManager.write(content, writer);
+        FileManager.closeWriter(writer);
     }
 }
