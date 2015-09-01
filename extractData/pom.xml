@@ -39,6 +39,7 @@
                     <archive>
                         <manifest>
                             <mainClass>br.uff.ic.kraken.extractdata.Extraction</mainClass>
+                            <!--<mainClass>br.uff.ic.kraken.extractdata.ScriptGenerator</mainClass>-->
                             <!--<mainClass>br.uff.ic.kraken.extractdata.bd.Migration</mainClass>-->
 
                         </manifest>

@@ -10,8 +10,6 @@ import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -22,31 +20,49 @@ public class ImportData {
     public static void main(String[] args) {
         ProjectDAO projectDAO = new ProjectDAO();
 
-        String dir = "/Users/gleiph/Dropbox/doutorado/implementation/production/out";
+        String dir = "/Users/gleiph/Desktop/teste/out";
 
         File directory = new File(dir);
 
         File[] listFiles = directory.listFiles();
 
+        //Passing for all projects
         for (File file : listFiles) {
+            try {
 
-            if (file.isDirectory()) {
+                if (file.isDirectory()) {
 
-                File[] subfiles = file.listFiles();
-                
-                if(subfiles.length <= 0){
-                    System.out.println(file.getAbsoluteFile()+ " is empty!");
-                    return;
-                }
-                
-                Project project = AutomaticAnalysis.readeProject(subfiles[0].getAbsolutePath());
-                
-                for (int i = 1; i < subfiles.length; i++) {
-                    Revision revision = AutomaticAnalysis.readeRevision(subfiles[0].getAbsolutePath()+i);
-                    project.getRevisions().add(revision);
-                }
-                
-                try {
+                    File[] subDirectories = file.listFiles();
+
+                    //Verifying if there are things to import
+                    if (subDirectories.length <= 0) {
+                        System.out.println(file.getAbsoluteFile() + " is empty!");
+                        continue;
+                    }
+
+                    //Reading project metadata
+                    Project project = AutomaticAnalysis.readProject(subDirectories);
+
+                    for (int i = 0; i < subDirectories.length - 1; i++) {
+
+                        File subDirectory = new File(file.getAbsoluteFile() + File.separator + i);
+                        File[] revisions = subDirectory.listFiles();
+
+                        if (i == 0) {
+                            for (int j = 1; j < revisions.length; j++) {
+                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
+                                project.getRevisions().add(revision);
+                            }
+                        } else {
+                            for (int j = i * 1000; j < i * 1000 + revisions.length - 1; j++) {
+                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
+                                project.getRevisions().add(revision);
+                            }
+                        }
+
+                        System.out.println(i + "/" + (subDirectories.length - 1));
+                    }
+
                     if (project != null && project.getId() != null) {
                         projectDAO.importAutomaticAnalyses(project);
                         System.out.println(project.getName() + " imported...");
@@ -54,9 +70,10 @@ public class ImportData {
                     } else {
                         System.out.println("Error while importing file : " + file.getAbsolutePath());
                     }
-                } catch (Exception ex) {
-                    Logger.getLogger(ImportData.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
+            } catch (Exception ex) {
+                System.out.println("The projects " + file.getName() + "was not imported well!");
             }
         }
 
