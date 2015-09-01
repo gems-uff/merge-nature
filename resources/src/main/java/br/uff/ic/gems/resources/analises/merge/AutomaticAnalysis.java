@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class AutomaticAnalysis {
 
-    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputProjectDirectory) throws Exception{
+    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputProjectDirectory) throws Exception {
 
         String githubURL = projectURL.replace("https://github.com/", "https://api.github.com/repos/");
         ProjectAnalyzer projectAnalyzer = new ProjectAnalyzer();
@@ -59,17 +59,16 @@ public class AutomaticAnalysis {
 
         outputProjectDirectory = outputProjectDirectory.concat(File.separator)
                 .concat(project.getName().concat(File.separator));
-        
+
         if (!outputProjectDirectory.endsWith(File.separator)) {
             outputProjectDirectory = outputProjectDirectory.concat(File.separator);
         }
 
-        
         File outputFileDirectory = new File(outputProjectDirectory);
         if (!outputFileDirectory.isDirectory()) {
             outputFileDirectory.mkdirs();
         }
-        
+
         Date beginDate = new Date();
         project = projectAnalyzer.analyze(project, false, outputProjectDirectory);
         Date endDate = new Date();
@@ -80,46 +79,62 @@ public class AutomaticAnalysis {
 
         String toJson = gson.toJson(project);
 
-        
-
         //Saving project metadata
         String directory = outputProjectDirectory + project.getName();
         Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName());
         FileManager.write(toJson, writer);
         FileManager.closeWriter(writer);
-        
+
         try {
             //Removing repository
-            System.out.println("Deleting "+repositoriesDirectoryPath+"...");
+            System.out.println("Deleting " + repositoriesDirectoryPath + "...");
             FileUtils.cleanDirectory(new File(repositoriesDirectoryPath));
         } catch (IOException ex) {
-            
-            System.out.println("Forcing deletion of "+repositoriesDirectoryPath+"...");
+
+            System.out.println("Forcing deletion of " + repositoriesDirectoryPath + "...");
             FileUtils.forceDelete(new File(repositoriesDirectoryPath));
-            
+
             Logger.getLogger(AutomaticAnalysis.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
-    
-    public static Project readeProject(String JSONPath){
-        Project project = null;
-        Reader reader = FileManager.createReader(JSONPath);
+    public static Project readProject(File[] files) {
+
+
+        if (files == null || files.length < 1) {
+            return null;
+        }
+
+        File file = null;
+
+        for (File file1 : files) {
+
+            if (file1.isFile()) {
+                file = file1;
+                break;
+            }
+        }
+
+        if(file == null)
+            return null;
         
+        Project project = null;
+        Reader reader = FileManager.createReader(file.getAbsolutePath());
+
         Gson gson = new Gson();
         project = gson.fromJson(reader, Project.class);
-        
+
         return project;
     }
-    
-    public static Revision readeRevision(String JSONPath){
+
+    public static Revision readRevision(String JSONPath) {
         Revision revision = null;
         Reader reader = FileManager.createReader(JSONPath);
-        
+
         Gson gson = new Gson();
         revision = gson.fromJson(reader, Revision.class);
-        
+
         return revision;
     }
 }
