@@ -70,7 +70,9 @@ public class AutomaticAnalysis {
         }
 
         Date beginDate = new Date();
-        project = projectAnalyzer.analyze(project, false, outputProjectDirectory);
+//        project = projectAnalyzer.analyze(project, false, outputProjectDirectory);
+        project = projectAnalyzer.analyze(project, true, null);
+
         Date endDate = new Date();
 
         System.out.println("Begin: " + beginDate + "\nEnd: " + endDate);
@@ -101,7 +103,6 @@ public class AutomaticAnalysis {
 
     public static Project readProject(File[] files) {
 
-
         if (files == null || files.length < 1) {
             return null;
         }
@@ -116,9 +117,10 @@ public class AutomaticAnalysis {
             }
         }
 
-        if(file == null)
+        if (file == null) {
             return null;
-        
+        }
+
         Project project = null;
         Reader reader = FileManager.createReader(file.getAbsolutePath());
 

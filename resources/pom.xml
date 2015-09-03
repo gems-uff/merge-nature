@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.6.Final</version>
+            <version>4.3.8.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -88,6 +88,7 @@
             <artifactId>eclipselink</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <!--Postgres-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -104,6 +105,26 @@
             <artifactId>h2</artifactId>
             <version>1.4.182</version>
         </dependency>
+        
+        <!--Derby-->
+                                            
+        <dependency>                                      
+            <groupId>org.apache.derby</groupId>             
+            <artifactId>derby</artifactId>                  
+            <version>10.8.2.2</version>                     
+            <scope>runtime</scope>                          
+        </dependency>                                     
+        <!-- 
+           an slf4j implementation is needed by
+           hibernate so that it could log its *stuff*
+        -->
+        <dependency>                                      
+            <groupId>org.slf4j</groupId>                    
+            <artifactId>slf4j-simple</artifactId>           
+            <version>1.6.4</version>                        
+            <scope>runtime</scope>                          
+        </dependency>    
+        
         <!-- End database dependencies  -->
 
         <!-- Apache commons -->

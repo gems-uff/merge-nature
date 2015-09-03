@@ -22,7 +22,9 @@ public class DatabaseManager {
 
     public static EntityManager getManager() {
         if (instance == null) {
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Automatic");
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("testPU");
+//                        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Automatic");
+
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("krakenUpdated");
 
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("AnalysesTrue");
