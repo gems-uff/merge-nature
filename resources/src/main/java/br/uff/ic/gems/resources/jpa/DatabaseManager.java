@@ -17,16 +17,17 @@ public class DatabaseManager {
 
     private static EntityManager instance = null;
 
+    private static EntityManagerFactory factory;
+
     public DatabaseManager() {
     }
 
     public static EntityManager getManager() {
         if (instance == null) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("testPU");
-//                        EntityManagerFactory factory = Persistence.createEntityManagerFactory("Automatic");
+            factory = Persistence.createEntityManagerFactory("testPU");
+//            EntityManagerFactory factory = Persistence.createEntityManagerFactory("Automatic");
 
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("krakenUpdated");
-
 //            EntityManagerFactory factory = Persistence.createEntityManagerFactory("AnalysesTrue");
             instance = factory.createEntityManager();
         }
@@ -36,5 +37,6 @@ public class DatabaseManager {
 
     public static void closeManager() {
         instance.close();
+        factory.close();
     }
 }
