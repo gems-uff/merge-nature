@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class AutomaticAnalysis {
 
-    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputProjectDirectory) throws Exception {
+    public static void analyze(String repositoriesDirectoryPath, String projectURL, String outputProjectDirectory, boolean persisteDB) throws Exception {
 
         String githubURL = projectURL.replace("https://github.com/", "https://api.github.com/repos/");
         ProjectAnalyzer projectAnalyzer = new ProjectAnalyzer();
@@ -70,8 +70,7 @@ public class AutomaticAnalysis {
         }
 
         Date beginDate = new Date();
-//        project = projectAnalyzer.analyze(project, false, outputProjectDirectory);
-        project = projectAnalyzer.analyze(project, true, null);
+        project = projectAnalyzer.analyze(project, persisteDB, outputProjectDirectory);
 
         Date endDate = new Date();
 
@@ -83,7 +82,7 @@ public class AutomaticAnalysis {
 
         //Saving project metadata
         String directory = outputProjectDirectory + project.getName();
-        Writer writer = FileManager.createWriter(outputProjectDirectory + project.getName());
+        Writer writer = FileManager.createWriter(directory);
         FileManager.write(toJson, writer);
         FileManager.closeWriter(writer);
 
