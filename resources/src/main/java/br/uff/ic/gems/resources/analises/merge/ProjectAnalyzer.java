@@ -13,11 +13,13 @@ import br.uff.ic.gems.resources.utils.FileManager;
 import br.uff.ic.gems.resources.vcs.Git;
 import com.google.gson.Gson;
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -91,32 +93,64 @@ public class ProjectAnalyzer {
         int conflictingMerges = 0;
         int progress = 1;
 
-        for (String rev : allMergeRevisions) {
+        String pathSHA;
+        if (!outputProjectDirectory.endsWith(File.separator)) {
+            outputProjectDirectory += File.separator;
+        }
 
-            Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
+        pathSHA = outputProjectDirectory + "sha";
 
-            if (revision.isConflict()) {
-                conflictingMerges++;
-            }
+        File SHAFile = new File(pathSHA);
 
+        List<String> shaList = null;
+
+        if (SHAFile.isFile()) {
             try {
-                if (persiste) {
-                    revision = revisionDAO.save(revision);
-                }
-            } catch (Exception ex) {
+                shaList = FileUtils.readLines(SHAFile);
+            } catch (IOException ex) {
                 Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
 
-            if (persiste) {
-                //In case of persistence in the database
-                revisions.add(revision);
+        for (String rev : allMergeRevisions) {
+
+            if (shaList != null && shaList.contains(rev) && !persiste) {
+                String jsonPath = outputProjectDirectory + (progress / 1000) + File.separator + project.getName() + progress;
+
+                Gson gson = new Gson();
+                Revision revision = AutomaticAnalysis.readRevision(jsonPath);
+
+                if (revision.isConflict()) {
+                    conflictingMerges++;
+                }
+
+                System.out.println("Skiping >>>> " + (progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+
             } else {
-                //Presisting the data using JSon files
-                saveRevision(outputProjectDirectory, project.getName(), progress, revision);
-                
-            }
-            System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+                Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
 
+                if (revision.isConflict()) {
+                    conflictingMerges++;
+                }
+
+                try {
+                    if (persiste) {
+                        revision = revisionDAO.save(revision);
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                if (persiste) {
+                    //In case of persistence in the database
+                    revisions.add(revision);
+                } else {
+                    //Persisting the data using JSon files
+                    saveRevision(outputProjectDirectory, project.getName(), progress, revision);
+
+                }
+                System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+            }
         }
 
         project.setRevisions(revisions);
@@ -129,7 +163,7 @@ public class ProjectAnalyzer {
             if (persiste) {
                 if (project.getId() == null) {
                     projectDAO.save(project);
-                }else{
+                } else {
                     projectDAO.saveGithub(project);
                 }
             }
@@ -170,9 +204,9 @@ public class ProjectAnalyzer {
         Writer writer = FileManager.createWriter(path);
         FileManager.write(content, writer);
         FileManager.closeWriter(writer);
-        
+
         //Saving SHA
-        writer = FileManager.createWriter(outputProjectDirectory+"sha", true);
+        writer = FileManager.createWriter(outputProjectDirectory + "sha", true);
         FileManager.write(revision.getSha() + "\n", writer);
         FileManager.closeWriter(writer);
     }
