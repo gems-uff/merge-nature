@@ -49,12 +49,12 @@ public class ImportData {
                         File[] revisions = subDirectory.listFiles();
 
                         if (i == 0) {
-                            for (int j = 1; j < revisions.length; j++) {
+                            for (int j = 1; j <= revisions.length; j++) {
                                 Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
                                 project.getRevisions().add(revision);
                             }
                         } else {
-                            for (int j = i * 1000; j < i * 1000 + revisions.length - 1; j++) {
+                            for (int j = i * 1000; j < i * 1000 + revisions.length; j++) {
                                 Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
                                 project.getRevisions().add(revision);
                             }
