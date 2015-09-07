@@ -112,8 +112,8 @@ public class ProjectAnalyzer {
                 revisions.add(revision);
             } else {
                 //Presisting the data using JSon files
-
                 saveRevision(outputProjectDirectory, project.getName(), progress, revision);
+                
             }
             System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
 
@@ -166,8 +166,14 @@ public class ProjectAnalyzer {
 
         path += File.separator + name + revisionNumber;
 
+        //Saving revision
         Writer writer = FileManager.createWriter(path);
         FileManager.write(content, writer);
+        FileManager.closeWriter(writer);
+        
+        //Saving SHA
+        writer = FileManager.createWriter(outputProjectDirectory+"sha", true);
+        FileManager.write(revision.getSha() + "\n", writer);
         FileManager.closeWriter(writer);
     }
 }
