@@ -127,7 +127,11 @@ public class ProjectAnalyzer {
         try {
             //Case we are persiting the data in the database
             if (persiste) {
-                projectDAO.save(project);
+                if (project.getId() == null) {
+                    projectDAO.save(project);
+                }else{
+                    projectDAO.saveGithub(project);
+                }
             }
         } catch (Exception ex) {
             Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
@@ -153,12 +157,13 @@ public class ProjectAnalyzer {
         int directoryNumber = revisionNumber / sizeDirectory;
 
         path += directoryNumber;
-        
+
         //Creating director, if it sdoes not exist 
         File directory = new File(path);
-        if(!directory.isDirectory())
+        if (!directory.isDirectory()) {
             directory.mkdirs();
-        
+        }
+
         path += File.separator + name + revisionNumber;
 
         Writer writer = FileManager.createWriter(path);
