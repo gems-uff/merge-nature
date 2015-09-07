@@ -43,7 +43,7 @@ public class JavaDB {
         String projURL = "https://github.com/dustin/java-memcached-client";
         String outDir = "/Users/gleiph/Desktop/teste/out";
     
-        AutomaticAnalysis.analyze(repoDir, projURL, outDir);
+        AutomaticAnalysis.analyze(repoDir, projURL, outDir, true);
     
     }
 }
