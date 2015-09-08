@@ -88,7 +88,8 @@ public class RevisionAnalyzer {
             }
 
         } else {
-            System.out.println("Implement!!!!!");
+            revision = new Revision();
+            revision.setStatus(MergeStatus.OCTOPUS);
         }
 
         return revision;

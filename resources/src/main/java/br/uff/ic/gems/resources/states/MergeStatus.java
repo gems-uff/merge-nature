@@ -10,5 +10,5 @@ package br.uff.ic.gems.resources.states;
  * @author gleiph
  */
 public enum MergeStatus {
-    CONFLICTING, NON_CONFLICTING, FAST_FORWARD
+    CONFLICTING, NON_CONFLICTING, FAST_FORWARD, OCTOPUS
 }
