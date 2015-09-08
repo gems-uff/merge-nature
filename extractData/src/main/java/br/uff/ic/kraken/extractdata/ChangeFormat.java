@@ -21,79 +21,55 @@ public class ChangeFormat {
 
     public static void main(String[] args) {
 
-        String dir = args[0];
-//        String dir = "/Users/gleiph/Desktop/teste/out";
+        createSHA("/Users/gleiph/Desktop/teste/out/processing-js");
+    }
 
-        File directory = new File(dir);
+    private static int countRevisions(String projectPath) {
+        int revisions = 0;
 
-        File[] listFiles = directory.listFiles();
+        File projectDirectory = new File(projectPath);
 
-        //Passing for all projects
-        for (File file : listFiles) {
-            try {
+        for (File file : projectDirectory.listFiles()) {
 
-                if (file.isDirectory()) {
-
-                    File[] subDirectories = file.listFiles();
-                    int numberSubdirectories = 0;
-
-                    for (File subDirectory : subDirectories) {
-                        if (subDirectory.isDirectory()) {
-                            numberSubdirectories++;
-                        }
-                    }
-
-                    //Verifying if there are things to import
-                    if (numberSubdirectories <= 0) {
-                        System.out.println(file.getAbsoluteFile() + " is empty!");
-                        continue;
-                    }
-
-                    //Reading project metadata
-                    String projectName = file.getName();
-                    System.out.println("    ");
-                    System.out.println(projectName);
-                    System.out.println("    ");
-
-                    List<String> revisionsSHA = new ArrayList<String>();
-
-                    for (int i = 0; i < numberSubdirectories; i++) {
-
-                        File subDirectory = new File(file.getAbsoluteFile() + File.separator + i);
-
-                        File[] revisions = subDirectory.listFiles();
-
-                        if (i == 0) {
-                            for (int j = 1; j <= revisions.length; j++) {
-                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + projectName + j);
-                                String sha = revision.getSha();
-                                revisionsSHA.add(sha);
-                            }
-                        } else {
-                            for (int j = i * 1000; j < i * 1000 + revisions.length; j++) {
-                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + projectName + j);
-                                String sha = revision.getSha();
-                                revisionsSHA.add(sha);
-                            }
-                        }
-                    }
-
-                    Writer writer = FileManager.createWriter(file.getAbsolutePath() + File.separator + "sha");
-
-                    for (String sha : revisionsSHA) {
-                        FileManager.write(sha + "\n", writer);
-                    }
-
-                    FileManager.closeWriter(writer);
-                }
-            } catch (Exception ex) {
-                System.out.println("The projects " + file.getName() + "was not imported well!");
+            if (file.isDirectory()) {
+                revisions += file.listFiles().length;
             }
         }
 
-        System.out.println("Done!");
-        return;
-
+        return revisions;
     }
 
+    public static List<String> getSHAs(String projectPath) {
+
+        List<String> SHAs = new ArrayList<>();
+        
+        int revisionsNumber = countRevisions(projectPath);
+
+        File projectDirectory = new File(projectPath);
+
+        for (int i = 1; i <= revisionsNumber; i++) {
+            File jsonFile = 
+                    new File(projectDirectory, (i / 1000) + File.separator + projectDirectory.getName() + i);
+            Revision revision = AutomaticAnalysis.readRevision(jsonFile.getAbsolutePath());
+            SHAs.add(revision.getSha());
+        }
+
+        return SHAs;
+    }
+
+    public static void createSHA(String projectPath){
+        List<String> SHAs = getSHAs(projectPath);
+        
+        File sha = new File(projectPath, "sha");
+                
+        Writer writer = FileManager.createWriter(sha.getAbsolutePath());
+        
+        for (String SHA : SHAs) {
+            FileManager.write(SHA+"\n", writer);
+        }
+        
+        FileManager.closeWriter(writer);
+        
+    }
+    
 }
