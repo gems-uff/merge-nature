@@ -21,7 +21,7 @@ public class ChangeFormat {
 
     public static void main(String[] args) {
 
-        createSHA("/Users/gleiph/Desktop/teste/out/processing-js");
+        createSHA(args[0]);
     }
 
     private static int countRevisions(String projectPath) {
