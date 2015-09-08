@@ -27,49 +27,6 @@ import org.apache.commons.io.FileUtils;
  */
 public class ProjectAnalyzer {
 
-    @Deprecated
-    public Project analyze(String repositoryPath) {
-
-        Project project = new Project();
-        ProjectDAO projectDAO = new ProjectDAO();
-        project.setRepositoryPath(repositoryPath);
-        List<String> allRevisions = Git.getMergeRevisions(repositoryPath);
-        project.setRepositoryPath(repositoryPath);
-
-        String[] split = repositoryPath.split(File.separator);
-        project.setName(split[split.length - 1]);
-
-        List<Revision> revisions = new ArrayList<>();
-
-        project.setNumberRevisions(revisions.size());
-
-        int conflictingMerges = 0;
-        int progress = 1;
-
-        for (String rev : allRevisions) {
-
-            System.out.println((progress++) + "//" + allRevisions.size() + ": " + rev);
-            Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
-
-            if (revision.isConflict()) {
-                conflictingMerges++;
-            }
-
-            revisions.add(revision);
-        }
-
-        project.setRevisions(revisions);
-        project.setNumberConflictingMerges(conflictingMerges);
-
-        try {
-            projectDAO.save(project);
-        } catch (Exception ex) {
-            Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return project;
-    }
-
     public Project analyze(Project project, boolean persiste, String outputProjectDirectory) {
 
         System.out.println("Getting merge information...");
@@ -166,7 +123,7 @@ public class ProjectAnalyzer {
                     revisions.add(revision);
                 } else {
                     //Persisting the data using JSon files
-                    saveRevision(outputProjectDirectory, project.getName(), progress, revision);
+                    saveRevision(outputProjectDirectory, project.getName(), progress, revision, rev);
 
                 }
                 System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
@@ -194,7 +151,7 @@ public class ProjectAnalyzer {
         return project;
     }
 
-    public void saveRevision(String outputProjectDirectory, String name, int revisionNumber, Revision revision) {
+    public void saveRevision(String outputProjectDirectory, String name, int revisionNumber, Revision revision, String rev) {
 
         Gson gson = new Gson();
 
@@ -218,7 +175,7 @@ public class ProjectAnalyzer {
             directory.mkdirs();
         }
 
-        path += File.separator + revision.getSha();
+        path += File.separator + rev;
 
         //Saving revision
         Writer writer = FileManager.createWriter(path);
@@ -227,7 +184,7 @@ public class ProjectAnalyzer {
 
         //Saving SHA
         writer = FileManager.createWriter(outputProjectDirectory + "sha", true);
-        FileManager.write(revision.getSha() + "\n", writer);
+        FileManager.write(rev + "\n", writer);
         FileManager.closeWriter(writer);
     }
 }
