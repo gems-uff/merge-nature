@@ -72,6 +72,7 @@ public class ProjectAnalyzer {
 
     public Project analyze(Project project, boolean persiste, String outputProjectDirectory) {
 
+        System.out.println("Getting merge information...");
         String repositoryPath = project.getRepositoryPath();
 
         RevisionDAO revisionDAO = new RevisionDAO();
@@ -87,8 +88,6 @@ public class ProjectAnalyzer {
         project.setName(split[split.length - 1]);
 
         List<Revision> revisions = new ArrayList<>();
-
-        project.setNumberRevisions(revisions.size());
 
         int conflictingMerges = 0;
         int progress = 1;
@@ -112,10 +111,31 @@ public class ProjectAnalyzer {
             }
         }
 
+        //Saving merge sequence for future execution
+        File mergeSequence  = new File(outputProjectDirectory, "sequence");
+        
+        if(!mergeSequence.isFile()){
+            Writer writer = FileManager.createWriter(mergeSequence.getAbsolutePath());
+            for (String allMergeRevision : allMergeRevisions) {
+                FileManager.write(allMergeRevision+"\n", writer);
+            }
+            FileManager.closeWriter(writer);
+        } else{
+            try {
+                allMergeRevisions = FileUtils.readLines(mergeSequence);
+            } catch (IOException ex) {
+                Logger.getLogger(ProjectAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+        //Analysis taking place
         for (String rev : allMergeRevisions) {
 
+            progress = allMergeRevisions.indexOf(rev) + 1;
+            
             if (shaList != null && shaList.contains(rev) && !persiste) {
-                String jsonPath = outputProjectDirectory + (progress / 1000) + File.separator + project.getName() + progress;
+                String jsonPath = outputProjectDirectory + (progress / 1000) + File.separator + rev;
 
                 Gson gson = new Gson();
                 Revision revision = AutomaticAnalysis.readRevision(jsonPath);
@@ -198,7 +218,7 @@ public class ProjectAnalyzer {
             directory.mkdirs();
         }
 
-        path += File.separator + name + revisionNumber;
+        path += File.separator + revision.getSha();
 
         //Saving revision
         Writer writer = FileManager.createWriter(path);
