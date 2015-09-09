@@ -101,7 +101,8 @@ public class ProjectAnalyzer {
                     conflictingMerges++;
                 }
 
-                System.out.println("Skiping >>>> " + (progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+                System.out.println("Skiping >>>> " + (progress++) + "//" + allMergeRevisions.size() + ": " + rev 
+                        + "("+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
 
             } else {
                 Revision revision = RevisionAnalyzer.analyze(rev, repositoryPath);
@@ -126,7 +127,8 @@ public class ProjectAnalyzer {
                     saveRevision(outputProjectDirectory, project.getName(), progress, revision, rev);
 
                 }
-                System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev);
+                System.out.println((progress++) + "//" + allMergeRevisions.size() + ": " + rev
+                        + "("+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + ")");
             }
         }
 
