@@ -25,7 +25,7 @@ public class ScriptGenerator {
 
     public static void main(String[] args) throws ParseException {
 
-        String outputScripts = "/Users/gleiph/Desktop/scripts/v2/";
+        String outputScripts = args[0];
         File scriptsDir = new File(outputScripts);
         if (!scriptsDir.isDirectory()) {
             scriptsDir.mkdirs();
