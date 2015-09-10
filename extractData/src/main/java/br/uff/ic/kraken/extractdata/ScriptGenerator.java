@@ -96,6 +96,8 @@ public class ScriptGenerator {
 
         for (String l : content) {
             FileManager.write("java -jar extract.jar $rep " + l + " $out \n", writer);
+            FileManager.write("rm -rf $rep \n", writer);
+
         }
         FileManager.closeWriter(writer);
 
