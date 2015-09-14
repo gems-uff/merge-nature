@@ -100,25 +100,7 @@ public class AutomaticAnalysis {
 
     }
 
-    public static Project readProject(File[] files) {
-
-        if (files == null || files.length < 1) {
-            return null;
-        }
-
-        File file = null;
-
-        for (File file1 : files) {
-
-            if (file1.isFile()) {
-                file = file1;
-                break;
-            }
-        }
-
-        if (file == null) {
-            return null;
-        }
+    public static Project readProject(File file) {
 
         Project project = null;
         Reader reader = FileManager.createReader(file.getAbsolutePath());

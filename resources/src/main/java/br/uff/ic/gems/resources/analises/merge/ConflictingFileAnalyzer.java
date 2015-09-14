@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class ConflictingFileAnalyzer {
 
-    public static ConflictingFile analyze(String conflictingFilePath, String repositoryPath, String leftSHA, String rightSHA, String developerSolutionSHA) throws IOException {
+    public static ConflictingFile analyze(String conflictingFilePath, String repositoryPath, String leftSHA, String rightSHA, String developerSolutionSHA) throws IOException, StackOverflowError {
 
         int context = 3;
         boolean hasSolution = true;

@@ -75,6 +75,8 @@ public class RevisionAnalyzer {
                     } catch (IOException ex) {
                         Logger.getLogger(RevisionAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
                         System.out.println("Investigate!!!!!");
+                    } catch(StackOverflowError e){
+                        System.out.println("StackOverflowError during " + conflictedFile + " analyses.");
                     }
                 }
 
