@@ -1,0 +1,9 @@
+DROP TABLE conflictingcontent;
+DROP TABLE solutioncontent;
+DROP TABLE languageconstruct;
+DROP TABLE kindconflict;
+DROP TABLE conflictingchunk;
+DROP TABLE conflictingfile;
+DROP TABLE revision;
+DROP TABLE language;
+DROP TABLE project;
