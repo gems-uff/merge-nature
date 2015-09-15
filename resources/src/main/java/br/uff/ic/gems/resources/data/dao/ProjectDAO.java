@@ -66,6 +66,33 @@ public class ProjectDAO {
         return project;
     }
 
+    public Project importAnalysesV2(Project project) throws Exception {
+        EntityManager manager = DatabaseManager.getManager();
+
+        try {
+            
+            Project projectBD = null;
+            
+            if (project.getId() != null) {
+                projectBD = this.getById(project.getId());
+            }
+
+            manager.getTransaction().begin();
+
+            if (projectBD == null) {
+                manager.persist(project);
+            } else{
+                manager.merge(project);
+            }
+            
+            manager.getTransaction().commit();
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return project;
+    }
+
     public Project importAutomaticAnalyses(Project project) throws Exception {
         EntityManager manager = DatabaseManager.getManager();
 
@@ -197,12 +224,12 @@ public class ProjectDAO {
 
         //Jpa manager
         String sql = "SELECT \n"
-                   + "          distinct(p)\n"
-                   + "FROM \n"
-                   + "          Project p join p.languages pl "                   
-                   + "WHERE \n"
-                   + "          UPPER(pl.name) = 'JAVA'";
-        
+                + "          distinct(p)\n"
+                + "FROM \n"
+                + "          Project p join p.languages pl "
+                + "WHERE \n"
+                + "          UPPER(pl.name) = 'JAVA'";
+
         Query query = manager.createQuery(sql);
 
         List<Project> result = query.getResultList();
