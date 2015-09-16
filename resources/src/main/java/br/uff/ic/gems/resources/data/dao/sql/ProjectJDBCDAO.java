@@ -8,7 +8,12 @@ package br.uff.ic.gems.resources.data.dao.sql;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -70,107 +75,39 @@ public class ProjectJDBCDAO {
 
     }
 
-//    public static void main(String[] args) {
-//
-//        File projectFile;
-//        projectFile = new File("/Users/gleiph/Desktop/teste/outTeste/platform_dalvik/platform_dalvik");
-//        
-//        String revisionFile = "/Users/gleiph/Desktop/teste/outTeste/platform_dalvik/0/3cfe50e0fa88e9aeee2739bebba6c504711ef47c";
-//
-//        Project project = AutomaticAnalysis.readProject(projectFile);
-//
-//        Revision revision = AutomaticAnalysis.readRevision(revisionFile);
-//
-//        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
-//        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
-//
-//        try {
-//            projectDAO.insert(project);
-//            revisionDAO.insertAll(revision, project.getId());
-//
-//        } catch (SQLException ex) {
-//            Logger.getLogger(ProjectJDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-////        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
-////        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
-////        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO();
-////        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO();
-////        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
-////        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO();
-////        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO();
-////        SolutionContentJDBCDAO chunkContentDAO = new SolutionContentJDBCDAO();
-////
-////        Project project = new Project();
-////        project.setCreatedAt("ghj");
-////        project.setDevelopers(12);
-////        project.setHtmlUrl("kjlkj");
-////        project.setId(1l);
-////        project.setMessage("message");
-////        project.setName("teste");
-////        project.setNumberConflictingMerges(1);
-////        project.setNumberMergeRevisions(2);
-////        project.setNumberRevisions(2);
-////        project.setPriva(true);
-////        project.setRepositoryPath("/jsldjk");
-////        project.setSearchUrl("http");
-////        project.setUpdatedAt("bla");
-////
-////        Revision revision = new Revision();
-////        revision.setBaseSha("sjdskhd");
-////        revision.setLeftSha("ksjdlskj");
-////        revision.setNumberConflictingFiles(1);
-////        revision.setNumberJavaConflictingFiles(1);
-////        revision.setRightSha("kjlkjkl");
-////        revision.setSha("jshdksjhd");
-////        revision.setStatus(MergeStatus.OCTOPUS);
-////
-////        Language language = new Language();
-////        language.setName("Java");
-////        language.setPercentage(100);
-////        language.setSize(10);
-////
-////        ConflictingFile conflictingFile = new ConflictingFile();
-////        conflictingFile.setFileType("java");
-////        conflictingFile.setName("something.java");
-////        conflictingFile.setPath("/sjlks/something.java");
-////        conflictingFile.setRemoved(false);
-////
-////        ConflictingChunk conflictingChunk = new ConflictingChunk();
-////        conflictingChunk.setBeginLine(1);
-////        conflictingChunk.setDeveloperDecision(DeveloperDecision.VERSION1);
-////        conflictingChunk.setEndLine(12);
-////        conflictingChunk.setIdentifier("cc1");
-////        conflictingChunk.setSeparatorLine(6);
-////
-////        KindConflict kindConflict = new KindConflict();
-////        kindConflict.setBeginLine(2);
-////        kindConflict.setEndLine(4);
-////
-////        LanguageConstruct languageConstruct = new LanguageConstruct();
-////        languageConstruct.setBeginColumn(1);
-////        languageConstruct.setBeginColumnBlock(2);
-////        languageConstruct.setBeginLine(3);
-////        languageConstruct.setBeginLineBlock(4);
-////        languageConstruct.setEndColumn(5);
-////        languageConstruct.setEndColumnBlock(6);
-////        languageConstruct.setEndLine(7);
-////        languageConstruct.setEndLineBlock(8);
-////        languageConstruct.setHasBlock(true);
-////        languageConstruct.setName("Method declaration");
-////
-////        try {
-////            projectDAO.insert(project);
-////            Long revision_id = revisionDAO.insert(revision, project.getId());
-////            Long language_id = languageDAO.insert(language, project.getId());
-////            Long conflictingFile_id = conflictingFileDAO.insert(conflictingFile, revision_id);
-////            Long conflictingChunk_id = conflictingChunkDAO.insert(conflictingChunk, conflictingFile_id);
-////            Long kindConflict_id = kindConflictDAO.insert(kindConflict, conflictingChunk_id, Side.LEFT);
-////            Long languageConstruct_id = languageConstructDAO.insert(languageConstruct, kindConflict_id);
-////
-////            chunkContentDAO.insert("a", conflictingChunk_id);
-////        } catch (SQLException ex) {
-////            Logger.getLogger(ProjectJDBCDAO.class.getName()).log(Level.SEVERE, null, ex);
-////        }
-//    }
+    public List<Project> selectAll() throws SQLException {
+        List<Project> projects = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.PROJECT;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {                
+                Project project = new Project();
+                
+                project.setCreatedAt(results.getString(CREATED_AT));
+                project.setDevelopers(results.getInt(DEVELOPERS));
+                project.setHtmlUrl(results.getString(HTML_URL));
+                project.setId(results.getLong(ID));
+                project.setMessage(results.getString(MESSAGE));
+                project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
+                project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
+                project.setNumberRevisions(results.getInt(REVISIONS));
+                project.setPriva(results.getBoolean(PRIVATE));
+                project.setRepositoryPath(results.getString(REPOSITORY_PATH));
+                project.setSearchUrl(results.getString(SEARCH_URL));
+                project.setUpdatedAt(results.getString(UPDATED_AT));
+                
+                projects.add(project);
+                      
+            }
+        }
+
+        return projects;
+    }
+
 }
