@@ -6,11 +6,14 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.bean.RequestScoped;
 
@@ -32,11 +35,16 @@ public class ProjectBean implements Serializable {
      */
     public ProjectBean() {
 
-        ProjectDAO projectDAO = new ProjectDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
 
         projects = new ArrayList<>();
-        
-        List<Project> all = projectDAO.getAll();
+
+        List<Project> all = null;
+        try {
+            all = projectDAO.selectAll();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         projects.addAll(all);
 
@@ -46,9 +54,14 @@ public class ProjectBean implements Serializable {
      * @return the projects
      */
     public List<Project> getProjects() {
-        ProjectDAO projectDAO = new ProjectDAO();
-        projects = projectDAO.getAll();
-        return projects;
+        try {
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+            projects = projectDAO.selectAll();
+            return projects;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ArrayList<>();
     }
 
     public String getProjectName() {
