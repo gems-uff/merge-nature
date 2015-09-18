@@ -8,8 +8,13 @@ package br.uff.ic.kraken.extractdata;
 import br.uff.ic.gems.resources.analises.merge.AutomaticAnalysis;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.RevisionJDBCDAO;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -17,68 +22,58 @@ import java.io.File;
  */
 public class ImportData {
 
-    public static void main(String[] args) {
-        ProjectDAO projectDAO = new ProjectDAO();
+    public static void main(String[] args) throws IOException {
 
-        String dir = "/Users/gleiph/Desktop/teste/out";
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
+        
+        String dir = args[0];
+//        String dir = "/Users/gleiph/Desktop/teste/out1";
 
         File directory = new File(dir);
 
         File[] listFiles = directory.listFiles();
 
         //Passing for all projects
-        for (File file : listFiles) {
+        for (File projectDirectory : listFiles) {
+
             try {
+                if (projectDirectory.isDirectory()) {
 
-                if (file.isDirectory()) {
+                    File shaFile = new File(projectDirectory, "sha");
 
-                    File[] subDirectories = file.listFiles();
-
-                    //Verifying if there are things to import
-                    if (subDirectories.length <= 0) {
-                        System.out.println(file.getAbsoluteFile() + " is empty!");
-                        continue;
+                    List<String> lines = new ArrayList<>();
+                    if (shaFile.isFile()) {
+                        lines = FileUtils.readLines(shaFile);
                     }
 
-                    //Reading project metadata
-                    Project project = AutomaticAnalysis.readProject(subDirectories);
+                    Project project = AutomaticAnalysis.readProject(new File(projectDirectory, projectDirectory.getName()));
+                    projectDAO.insertAll(project);
+                    
+                    
+                    System.out.println("Importing " + project.getName() + "...");
+                    for (String line : lines) {
+                        int index = lines.indexOf(line) + 1;
 
-                    for (int i = 0; i < subDirectories.length - 1; i++) {
+                        System.out.println(lines.indexOf(line) + "/" + lines.size() + "(" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000 + ")");
+                        File currentRevisionPath = new File(projectDirectory, (index / 1000) + File.separator + line);
+                        Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionPath.getAbsolutePath());
 
-                        File subDirectory = new File(file.getAbsoluteFile() + File.separator + i);
-                        File[] revisions = subDirectory.listFiles();
+                        revisionDAO.insertAll(currentRevision, project.getId());
 
-                        if (i == 0) {
-                            for (int j = 1; j <= revisions.length; j++) {
-                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
-                                project.getRevisions().add(revision);
-                            }
-                        } else {
-                            for (int j = i * 1000; j < i * 1000 + revisions.length; j++) {
-                                Revision revision = AutomaticAnalysis.readRevision(subDirectory.getAbsolutePath() + File.separator + project.getName() + j);
-                                project.getRevisions().add(revision);
-                            }
-                        }
 
-                        System.out.println(i + "/" + (subDirectories.length - 1));
-                    }
 
-                    if (project != null && project.getId() != null) {
-                        projectDAO.importAutomaticAnalyses(project);
-                        System.out.println(project.getName() + " imported...");
-
-                    } else {
-                        System.out.println("Error while importing file : " + file.getAbsolutePath());
                     }
 
                 }
-            } catch (Exception ex) {
-                System.out.println("The projects " + file.getName() + "was not imported well!");
+            } catch (Exception e) {
+                
+                e.printStackTrace();
+                System.out.println("Problem during " + projectDirectory.getName() + " importation...");
             }
         }
 
         System.out.println("Done!");
-        return;
 
     }
 }
