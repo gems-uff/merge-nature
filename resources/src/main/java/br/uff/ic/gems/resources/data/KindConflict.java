@@ -7,6 +7,7 @@ package br.uff.ic.gems.resources.data;
 
 import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.ast.ASTTypes;
+import br.uff.ic.gems.resources.data.dao.sql.Side;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  *
@@ -31,6 +33,8 @@ public class KindConflict implements Serializable {
     private Long id;
     private int beginLine;
     private int endLine;
+    @Transient
+    private Side side;
 
     @OneToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "KindConflict_LanguageConstruct",
@@ -480,5 +484,19 @@ public class KindConflict implements Serializable {
         }
 
         return result;
+    }
+
+    /**
+     * @return the side
+     */
+    public Side getSide() {
+        return side;
+    }
+
+    /**
+     * @param side the side to set
+     */
+    public void setSide(Side side) {
+        this.side = side;
     }
 }
