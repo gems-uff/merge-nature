@@ -9,9 +9,12 @@ import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
 import br.uff.ic.kraken.projectviewer.utils.Navigation;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 
@@ -55,7 +58,12 @@ public class ShowConflictsBean extends Navigation implements Serializable {
     }
 
     public String navigate() {
-        return super.dataNavigation(id, dataType);
+        try {
+            return super.dataNavigation(id, dataType);
+        } catch (SQLException ex) {
+            Logger.getLogger(ShowConflictsBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public List<String> getGeneralKindOfConflict(List<LanguageConstruct> leftFiltered, List<LanguageConstruct> rightFiltered) {

@@ -7,7 +7,6 @@ package br.uff.ic.kraken.projectviewer.utils;
 
 import br.uff.ic.gems.resources.analises.merge.ProjectAnalyzer;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
 
@@ -19,7 +18,6 @@ public class ProjectAnalyses {
 
     public Project analyze(String repositoryPath, Project project) {
 
-        ProjectDAO projectDAO = new ProjectDAO();
         ProjectAnalyzer pa = new ProjectAnalyzer();
 
         File repositoriesDirectory = new File(repositoryPath);

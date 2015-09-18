@@ -9,10 +9,11 @@ import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
-import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
-import br.uff.ic.gems.resources.data.dao.ConflictingFileDAO;
-import br.uff.ic.gems.resources.data.dao.RevisionDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ConflictingFileJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.RevisionJDBCDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import java.sql.SQLException;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Navigation {
     private String conflictingFileVisibility = "hidden";
     private String conflictingChunkVisibility = "hidden";
 
-    public String dataNavigation(Long id, String dataType) {
+    public String dataNavigation(Long id, String dataType) throws SQLException {
 
         setProject(null);
         setRevision(null);
@@ -45,20 +46,20 @@ public class Navigation {
                 System.out.println("Implement...");
                 break;
             case DataTypes.REVISION:
-                RevisionDAO revisionDAO = new RevisionDAO();
-                setRevision(revisionDAO.getById(id));
+                RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
+                setRevision(revisionDAO.selectAllByRevisionId(id));
                 revisionVisibility = "visible";
                 System.out.println(revision.getSha());
                 break;
             case DataTypes.CONFLICTING_FILE:
-                ConflictingFileDAO conflictingFileDAO = new ConflictingFileDAO();
-                setConflictingFile(conflictingFileDAO.getById(id));
+                ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO();
+                setConflictingFile(conflictingFileDAO.selectAllByConflictingFileId(id));
                 conflictingFileVisibility = "visible";
                 System.out.println(conflictingFile.getName());
                 break;
             case DataTypes.CONFLICTING_CHUNK:
-                ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
-                setConflictingChunk(conflictingChunkDAO.getById(id));
+                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+                setConflictingChunk(conflictingChunkDAO.selectAllByConflictingChunkId(id));
                 conflictingChunkVisibility = "visible";
                 System.out.println(conflictingChunk.getIdentifier());
                 break;

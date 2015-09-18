@@ -41,7 +41,7 @@ public class ProjectBean implements Serializable {
 
         List<Project> all = null;
         try {
-            all = projectDAO.selectAll();
+            all = projectDAO.select();
         } catch (SQLException ex) {
             Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -56,7 +56,7 @@ public class ProjectBean implements Serializable {
     public List<Project> getProjects() {
         try {
             ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
-            projects = projectDAO.selectAll();
+            projects = projectDAO.select();
             return projects;
         } catch (SQLException ex) {
             Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);

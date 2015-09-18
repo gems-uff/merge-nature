@@ -5,8 +5,8 @@
  */
 package br.uff.ic.kraken.projectviewer.bean;
 
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import java.io.Serializable;
@@ -45,7 +45,7 @@ public class AddGithubProjectBean implements Serializable {
         if(githubURL.endsWith("/"))
            githubURL = githubURL.substring(0, githubURL.length() - 1);
         
-        ProjectDAO projectDAO = new ProjectDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
 
         Project project;
         GithubAPI.init();
@@ -53,7 +53,7 @@ public class AddGithubProjectBean implements Serializable {
         project = GithubAPI.project(githubURL);
 
         try {
-            projectDAO.saveGithub(project);
+            projectDAO.insertAll(project);
         } catch (Exception ex) {
             Logger.getLogger(AddGithubProjectBean.class.getName()).log(Level.SEVERE, null, ex);
         }

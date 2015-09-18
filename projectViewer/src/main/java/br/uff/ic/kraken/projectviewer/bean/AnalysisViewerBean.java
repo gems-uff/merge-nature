@@ -9,8 +9,8 @@ import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
-import br.uff.ic.gems.resources.data.dao.ConflictingChunkDAO;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DataTypes;
@@ -18,9 +18,12 @@ import br.uff.ic.kraken.projectviewer.utils.ProjectAnalyses;
 import br.uff.ic.kraken.projectviewer.utils.ProjectOverview;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.RequestScoped;
 import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
@@ -76,8 +79,14 @@ public class AnalysisViewerBean implements Serializable {
 
     public String actionNavigator() {
 
-        ProjectDAO projectDAO = new ProjectDAO();
-        Project projectById = projectDAO.getById(projectId);
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        Project projectById;
+        try {
+            projectById = projectDAO.selectAllByProjectId(projectId);
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
 
         revisions = projectById.getRevisions();
 
@@ -105,8 +114,12 @@ public class AnalysisViewerBean implements Serializable {
 
     public String showConflictingChunk() {
 
-        ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
-        selectedConflictingChunk = conflictingChunkDAO.getById(conflictingChunkId);
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+        try {
+            selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(conflictingChunkId);
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         return PagesName.showConflictingChunk;
     }
@@ -114,8 +127,14 @@ public class AnalysisViewerBean implements Serializable {
     public String analyze() {
 
         System.out.println("Begin: " + new Date());
-        ProjectDAO projectDAO = new ProjectDAO();
-        Project project = projectDAO.getById(projectId);
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+
+        Project project = null;
+        try {
+            project = projectDAO.selectAllByProjectId(projectId);
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         String repositoriesPath = "/Users/gleiph/Desktop/repositories";
 //        String repositoriesPath = "/home/gmenezes/repositories";
@@ -130,8 +149,14 @@ public class AnalysisViewerBean implements Serializable {
 
     public String overview() {
 
-        ProjectDAO projectDAO = new ProjectDAO();
-        Project project = projectDAO.getById(projectId);
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+
+        Project project = null;
+        try {
+            project = projectDAO.selectAllByProjectId(projectId);
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         projectSummarization = new ArrayList<>();
 
@@ -207,9 +232,13 @@ public class AnalysisViewerBean implements Serializable {
     public String presenter() {
 
         if (dataType.equals(DataTypes.CONFLICTING_CHUNK)) {
-            ConflictingChunkDAO conflictingChunkDAO = new ConflictingChunkDAO();
+            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
 
-            selectedConflictingChunk = conflictingChunkDAO.getById(Long.parseLong(selectedId));
+            try {
+                selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(Long.parseLong(selectedId));
+            } catch (SQLException ex) {
+                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             return PagesName.showConflicts;
         }
