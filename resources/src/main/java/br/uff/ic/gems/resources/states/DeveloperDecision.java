@@ -31,7 +31,28 @@ public enum DeveloperDecision {
         }
 
         return null;
-        
+
+    }
+
+    public static DeveloperDecision toDeveloperDecision(String developerDecision){
+
+        if (VERSION1.toString().equals(developerDecision)) {
+            return VERSION1;
+        } else if (VERSION2.toString().equals(developerDecision)) {
+            return VERSION2;
+        } else if (CONCATENATION.toString().equals(developerDecision)) {
+            return CONCATENATION;
+        } else if (COMBINATION.toString().equals(developerDecision)) {
+            return COMBINATION;
+        } else if (MANUAL.toString().equals(developerDecision)) {
+            return MANUAL;
+        } else if (NONE.toString().equals(developerDecision)) {
+            return NONE;
+        } else {
+            System.out.println("Problem during conversion to Developer decision: " 
+                    + developerDecision + "is not a developerDecision.");
+            return null;
+        }
     }
 
 }
