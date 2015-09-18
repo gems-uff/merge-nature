@@ -6,7 +6,14 @@
 package br.uff.ic.gems.resources.data.dao.sql;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.KindConflict;
+import br.uff.ic.gems.resources.states.DeveloperDecision;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -73,6 +80,128 @@ public class ConflictingChunkJDBCDAO {
 
         return conflictingChunkId;
 
+    }
+
+    public List<ConflictingChunk> selectByConflictingFileId(Long conflictingFileId) throws SQLException {
+        List<ConflictingChunk> conflictingChunks = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK
+                + " WHERE " + CONFLICTING_FILE_ID + " = " + conflictingFileId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                ConflictingChunk conflictingChunk = new ConflictingChunk();
+
+                conflictingChunk.setBeginLine(results.getInt(BEGIN_LINE));
+                conflictingChunk.setDeveloperDecision(DeveloperDecision.toDeveloperDecision(results.getString(DEVELOPER_DECISION)));
+                conflictingChunk.setEndLine(results.getInt(END_LINE));
+                conflictingChunk.setId(results.getLong(ID));
+                conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
+                conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+
+                conflictingChunks.add(conflictingChunk);
+            }
+        }
+
+        return conflictingChunks;
+    }
+
+    public List<ConflictingChunk> selectAllByConflictingFileId(Long conflictingFileId) throws SQLException {
+        List<ConflictingChunk> conflictingChunks = this.selectByConflictingFileId(conflictingFileId);
+
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO();
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO();
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO();
+
+        for (ConflictingChunk conflictingChunk : conflictingChunks) {
+
+            //Adding conflicting content
+            conflictingChunk.setConflictingContent(conflictingContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+            //Adding solution content
+            conflictingChunk.setSolutionContent(solutionContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+            List<KindConflict> kindConflict = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
+
+            if (kindConflict.size() != 2) {
+                throw new SQLException("Wrong number of kind of conflicts.");
+            } else {
+                for (KindConflict kc : kindConflict) {
+                    if (kc.getSide() == Side.LEFT) {
+                        conflictingChunk.setLeftKindConflict(kc);
+                    } else {
+                        conflictingChunk.setRightKindConflict(kc);
+                    }
+                }
+            }
+
+        }
+
+        return conflictingChunks;
+    }
+
+    public ConflictingChunk selectByConflictingChunkId(Long conflictingChunkId) throws SQLException {
+
+        ConflictingChunk conflictingChunk = new ConflictingChunk();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK
+                + " WHERE " + ID + " = " + conflictingChunkId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            if (results.next()) {
+
+                conflictingChunk.setBeginLine(results.getInt(BEGIN_LINE));
+                conflictingChunk.setDeveloperDecision(DeveloperDecision.toDeveloperDecision(results.getString(DEVELOPER_DECISION)));
+                conflictingChunk.setEndLine(results.getInt(END_LINE));
+                conflictingChunk.setId(results.getLong(ID));
+                conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
+                conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+
+            }
+        }
+
+        return conflictingChunk;
+    }
+
+    public ConflictingChunk selectAllByConflictingChunkId(Long conflictingChunkId) throws SQLException {
+
+        ConflictingChunk conflictingChunk = this.selectByConflictingChunkId(conflictingChunkId);
+
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO();
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO();
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO();
+
+        //Adding conflicting content
+        conflictingChunk.setConflictingContent(conflictingContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+        //Adding solution content
+        conflictingChunk.setSolutionContent(solutionContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+        List<KindConflict> kindConflict = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
+
+        if (kindConflict.size() != 2) {
+            throw new SQLException("Wrong number of kind of conflicts.");
+        } else {
+            for (KindConflict kc : kindConflict) {
+                if (kc.getSide() == Side.LEFT) {
+                    conflictingChunk.setLeftKindConflict(kc);
+                } else {
+                    conflictingChunk.setRightKindConflict(kc);
+                }
+            }
+        }
+
+        return conflictingChunk;
     }
 
 }

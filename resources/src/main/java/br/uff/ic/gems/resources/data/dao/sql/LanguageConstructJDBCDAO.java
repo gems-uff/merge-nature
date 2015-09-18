@@ -6,7 +6,12 @@
 package br.uff.ic.gems.resources.data.dao.sql;
 
 import br.uff.ic.gems.resources.data.LanguageConstruct;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -63,5 +68,43 @@ public class LanguageConstructJDBCDAO {
     public Long insertAll(LanguageConstruct languageConstruct, Long kindConflict_id) throws SQLException {
         return this.insert(languageConstruct, kindConflict_id);
     }
+
+    public List<LanguageConstruct> selectByKindConflictId(Long kindConflictId) throws SQLException {
+        List<LanguageConstruct> languageConstructs = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.LANGUAGE_CONSTRUCT
+                + " WHERE " + KIND_CONFLICT_ID + " = " + kindConflictId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                LanguageConstruct languageConstruct = new LanguageConstruct();
+
+                languageConstruct.setBeginColumn(results.getInt(BEGIN_COLUMN));
+                languageConstruct.setBeginColumnBlock(results.getInt(BEGIN_COLUMN_BLOCK));
+                languageConstruct.setBeginLine(results.getInt(BEGIN_LINE));
+                languageConstruct.setBeginLineBlock(results.getInt(BEGIN_LINE_BLOCK));
+                languageConstruct.setEndColumn(results.getInt(END_COLUMN));
+                languageConstruct.setEndColumnBlock(results.getInt(END_COLUMN_BLOCK));
+                languageConstruct.setEndLine(results.getInt(END_LINE));
+                languageConstruct.setEndLineBlock(results.getInt(END_LINE_BLOCK));
+                languageConstruct.setHasBlock(results.getBoolean(HAS_BLOCK));
+                languageConstruct.setId(results.getLong(ID));
+                languageConstruct.setName(results.getString(NAME));
+                
+                languageConstructs.add(languageConstruct);
+            }
+        }
+
+        return languageConstructs;
+    }
+
+        public List<LanguageConstruct> selectAllByKindConflictId(Long kindConflictId) throws SQLException {
+            return this.selectByKindConflictId(kindConflictId);
+        }
 
 }

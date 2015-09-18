@@ -7,7 +7,12 @@ package br.uff.ic.gems.resources.data.dao.sql;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -57,5 +62,81 @@ public class ConflictingFileJDBCDAO {
 
         return conflictingFile_id;
 
+    }
+
+    public List<ConflictingFile> selectByRevisionId(Long revisionId) throws SQLException {
+        List<ConflictingFile> conflictingFiles = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_FILE
+                + " WHERE " + REVISION_ID + " = " + revisionId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                ConflictingFile conflictingFile = new ConflictingFile();
+
+                conflictingFile.setFileType(results.getString(FILETYPE));
+                conflictingFile.setId(results.getLong(ID));
+                conflictingFile.setName(results.getString(NAME));
+                conflictingFile.setPath(results.getString(PATH));
+                conflictingFile.setRemoved(results.getBoolean(REMOVED));
+
+                conflictingFiles.add(conflictingFile);
+            }
+        }
+
+        return conflictingFiles;
+    }
+
+    public List<ConflictingFile> selectAllByRevisionId(Long revisionId) throws SQLException {
+        List<ConflictingFile> conflictingFiles = this.selectByRevisionId(revisionId);
+
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+
+        for (ConflictingFile conflictingFile : conflictingFiles) {
+            conflictingFile.setConflictingChunks(conflictingChunkDAO.selectAllByConflictingFileId(conflictingFile.getId()));
+        }
+
+        return conflictingFiles;
+    }
+
+    public ConflictingFile selectByConflictingFileId(Long conflictingFileId) throws SQLException {
+        ConflictingFile conflictingFile = new ConflictingFile();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_FILE
+                + " WHERE " + ID + " = " + conflictingFileId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            if (results.next()) {
+
+                conflictingFile.setFileType(results.getString(FILETYPE));
+                conflictingFile.setId(results.getLong(ID));
+                conflictingFile.setName(results.getString(NAME));
+                conflictingFile.setPath(results.getString(PATH));
+                conflictingFile.setRemoved(results.getBoolean(REMOVED));
+
+            }
+        }
+
+        return conflictingFile;
+    }
+
+    public ConflictingFile selectAllByConflictingFileId(Long conflictingFileId) throws SQLException {
+        ConflictingFile conflictingFile = this.selectByConflictingFileId(conflictingFileId);
+
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+
+        conflictingFile.setConflictingChunks(conflictingChunkDAO.selectAllByConflictingFileId(conflictingFile.getId()));
+
+        return conflictingFile;
     }
 }

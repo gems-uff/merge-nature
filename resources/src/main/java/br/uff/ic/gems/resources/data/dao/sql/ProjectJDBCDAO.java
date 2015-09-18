@@ -75,7 +75,7 @@ public class ProjectJDBCDAO {
 
     }
 
-    public List<Project> selectAll() throws SQLException {
+    public List<Project> select() throws SQLException {
         List<Project> projects = new ArrayList<>();
 
         String query = "SELECT * FROM " + Tables.PROJECT;
@@ -86,9 +86,9 @@ public class ProjectJDBCDAO {
 
             ResultSet results = statement.getResultSet();
 
-            while (results.next()) {                
+            while (results.next()) {
                 Project project = new Project();
-                
+
                 project.setCreatedAt(results.getString(CREATED_AT));
                 project.setDevelopers(results.getInt(DEVELOPERS));
                 project.setHtmlUrl(results.getString(HTML_URL));
@@ -101,13 +101,73 @@ public class ProjectJDBCDAO {
                 project.setRepositoryPath(results.getString(REPOSITORY_PATH));
                 project.setSearchUrl(results.getString(SEARCH_URL));
                 project.setUpdatedAt(results.getString(UPDATED_AT));
-                
+
                 projects.add(project);
-                      
+
             }
         }
 
         return projects;
     }
 
+    public List<Project> selectAll() throws SQLException {
+        List<Project> projects = this.select();
+
+        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO();
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
+
+        for (Project project : projects) {
+
+            project.setLanguages(languageDAO.selectAllByProjectId(project.getId()));
+            project.setRevisions(revisionDAO.selectAllByProjectId(project.getId()));
+
+        }
+
+        return projects;
+    }
+
+    public Project selectByProjectId(Long projectId) throws SQLException {
+        Project project = new Project();
+
+        String query = "SELECT * FROM " + Tables.PROJECT
+                + " WHERE " + ID + " = " + projectId;
+
+        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+                Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            if (results.next()) {
+
+                project.setCreatedAt(results.getString(CREATED_AT));
+                project.setDevelopers(results.getInt(DEVELOPERS));
+                project.setHtmlUrl(results.getString(HTML_URL));
+                project.setId(results.getLong(ID));
+                project.setMessage(results.getString(MESSAGE));
+                project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
+                project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
+                project.setNumberRevisions(results.getInt(REVISIONS));
+                project.setPriva(results.getBoolean(PRIVATE));
+                project.setRepositoryPath(results.getString(REPOSITORY_PATH));
+                project.setSearchUrl(results.getString(SEARCH_URL));
+                project.setUpdatedAt(results.getString(UPDATED_AT));
+
+            }
+        }
+
+        return project;
+    }
+
+    public Project selectAllByProjectId(Long projectId) throws SQLException {
+        Project project = this.selectByProjectId(projectId);
+
+        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO();
+        project.setLanguages(languageDAO.selectAllByProjectId(project.getId()));
+
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
+        project.setRevisions(revisionDAO.selectAllByProjectId(project.getId()));
+
+        return project;
+    }
 }
