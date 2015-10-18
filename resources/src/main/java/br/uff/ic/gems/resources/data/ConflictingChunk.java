@@ -182,7 +182,7 @@ public class ConflictingChunk implements Serializable {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        
+
         return context2;
     }
 
@@ -246,7 +246,6 @@ public class ConflictingChunk implements Serializable {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
         return context1;
     }
 
@@ -265,17 +264,18 @@ public class ConflictingChunk implements Serializable {
     public void setRightKindConflict(KindConflict rightKindConflict) {
         this.rightKindConflict = rightKindConflict;
     }
-    
-    public List<String> generalKindConflict(){
-        
+
+    public List<String> generalKindConflict() {
+
         List<LanguageConstruct> leftFiltered = this.getLeftKindConflict().getFilteredLanguageConstructs();
         List<LanguageConstruct> rightFiltered = this.getRightKindConflict().getFilteredLanguageConstructs();
-        
-        if(leftFiltered == null || rightFiltered == null)
+
+        if (leftFiltered == null || rightFiltered == null) {
             return new ArrayList<>();
-        
+        }
+
         List<String> result = new ArrayList<>();
-        
+
         for (LanguageConstruct lf : leftFiltered) {
             String translatedName = ASTTranslator.translate(lf.getName());
             if (!result.contains(translatedName)) {
@@ -284,7 +284,7 @@ public class ConflictingChunk implements Serializable {
         }
 
         for (LanguageConstruct rf : rightFiltered) {
-            
+
             String translatedName = ASTTranslator.translate(rf.getName());
 
             if (!result.contains(translatedName)) {
@@ -292,16 +292,53 @@ public class ConflictingChunk implements Serializable {
             }
         }
 
-        while(result.contains(ASTTypes.BLANK) && result.size() > 1){
+        while (result.contains(ASTTypes.BLANK) && result.size() > 1) {
             result.remove(ASTTypes.BLANK);
         }
-        
-        while(result.contains(ASTTypes.OTHER) && result.size() > 1){
+
+        while (result.contains(ASTTypes.OTHER) && result.size() > 1) {
             result.remove(ASTTypes.OTHER);
         }
-        
+
         Collections.sort(result);
-        
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+
+        result += this.getIdentifier()
+                + "(" + this.getBeginLine() + ", "
+                + this.getEndLine() + ") - ";
+        if (this.developerDecision != null) {
+            result += this.developerDecision.toString()
+                    + "\n\n";
+        }else{
+            result +=  " ? \n\n";
+        }
+
+        if (this.getConflictingContent() == null || this.getConflictingContent().isEmpty()) {
+            result += "Conflicting chunk empty!\n\n";
+        } else {
+            result += "\tConflicting content:";
+            for (String conflictingContentLine : this.getConflictingContent()) {
+                result += conflictingContentLine + "\n";
+            }
+            result += "\n";
+        }
+
+        if (this.getSolutionContent() == null || this.getSolutionContent().isEmpty()) {
+            result += "Solution empty!\n\n";
+        } else {
+            result += "\tSolution content:";
+            for (String solutionContentLine : this.getSolutionContent()) {
+                result += solutionContentLine + "\n";
+            }
+            result += "\n";
+        }
+
         return result;
     }
 }
