@@ -55,6 +55,57 @@ public class CMD {
         return result;
     }
 
+    public static CMDOutput cmd(String path, String command, boolean showProgress) {
+
+        CMDOutput result = new CMDOutput();
+
+        try {
+
+            Process exec;
+
+            if (path != null) {
+                exec = Runtime.getRuntime().exec(command, null, new File(path));
+            } else {
+                exec = Runtime.getRuntime().exec(command);
+            }
+
+            String s;
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+
+            System.out.println("-----------------------------------------------------------");
+            System.out.println("                 Output");
+            System.out.println("-----------------------------------------------------------");
+
+            // read the output from the command
+            while ((s = stdInput.readLine()) != null) {
+                if (showProgress) {
+                    System.out.println(s);
+                }
+                result.addOutput(s);
+            }
+
+            System.out.println("-----------------------------------------------------------");
+            System.out.println("                 Error");
+            System.out.println("-----------------------------------------------------------");
+
+            // read any errors from the attempted command
+            while ((s = stdError.readLine()) != null) {
+                if (showProgress) {
+                    System.out.println(s);
+                }
+                result.addErrors(s);
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(CMD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return result;
+    }
+
     public static CMDOutput cmdGithub(String command) {
 
         CMDOutput result = new CMDOutput();
@@ -94,7 +145,6 @@ public class CMD {
 //                            if (split.length > 3) {
 //                                split[3] = nextUser.getLogin() + ":" + nextUser.getPassword();
 //                            }
-
                             command = "";
 
                             for (String piece : split) {

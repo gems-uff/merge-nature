@@ -17,45 +17,36 @@ public class AntBuilder {
 
     private String pathProject;
     private String antPath;
+    private boolean showProgress;
 
-    public AntBuilder(String pathProject, String antPath) {
+    public AntBuilder(String pathProject, String antPath, boolean showProgress) {
 
         this.pathProject = pathProject;
         this.antPath = antPath + File.separator + "bin" + File.separator + "ant";
+        this.showProgress = showProgress;
 
     }
 
     public boolean compile() {
 
         String command = getAntPath() + " compile";
-        CMDOutput cmd = CMD.cmd(pathProject, command);
+        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
-        System.out.println("Error:\n\n\n");
-        for (String error : cmd.getErrors()) {
-            System.out.println(error);
-        }
-
-        System.out.println("\n\n\n\nOutput:\n\n\n");
-
-        for (String line : cmd.getOutput()) {
-            System.out.println(line);
-        }
-
-        return true;
+        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
 
     public boolean test() {
         String command = getAntPath() + " test";
-        CMD.cmd(getPathProject(), command);
+        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
-        return true;
+        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
 
     public boolean task(String task) {
         String command = getAntPath() + " " + task;
-        CMD.cmd(getPathProject(), command);
+        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
-        return true;
+        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
 
     /**
@@ -73,7 +64,7 @@ public class AntBuilder {
     }
 
     public static void main(String[] args) {
-        AntBuilder ant = new AntBuilder("/Users/gleiph/Dropbox/doutorado/repositories/lombok", "/Users/gleiph/Applications/apache-ant-1.9.6");
+        AntBuilder ant = new AntBuilder("/Users/gleiph/Dropbox/doutorado/repositories/lombok", "/Users/gleiph/Applications/apache-ant-1.9.6", true);
         ant.compile();
     }
 
@@ -89,5 +80,19 @@ public class AntBuilder {
      */
     public void setAntPath(String antPath) {
         this.antPath = antPath;
+    }
+
+    /**
+     * @return the showProgress
+     */
+    public boolean isShowProgress() {
+        return showProgress;
+    }
+
+    /**
+     * @param showProgress the showProgress to set
+     */
+    public void setShowProgress(boolean showProgress) {
+        this.showProgress = showProgress;
     }
 }
