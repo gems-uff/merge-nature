@@ -13,32 +13,21 @@ import java.io.File;
  *
  * @author gleiph
  */
-public class AntBuilder implements Builder {
+public class MavenBuilder implements Builder {
 
     private String pathProject;
-    private String antHome;
+    private String mvnHome;
     private boolean showProgress;
 
-    public AntBuilder(String pathProject, String antHome, boolean showProgress) {
-
+    public MavenBuilder(String pathProject, String mvnHome, boolean showProgress) {
         this.pathProject = pathProject;
-        this.antHome = antHome + File.separator + "bin" + File.separator + "ant";
+        this.mvnHome = mvnHome + File.separator + "bin" + File.separator + "mvn";
         this.showProgress = showProgress;
-
     }
 
     @Override
     public boolean compile() {
-
-        String command = getAntHome() + " compile";
-        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
-
-        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
-    }
-
-    @Override
-    public boolean test() {
-        String command = getAntHome() + " test";
+        String command = getMvnHome() + " compile";
         CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
         return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
@@ -46,7 +35,15 @@ public class AntBuilder implements Builder {
 
     @Override
     public boolean task(String task) {
-        String command = getAntHome() + " " + task;
+        String command = getMvnHome() + " " + task;
+        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
+
+        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
+    }
+
+    @Override
+    public boolean test() {
+        String command = getMvnHome() + " test";
         CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
         return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
@@ -66,10 +63,19 @@ public class AntBuilder implements Builder {
         this.pathProject = pathProject;
     }
 
-//    public static void main(String[] args) {
-//        AntBuilder ant = new AntBuilder("/Users/gleiph/Dropbox/doutorado/repositories/lombok", "/Users/gleiph/Applications/apache-ant-1.9.6", true);
-//        ant.compile();
-//    }
+    /**
+     * @return the mvnHome
+     */
+    public String getMvnHome() {
+        return mvnHome;
+    }
+
+    /**
+     * @param mvnHome the mvnHome to set
+     */
+    public void setMvnHome(String mvnHome) {
+        this.mvnHome = mvnHome;
+    }
 
     /**
      * @return the showProgress
@@ -85,19 +91,13 @@ public class AntBuilder implements Builder {
         this.showProgress = showProgress;
     }
 
-    /**
-     * @return the antHome
-     */
-    public String getAntHome() {
-        return antHome;
-    }
-
-    /**
-     * @param antHome the antHome to set
-     */
-    public void setAntHome(String antHome) {
-        this.antHome = antHome;
-    }
-    
-    
+//    public static void main(String[] args) {
+//        Builder builder = new MavenBuilder("/Users/gleiph/Dropbox/doutorado/repositories/twitter4j", "/usr/local/apache-maven/apache-maven-3.3.3/", true);
+//        boolean compile = builder.compile();
+//        
+//        if(compile)
+//            System.out.println("OK!");
+//        else
+//            System.out.println("Fail!");
+//    }
 }
