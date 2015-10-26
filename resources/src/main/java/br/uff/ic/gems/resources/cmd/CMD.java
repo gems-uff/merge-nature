@@ -74,11 +74,11 @@ public class CMD {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
 
             BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
-
-            System.out.println("-----------------------------------------------------------");
-            System.out.println("                 Output");
-            System.out.println("-----------------------------------------------------------");
-
+            if (showProgress) {
+                System.out.println("-----------------------------------------------------------");
+                System.out.println("                 Output");
+                System.out.println("-----------------------------------------------------------");
+            }
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
                 if (showProgress) {
@@ -87,10 +87,11 @@ public class CMD {
                 result.addOutput(s);
             }
 
-            System.out.println("-----------------------------------------------------------");
-            System.out.println("                 Error");
-            System.out.println("-----------------------------------------------------------");
-
+            if (showProgress) {
+                System.out.println("-----------------------------------------------------------");
+                System.out.println("                 Error");
+                System.out.println("-----------------------------------------------------------");
+            }
             // read any errors from the attempted command
             while ((s = stdError.readLine()) != null) {
                 if (showProgress) {
