@@ -27,10 +27,7 @@ public class MavenBuilder implements Builder {
 
     @Override
     public boolean compile() {
-        String command = getMvnHome() + " compile";
-        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
-
-        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
+        return task("compile");
     }
 
     @Override
@@ -38,15 +35,19 @@ public class MavenBuilder implements Builder {
         String command = getMvnHome() + " " + task;
         CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
+        for (String output : cmd.getOutput()) {
+            if (output.contains("BUILD FAILURE")) {
+                return false;
+            }
+        }
+
         return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
 
     @Override
     public boolean test() {
-        String command = getMvnHome() + " test";
-        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
+        return task("test");
 
-        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
 
     /**
@@ -91,13 +92,14 @@ public class MavenBuilder implements Builder {
         this.showProgress = showProgress;
     }
 
-//    public static void main(String[] args) {
-//        Builder builder = new MavenBuilder("/Users/gleiph/Dropbox/doutorado/repositories/twitter4j", "/usr/local/apache-maven/apache-maven-3.3.3/", true);
-//        boolean compile = builder.compile();
-//        
-//        if(compile)
-//            System.out.println("OK!");
-//        else
-//            System.out.println("Fail!");
-//    }
+    public static void main(String[] args) {
+        Builder builder = new MavenBuilder("/Users/gleiph/Dropbox/doutorado/repositories/left", "/usr/local/apache-maven/apache-maven-3.3.3/", true);
+        boolean compile = builder.compile();
+
+        if (compile) {
+            System.out.println("OK!");
+        } else {
+            System.out.println("Fail!");
+        }
+    }
 }

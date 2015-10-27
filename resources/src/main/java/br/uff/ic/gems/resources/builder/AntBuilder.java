@@ -30,24 +30,25 @@ public class AntBuilder implements Builder {
     @Override
     public boolean compile() {
 
-        String command = getAntHome() + " compile";
-        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
-
-        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
+        return task("compile");
     }
 
     @Override
     public boolean test() {
-        String command = getAntHome() + " test";
-        CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
 
-        return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
+        return task("test");
     }
 
     @Override
     public boolean task(String task) {
         String command = getAntHome() + " " + task;
         CMDOutput cmd = CMD.cmd(getPathProject(), command, showProgress);
+
+        for (String output : cmd.getOutput()) {
+            if (output.contains("BUILD FAILURE")) {
+                return false;
+            }
+        }
 
         return !(cmd.getErrors() != null && !cmd.getErrors().isEmpty());
     }
@@ -70,7 +71,6 @@ public class AntBuilder implements Builder {
 //        AntBuilder ant = new AntBuilder("/Users/gleiph/Dropbox/doutorado/repositories/lombok", "/Users/gleiph/Applications/apache-ant-1.9.6", true);
 //        ant.compile();
 //    }
-
     /**
      * @return the showProgress
      */
@@ -98,6 +98,5 @@ public class AntBuilder implements Builder {
     public void setAntHome(String antHome) {
         this.antHome = antHome;
     }
-    
-    
+
 }
