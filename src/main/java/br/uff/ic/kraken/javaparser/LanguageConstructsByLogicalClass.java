@@ -14,18 +14,18 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
  *
  * @author gleiph
  */
-public class LanguageConstructsByClass {
+public class LanguageConstructsByLogicalClass {
 
     private String qualifiedName;
 
     private List<MethodDeclaration> methodDeclarations;
-    private List<MethodInvocation> methoInvocations;
+    private List<MethodInvocation> methodInvocations;
 
-    public LanguageConstructsByClass(String qualifiedName) {
+    public LanguageConstructsByLogicalClass(String qualifiedName) {
         this.qualifiedName = qualifiedName;
 
         methodDeclarations = new ArrayList<>();
-        methoInvocations = new ArrayList<>();
+        methodInvocations = new ArrayList<>();
         
     }
 
@@ -64,19 +64,19 @@ public class LanguageConstructsByClass {
     /**
      * @return the methoInvocations
      */
-    public List<MethodInvocation> getMethoInvocations() {
-        return methoInvocations;
+    public List<MethodInvocation> getMethodInvocations() {
+        return methodInvocations;
     }
 
     /**
      * @param methoInvocations the methoInvocations to set
      */
-    public void setMethoInvocations(List<MethodInvocation> methoInvocations) {
-        this.methoInvocations = methoInvocations;
+    public void setMethodInvocations(List<MethodInvocation> methoInvocations) {
+        this.methodInvocations = methoInvocations;
     }
 
     public boolean addMethodInvocation(MethodInvocation methodInvocation){
-        return methoInvocations.add(methodInvocation);
+        return methodInvocations.add(methodInvocation);
     }
     
 }

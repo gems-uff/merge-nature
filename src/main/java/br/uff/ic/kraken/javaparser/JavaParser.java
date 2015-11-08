@@ -40,8 +40,8 @@ public class JavaParser {
         return storage;
     }
 
-    public List<LanguageConstructsByClass> parser(String path) {
-        List<LanguageConstructsByClass> languageConstructs = new ArrayList<>();
+    public List<LanguageConstructsByLogicalClass> parser(String path) {
+        List<LanguageConstructsByLogicalClass> languageConstructs = new ArrayList<>();
 
         JavaParser javaParser = new JavaParser();
         Storage ASTs = javaParser.generateASTs(path);
@@ -54,15 +54,19 @@ public class JavaParser {
             DepVisitor depVisitor = new DepVisitor(cu);
             cu.accept(depVisitor);
 
-            String className = depVisitor.getClassName();
-            if (className != null) {
+            for (LanguageConstructsByLogicalClass languageConstructsByLogicalClass : depVisitor.getLanguageConstructsByLogicalClasses()) {
+                String className = languageConstructsByLogicalClass.getQualifiedName();
 
-                LanguageConstructsByClass languageConstructsByClass = new LanguageConstructsByClass(className);
+                if (className != null) {
 
-                languageConstructsByClass.setMethodDeclarations(depVisitor.getMethodDeclarations());
-                languageConstructsByClass.setMethoInvocations(depVisitor.getMethodInvocations());
+                    LanguageConstructsByLogicalClass languageConstructsByClass = new LanguageConstructsByLogicalClass(className);
 
-                languageConstructs.add(languageConstructsByClass);
+                    languageConstructsByClass.setMethodDeclarations(languageConstructsByLogicalClass.getMethodDeclarations());
+                    languageConstructsByClass.setMethodInvocations(languageConstructsByLogicalClass.getMethodInvocations());
+
+                    languageConstructs.add(languageConstructsByClass);
+                }
+
             }
 
         }
@@ -92,5 +96,4 @@ public class JavaParser {
 //        }
 //
 //    }
-
 }

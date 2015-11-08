@@ -9,13 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
@@ -26,30 +24,23 @@ public class DepVisitor extends ASTVisitor {
 
     private final CompilationUnit cu;
 
-    private List<MethodDeclaration> methodDeclarations;
+    private List<LanguageConstructsByLogicalClass> languageConstructsByLogicalClasses;
 
-    private List<MethodInvocation> methodInvocations;
-
-    private List<SimpleName> simpleNames;
-
-    private String className;
+    private LanguageConstructsByLogicalClass languageConstructsByLogicalClass;
 
     public DepVisitor(CompilationUnit cuArg) {
 
         this.cu = cuArg;
 
-        this.methodDeclarations = new ArrayList<>();
-
-        this.methodInvocations = new ArrayList<>();
-
-        this.simpleNames = new ArrayList<>();
+        this.languageConstructsByLogicalClasses = new ArrayList<>();
+        this.languageConstructsByLogicalClass = null;
 
     }
 
     @Override
     public boolean visit(MethodInvocation node) {
 
-        methodInvocations.add(node);
+        languageConstructsByLogicalClass.getMethodInvocations().add(node);
 
 //        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
 //        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -61,7 +52,7 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
 
-        methodDeclarations.add(node);
+        languageConstructsByLogicalClass.getMethodDeclarations().add(node);
 
 //        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
 //        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -88,15 +79,9 @@ public class DepVisitor extends ASTVisitor {
     }
 
     @Override
-    public boolean visit(SimpleName node) {
-
-        simpleNames.add(node);
-        return true;
-    }
-
-    @Override
     public boolean visit(TypeDeclaration node) {
 
+        String className = null;
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {
             String packageName = aPackage.getName().getFullyQualifiedName();
@@ -104,12 +89,21 @@ public class DepVisitor extends ASTVisitor {
         } else {
             className = null;
         }
+
+        if (languageConstructsByLogicalClass != null) {
+            getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
+        }
+
+        languageConstructsByLogicalClass = new LanguageConstructsByLogicalClass(className);
+
         return true;
     }
 
     @Override
     public boolean visit(EnumDeclaration node) {
 
+        String className = null;
+
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {
             String packageName = aPackage.getName().getFullyQualifiedName();
@@ -117,12 +111,14 @@ public class DepVisitor extends ASTVisitor {
         } else {
             className = null;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean visit(AnnotationTypeDeclaration node) {
 
+        String className = null;
+
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {
             String packageName = aPackage.getName().getFullyQualifiedName();
@@ -130,63 +126,24 @@ public class DepVisitor extends ASTVisitor {
         } else {
             className = null;
         }
+
+        languageConstructsByLogicalClass = new LanguageConstructsByLogicalClass(className);
+
         return true;
     }
 
     /**
-     * @return the methodDeclarations
+     * @return the languageConstructsByLogicalClasses
      */
-    public List<MethodDeclaration> getMethodDeclarations() {
-        return methodDeclarations;
+    public List<LanguageConstructsByLogicalClass> getLanguageConstructsByLogicalClasses() {
+        return languageConstructsByLogicalClasses;
     }
 
     /**
-     * @param methodDeclarations the methodDeclarations to set
+     * @param languageConstructsByLogicalClasses the languageConstructsByLogicalClasses to set
      */
-    public void setMethodDeclarations(List<MethodDeclaration> methodDeclarations) {
-        this.methodDeclarations = methodDeclarations;
-    }
-
-    /**
-     * @return the methodInvocations
-     */
-    public List<MethodInvocation> getMethodInvocations() {
-        return methodInvocations;
-    }
-
-    /**
-     * @param methodInvocations the methodInvocations to set
-     */
-    public void setMethodInvocations(List<MethodInvocation> methodInvocations) {
-        this.methodInvocations = methodInvocations;
-    }
-
-    /**
-     * @return the simpleNames
-     */
-    public List<SimpleName> getSimpleNames() {
-        return simpleNames;
-    }
-
-    /**
-     * @param simpleNames the simpleNames to set
-     */
-    public void setSimpleNames(List<SimpleName> simpleNames) {
-        this.simpleNames = simpleNames;
-    }
-
-    /**
-     * @return the className
-     */
-    public String getClassName() {
-        return className;
-    }
-
-    /**
-     * @param className the className to set
-     */
-    public void setClassName(String className) {
-        this.className = className;
+    public void setLanguageConstructsByLogicalClasses(List<LanguageConstructsByLogicalClass> languageConstructsByLogicalClasses) {
+        this.languageConstructsByLogicalClasses = languageConstructsByLogicalClasses;
     }
 
 }
