@@ -18,12 +18,12 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 public class Dependencies {
 
     private String projectPath;
-    private List<ClassLanguageContructs> languageConstructsByClasses;
+    private List<ClassLanguageContructs> classesLanguageConstructs;
 
     public Dependencies(String projectPath) {
         this.projectPath = projectPath;
         JavaParser javaParser = new JavaParser();
-        languageConstructsByClasses = javaParser.parser(projectPath);
+        classesLanguageConstructs = javaParser.parser(projectPath);
     }
 
     public List<MethodInvocation> getCallers(MethodDeclaration methodDeclaration, String pathClassDeclaration, String qualifiedNameClassDeclaration) {
@@ -35,7 +35,7 @@ public class Dependencies {
             return null;
         }
 
-        for (ClassLanguageContructs languageConstructsByClass : languageConstructsByClasses) {
+        for (ClassLanguageContructs languageConstructsByClass : classesLanguageConstructs) {
             for (MethodInvocation methoInvocation : languageConstructsByClass.getMethodInvocations()) {
 
                 IMethodBinding methodInvocationBinding = methoInvocation.resolveMethodBinding();
@@ -74,24 +74,24 @@ public class Dependencies {
     }
 
     /**
-     * @return the languageConstructsByClasses
+     * @return the classesLanguageConstructs
      */
-    public List<ClassLanguageContructs> getLanguageConstructsByClasses() {
-        return languageConstructsByClasses;
+    public List<ClassLanguageContructs> getClassesLanguageConstructs() {
+        return classesLanguageConstructs;
     }
 
     /**
-     * @param languageConstructsByClasses the languageConstructsByClasses to set
+     * @param languageConstructsByClasses the classesLanguageConstructs to set
      */
-    public void setLanguageConstructsByClasses(List<ClassLanguageContructs> languageConstructsByClasses) {
-        this.languageConstructsByClasses = languageConstructsByClasses;
+    public void setClassesLanguageConstructs(List<ClassLanguageContructs> languageConstructsByClasses) {
+        this.classesLanguageConstructs = languageConstructsByClasses;
     }
 
     public static void main(String[] args) {
 
         Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/repositories/lombok");
 
-        for (ClassLanguageContructs languageConstructsByClass : dependencies.getLanguageConstructsByClasses()) {
+        for (ClassLanguageContructs languageConstructsByClass : dependencies.getClassesLanguageConstructs()) {
 
             String className = languageConstructsByClass.getQualifiedName();
             List<MethodDeclaration> methodDeclarations = languageConstructsByClass.getMethodDeclarations();

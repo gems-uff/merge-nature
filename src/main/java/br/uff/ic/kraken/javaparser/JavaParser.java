@@ -41,37 +41,37 @@ public class JavaParser {
     }
 
     public List<ClassLanguageContructs> parser(String path) {
-        List<ClassLanguageContructs> languageConstructs = new ArrayList<>();
+        List<ClassLanguageContructs> classesLanguageConstructs = new ArrayList<>();
 
         JavaParser javaParser = new JavaParser();
         Storage ASTs = javaParser.generateASTs(path);
 
         Set<String> classes = ASTs.keys();
 
-        for (String clazz : classes) {
-            CompilationUnit cu = ASTs.get(clazz);
+        for (String classPath : classes) {
+            CompilationUnit cu = ASTs.get(classPath);
 
-            DepVisitor depVisitor = new DepVisitor(cu, clazz);
+            DepVisitor depVisitor = new DepVisitor(cu, classPath);
             cu.accept(depVisitor);
 
-            for (ClassLanguageContructs languageConstructsByLogicalClass : depVisitor.getLanguageConstructsByLogicalClasses()) {
-                String qualifiedName = languageConstructsByLogicalClass.getQualifiedName();
+            for (ClassLanguageContructs classLanguageConstructs : depVisitor.getClassesLanguageConstructs()) {
+                String qualifiedName = classLanguageConstructs.getQualifiedName();
 
                 if (qualifiedName != null) {
 
-                    ClassLanguageContructs languageConstructsByClass = new ClassLanguageContructs(qualifiedName, clazz);
+                    ClassLanguageContructs classLanguageContructs = new ClassLanguageContructs(qualifiedName, classPath);
 
-                    languageConstructsByClass.setMethodDeclarations(languageConstructsByLogicalClass.getMethodDeclarations());
-                    languageConstructsByClass.setMethodInvocations(languageConstructsByLogicalClass.getMethodInvocations());
+                    classLanguageContructs.setMethodDeclarations(classLanguageConstructs.getMethodDeclarations());
+                    classLanguageContructs.setMethodInvocations(classLanguageConstructs.getMethodInvocations());
 
-                    languageConstructs.add(languageConstructsByClass);
+                    classesLanguageConstructs.add(classLanguageContructs);
                 }
 
             }
 
         }
 
-        return languageConstructs;
+        return classesLanguageConstructs;
     }
 
 //    public static void main(String[] args) {

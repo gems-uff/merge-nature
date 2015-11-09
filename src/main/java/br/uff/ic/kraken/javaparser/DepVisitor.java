@@ -25,24 +25,24 @@ public class DepVisitor extends ASTVisitor {
     private String path;
     private final CompilationUnit cu;
 
-    private List<ClassLanguageContructs> languageConstructsByLogicalClasses;
+    private List<ClassLanguageContructs> classesLanguageConstructs;
 
-    private ClassLanguageContructs languageConstructsByLogicalClass;
+    private ClassLanguageContructs classLanguageContructs;
 
     public DepVisitor(CompilationUnit cuArg, String path) {
 
         this.cu = cuArg;
         this.path = path;
 
-        this.languageConstructsByLogicalClasses = new ArrayList<>();
-        this.languageConstructsByLogicalClass = null;
+        this.classesLanguageConstructs = new ArrayList<>();
+        this.classLanguageContructs = null;
 
     }
 
     @Override
     public boolean visit(MethodInvocation node) {
 
-        languageConstructsByLogicalClass.getMethodInvocations().add(node);
+        classLanguageContructs.getMethodInvocations().add(node);
 
 //        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
 //        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -54,7 +54,7 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodDeclaration node) {
 
-        languageConstructsByLogicalClass.getMethodDeclarations().add(node);
+        classLanguageContructs.getMethodDeclarations().add(node);
 
 //        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
 //        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -92,14 +92,14 @@ public class DepVisitor extends ASTVisitor {
             className = null;
         }
 
-        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
+        classLanguageContructs = new ClassLanguageContructs(className, path);
 
         return true;
     }
 
     @Override
     public void endVisit(TypeDeclaration node) {
-        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
+        getClassesLanguageConstructs().add(classLanguageContructs);
     }
 
     @Override
@@ -115,14 +115,14 @@ public class DepVisitor extends ASTVisitor {
             className = null;
         }
 
-        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
+        classLanguageContructs = new ClassLanguageContructs(className, path);
 
         return false;
     }
 
     @Override
     public void endVisit(EnumDeclaration node) {
-        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
+        getClassesLanguageConstructs().add(classLanguageContructs);
     }
 
     @Override
@@ -138,29 +138,29 @@ public class DepVisitor extends ASTVisitor {
             className = null;
         }
 
-        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
+        classLanguageContructs = new ClassLanguageContructs(className, path);
 
         return true;
     }
 
     @Override
     public void endVisit(AnnotationTypeDeclaration node) {
-        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
+        getClassesLanguageConstructs().add(classLanguageContructs);
     }
 
     /**
-     * @return the languageConstructsByLogicalClasses
+     * @return the classesLanguageConstructs
      */
-    public List<ClassLanguageContructs> getLanguageConstructsByLogicalClasses() {
-        return languageConstructsByLogicalClasses;
+    public List<ClassLanguageContructs> getClassesLanguageConstructs() {
+        return classesLanguageConstructs;
     }
 
     /**
      * @param languageConstructsByLogicalClasses the
-     * languageConstructsByLogicalClasses to set
+ classesLanguageConstructs to set
      */
-    public void setLanguageConstructsByLogicalClasses(List<ClassLanguageContructs> languageConstructsByLogicalClasses) {
-        this.languageConstructsByLogicalClasses = languageConstructsByLogicalClasses;
+    public void setClassesLanguageConstructs(List<ClassLanguageContructs> languageConstructsByLogicalClasses) {
+        this.classesLanguageConstructs = languageConstructsByLogicalClasses;
     }
 
     /**
