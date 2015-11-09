@@ -74,26 +74,4 @@ public class JavaParser {
         return classesLanguageConstructs;
     }
 
-//    public static void main(String[] args) {
-//
-//        String projectPath = "/Users/gleiph/Dropbox/doutorado/repositories/lombok";
-//
-//        JavaParser javaParser = new JavaParser();
-//        Storage ASTs = javaParser.generateASTs(projectPath);
-//
-//        Set<String> classes = ASTs.keys();
-//
-//        for (String clazz : classes) {
-//            CompilationUnit cu = ASTs.get(clazz);
-//
-//            DepVisitor depVisitor = new DepVisitor(cu);
-//            cu.accept(depVisitor);
-//
-//            String className = depVisitor.getClassName();
-//            if (className != null) {
-//            }
-//
-//        }
-//
-//    }
 }

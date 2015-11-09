@@ -5,10 +5,14 @@
  */
 package br.uff.ic.kraken.javaparser;
 
+import br.uff.ic.kraken.javaparser.languageConstructs.Location;
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -42,41 +46,48 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(MethodInvocation node) {
 
-        classLanguageContructs.getMethodInvocations().add(node);
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-//        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
-//        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
-//        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+        Location location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyMethodInvocation myMethodInvocation = new MyMethodInvocation(node, location);
+
+        classLanguageContructs.getMethodInvocations().add(myMethodInvocation);
+
         return true;
     }
 
     @Override
     public boolean visit(MethodDeclaration node) {
 
-        classLanguageContructs.getMethodDeclarations().add(node);
+        Location location = null;
+        
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
 
-//        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
-//        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
-//        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
-//        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
-//
-//        Block body = node.getBody();
-//        LanguageConstructInformation languageConstructInformation;
-//        if (body == null) {
-//            languageConstructInformation = new LanguageConstructInformation(elementLineBegin, elementColumnBegin, elementLineEnd, elementColumnEnd);
-//        } else {
-//            int bodyLineBegin = cu.getLineNumber(body.getStartPosition());
-//            int bodyLineEnd = cu.getLineNumber(body.getStartPosition() + body.getLength());
-//            int bodyColumnBegin = cu.getColumnNumber(body.getStartPosition());
-//            int bodyColumnEnd = cu.getColumnNumber(body.getStartPosition() + body.getLength());
-//
-//            languageConstructInformation = new LanguageConstructInformation(elementLineBegin, elementColumnBegin, elementLineEnd, elementColumnEnd,
-//                    bodyLineBegin, bodyColumnBegin, bodyLineEnd, bodyColumnEnd);
-//
-//        }
-//
-//        methodDeclarationInformation.add(languageConstructInformation);
+        Block body = node.getBody();
+        if (body == null) {
+            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+        } else {
+            int bodyLineBegin = cu.getLineNumber(body.getStartPosition());
+            int bodyLineEnd = cu.getLineNumber(body.getStartPosition() + body.getLength());
+            int bodyColumnBegin = cu.getColumnNumber(body.getStartPosition());
+            int bodyColumnEnd = cu.getColumnNumber(body.getStartPosition() + body.getLength());
+
+            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd, 
+                    bodyLineBegin, bodyLineEnd, bodyColumnBegin, bodyColumnEnd);
+
+        }
+        
+        MyMethodDeclaration myMethodDeclaration = new MyMethodDeclaration(node, location);
+
+        classLanguageContructs.getMethodDeclarations().add(myMethodDeclaration);
+
         return true;
     }
 
@@ -156,8 +167,8 @@ public class DepVisitor extends ASTVisitor {
     }
 
     /**
-     * @param languageConstructsByLogicalClasses the
- classesLanguageConstructs to set
+     * @param languageConstructsByLogicalClasses the classesLanguageConstructs
+     * to set
      */
     public void setClassesLanguageConstructs(List<ClassLanguageContructs> languageConstructsByLogicalClasses) {
         this.classesLanguageConstructs = languageConstructsByLogicalClasses;

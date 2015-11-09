@@ -5,10 +5,10 @@
  */
 package br.uff.ic.kraken.javaparser;
 
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 
 /**
  *
@@ -19,8 +19,8 @@ public class ClassLanguageContructs {
     private String path;
     private String qualifiedName;
 
-    private List<MethodDeclaration> methodDeclarations;
-    private List<MethodInvocation> methodInvocations;
+    private List<MyMethodDeclaration> methodDeclarations;
+    private List<MyMethodInvocation> methodInvocations;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -48,36 +48,36 @@ public class ClassLanguageContructs {
     /**
      * @return the methodDeclarations
      */
-    public List<MethodDeclaration> getMethodDeclarations() {
+    public List<MyMethodDeclaration> getMethodDeclarations() {
         return methodDeclarations;
     }
 
     /**
      * @param methodDeclarations the methodDeclarations to set
      */
-    public void setMethodDeclarations(List<MethodDeclaration> methodDeclarations) {
+    public void setMethodDeclarations(List<MyMethodDeclaration> methodDeclarations) {
         this.methodDeclarations = methodDeclarations;
     }
 
-    public boolean addMethodDeclaration(MethodDeclaration methodDeclaration){
+    public boolean addMethodDeclaration(MyMethodDeclaration methodDeclaration){
         return methodDeclarations.add(methodDeclaration);
     }
     
     /**
      * @return the methoInvocations
      */
-    public List<MethodInvocation> getMethodInvocations() {
+    public List<MyMethodInvocation> getMethodInvocations() {
         return methodInvocations;
     }
 
     /**
      * @param methoInvocations the methoInvocations to set
      */
-    public void setMethodInvocations(List<MethodInvocation> methoInvocations) {
+    public void setMethodInvocations(List<MyMethodInvocation> methoInvocations) {
         this.methodInvocations = methoInvocations;
     }
 
-    public boolean addMethodInvocation(MethodInvocation methodInvocation){
+    public boolean addMethodInvocation(MyMethodInvocation methodInvocation){
         return methodInvocations.add(methodInvocation);
     }
 

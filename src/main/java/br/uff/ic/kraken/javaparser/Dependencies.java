@@ -5,6 +5,8 @@
  */
 package br.uff.ic.kraken.javaparser;
 
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -26,8 +28,8 @@ public class Dependencies {
         classesLanguageConstructs = javaParser.parser(projectPath);
     }
 
-    public List<MethodInvocation> getCallers(MethodDeclaration methodDeclaration, String pathClassDeclaration, String qualifiedNameClassDeclaration) {
-        List<MethodInvocation> invocations = new ArrayList<>();
+    public List<MyMethodInvocation> getCallers(MethodDeclaration methodDeclaration, String pathClassDeclaration, String qualifiedNameClassDeclaration) {
+        List<MyMethodInvocation> invocations = new ArrayList<>();
 
         IMethodBinding methodDeclarationBinding = methodDeclaration.resolveBinding();
         if (methodDeclarationBinding == null) {
@@ -36,9 +38,9 @@ public class Dependencies {
         }
 
         for (ClassLanguageContructs languageConstructsByClass : classesLanguageConstructs) {
-            for (MethodInvocation methoInvocation : languageConstructsByClass.getMethodInvocations()) {
+            for (MyMethodInvocation methoInvocation : languageConstructsByClass.getMethodInvocations()) {
 
-                IMethodBinding methodInvocationBinding = methoInvocation.resolveMethodBinding();
+                IMethodBinding methodInvocationBinding = methoInvocation.getMethodInvocation().resolveMethodBinding();
 
                 if (methodInvocationBinding == null) {
 //                    System.out.println("Method invocation " + methodDeclaration.getName().getIdentifier() + " does not have binding! ");
@@ -47,7 +49,7 @@ public class Dependencies {
 
                 if (methodDeclarationBinding.equals(methodInvocationBinding)) {
                     invocations.add(methoInvocation);
-                    System.out.println("\t\tIs called in class " + languageConstructsByClass.getQualifiedName());
+                    System.out.println("\t\tIs called in class " + languageConstructsByClass.getQualifiedName() + " " + methoInvocation.toString());
                     
                     //Data to select 
                     
@@ -94,13 +96,13 @@ public class Dependencies {
         for (ClassLanguageContructs languageConstructsByClass : dependencies.getClassesLanguageConstructs()) {
 
             String className = languageConstructsByClass.getQualifiedName();
-            List<MethodDeclaration> methodDeclarations = languageConstructsByClass.getMethodDeclarations();
+            List<MyMethodDeclaration> methodDeclarations = languageConstructsByClass.getMethodDeclarations();
 
             System.out.println(className);
-            for (MethodDeclaration methodDeclaration : methodDeclarations) {
+            for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
 
-                System.out.println("\t" + methodDeclaration.getName().getFullyQualifiedName());
-                List<MethodInvocation> calers = dependencies.getCallers(methodDeclaration, languageConstructsByClass.getPath(), languageConstructsByClass.getQualifiedName());
+                System.out.println("\t" + methodDeclaration.toString());
+                List<MyMethodInvocation> calers = dependencies.getCallers(methodDeclaration.getMethodDeclaration(), languageConstructsByClass.getPath(), languageConstructsByClass.getQualifiedName());
 
             }
 
