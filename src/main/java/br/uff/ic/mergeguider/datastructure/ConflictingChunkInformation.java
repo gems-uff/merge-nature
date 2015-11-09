@@ -7,6 +7,7 @@ package br.uff.ic.mergeguider.datastructure;
 
 import br.uff.ic.gems.resources.analises.merge.ConflictingFileAnalyzer;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.repositioning.Repositioning;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,10 +20,19 @@ import org.apache.commons.io.FileUtils;
  */
 public class ConflictingChunkInformation {
 
+    //Information base of any conflicting chunk
     private String filePath;
     private int begin;
     private int separator;
     private int end;
+
+    //Information related to the left repository
+    private int leftBegin;
+    private int leftEnd;
+
+    //Information related to the right repository
+    private int rightBegin;
+    private int rightEnd;
 
     public ConflictingChunkInformation(String filePath, int begin, int separator, int end) {
         this.filePath = filePath;
@@ -53,7 +63,7 @@ public class ConflictingChunkInformation {
 
         return result;
     }
-    
+
     public static List<ConflictingChunkInformation> extractConflictingChunksInformation(List<String> filePaths) throws IOException {
         List<ConflictingChunkInformation> result = new ArrayList<>();
 
@@ -61,7 +71,7 @@ public class ConflictingChunkInformation {
             List<ConflictingChunkInformation> cci = extractConflictingChunksInformation(filePath);
             result.addAll(cci);
         }
-        
+
         return result;
     }
 
@@ -140,7 +150,7 @@ public class ConflictingChunkInformation {
             v1 = "Left not empty";
 
         }
-        
+
         if (this.isRightEmpty()) {
             v2 = "Right empty";
         } else {
@@ -148,7 +158,88 @@ public class ConflictingChunkInformation {
 
         }
 
-        return filePath + "(" + begin + ", " + separator + ", " + end + ") \n\t->" + v1 + "\n\t->" + v2 ;
+        return filePath + "(" + begin + ", " + separator + ", " + end + ") \n\t->" + v1 + "\n\t->" + v2 + 
+                "\n\t\trepositioning left: ("+ leftBegin + ", " + leftEnd + ") " +
+                "\n\t\trepositioning right: ("+ rightBegin + ", " + rightEnd + ") ";
     }
 
+    public void reposition(String baseFilePath, String leftFilePath, String rightFilePath) {
+        Repositioning repositioning = new Repositioning(null);
+
+        if (!isLeftEmpty()) {
+
+            //Adding two 1 to change the index of array to file and another to take the following line
+            //of begin mark
+            setLeftBegin(repositioning.repositioning(baseFilePath, leftFilePath, begin + 1 + 1));
+            //No displacement, it is necessary to add 1 to change the index of array to file 
+            //and remove one to take the following line of separator mark
+            setLeftEnd(repositioning.repositioning(baseFilePath, leftFilePath, separator));
+        }
+
+        if (!isRightEmpty()) {
+
+            //Adding two 1 to change the index of array to file and another to take the following line
+            //of begin mark
+            setRightBegin(repositioning.repositioning(baseFilePath, rightFilePath, separator + 1 + 1));
+            //No displacement, it is necessary to add 1 to change the index of array to file 
+            //and remove one to take the following line of separator mark
+            setRightEnd(repositioning.repositioning(baseFilePath, rightFilePath, end));
+        }
+    }
+
+    /**
+     * @return the leftBegin
+     */
+    public int getLeftBegin() {
+        return leftBegin;
+    }
+
+    /**
+     * @param leftBegin the leftBegin to set
+     */
+    public void setLeftBegin(int leftBegin) {
+        this.leftBegin = leftBegin;
+    }
+
+    /**
+     * @return the leftEnd
+     */
+    public int getLeftEnd() {
+        return leftEnd;
+    }
+
+    /**
+     * @param leftEnd the leftEnd to set
+     */
+    public void setLeftEnd(int leftEnd) {
+        this.leftEnd = leftEnd;
+    }
+
+    /**
+     * @return the rightBegin
+     */
+    public int getRightBegin() {
+        return rightBegin;
+    }
+
+    /**
+     * @param rightBegin the rightBegin to set
+     */
+    public void setRightBegin(int rightBegin) {
+        this.rightBegin = rightBegin;
+    }
+
+    /**
+     * @return the rightEnd
+     */
+    public int getRightEnd() {
+        return rightEnd;
+    }
+
+    /**
+     * @param rightEnd the rightEnd to set
+     */
+    public void setRightEnd(int rightEnd) {
+        this.rightEnd = rightEnd;
+    }
 }

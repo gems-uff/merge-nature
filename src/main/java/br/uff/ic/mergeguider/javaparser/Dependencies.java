@@ -91,6 +91,7 @@ public class Dependencies {
     public static void main(String[] args) {
 
         Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/repositories/lombok");
+//        Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/implementation/JavaParser");
 
         for (ClassLanguageContructs languageConstructsByClass : dependencies.getClassesLanguageConstructs()) {
 
