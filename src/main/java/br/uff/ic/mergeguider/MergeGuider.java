@@ -5,10 +5,9 @@
  */
 package br.uff.ic.mergeguider;
 
-import br.uff.ic.gems.resources.analises.merge.ConflictingFileAnalyzer;
-import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
+import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -24,49 +23,40 @@ public class MergeGuider {
         String projectPath = "/Users/gleiph/Dropbox/doutorado/repositories/lombok";
         String SHALeft = "e557413";
         String SHARight = "fbab1ca";
-        int contextSize = 3;
 
-        
+        if (isFailedMerge(projectPath, SHALeft, SHARight)) {
+
+            List<String> conflictedFilePaths = Git.conflictedFiles(projectPath);
+
+            //Getting conflicting chunks
+            List<ConflictingChunkInformation> ccis = ConflictingChunkInformation.extractConflictingChunksInformation(conflictedFilePaths);
+            
+            printConflcitingChunksInformation(ccis);
+            
+            
+        }
+
+    }
+
+    public static void printConflcitingChunksInformation(List<ConflictingChunkInformation> ccis) throws IOException {
+        for (ConflictingChunkInformation cci : ccis) {
+            List<String> fileLines = FileUtils.readLines(new File(cci.getFilePath()));
+            
+            List<String> ccLines = fileLines.subList(cci.getBegin(), cci.getEnd() + 1);
+            
+            System.out.println(cci.toString());
+            for (String ccLine : ccLines) {
+                System.out.println("\t\t" + ccLine);
+            }
+        }
+    }
+
+    public static boolean isFailedMerge(String projectPath, String SHALeft, String SHARight) {
         Git.reset(projectPath);
         Git.checkout(projectPath, SHALeft);
         List<String> merge = Git.merge(projectPath, SHARight, false, false);
 
-        if (MergeStatusAnalizer.isConflict(merge)) {
-
-            List<String> conflictedFilePaths = Git.conflictedFiles(projectPath);
-
-            for (String conflictedFilePath : conflictedFilePaths) {
-
-                System.out.println("--------------------------------------------------------------------------");
-                System.out.println(conflictedFilePath);
-                System.out.println("--------------------------------------------------------------------------");
-            
-                List<String> conflictedFileContent = FileUtils.readLines(new File(conflictedFilePath));
-                
-                List<ConflictingChunk> conflictingChunks = ConflictingFileAnalyzer.getConflictingChunks(conflictedFileContent);
-
-                for (ConflictingChunk conflictingChunk : conflictingChunks) {
-                    
-                    int beginContext = conflictingChunk.getBeginLine() - contextSize;
-                    if (beginContext < 0) {
-                        beginContext = 0;
-                    }
-
-                    int endContext = conflictingChunk.getEndLine() + contextSize;
-                    if (endContext > conflictedFileContent.size()) {
-                        endContext = conflictedFileContent.size();
-                    }
-
-                    List<String> conflictingContent = conflictedFileContent.subList(beginContext, endContext);
-                    conflictingChunk.setConflictingContent(conflictingContent);
-
-                    System.out.println(conflictingChunk.toString());
-                    System.out.println("");
-                }
-            
-            }
-        }
-
+        return MergeStatusAnalizer.isConflict(merge);
     }
 
 }
