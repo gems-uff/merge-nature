@@ -14,16 +14,18 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
  *
  * @author gleiph
  */
-public class LanguageConstructsByLogicalClass {
+public class ClassLanguageContructs {
 
+    private String path;
     private String qualifiedName;
 
     private List<MethodDeclaration> methodDeclarations;
     private List<MethodInvocation> methodInvocations;
 
-    public LanguageConstructsByLogicalClass(String qualifiedName) {
+    public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
-
+        this.path = path;
+        
         methodDeclarations = new ArrayList<>();
         methodInvocations = new ArrayList<>();
         
@@ -77,6 +79,20 @@ public class LanguageConstructsByLogicalClass {
 
     public boolean addMethodInvocation(MethodInvocation methodInvocation){
         return methodInvocations.add(methodInvocation);
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
     
 }

@@ -22,15 +22,17 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  */
 public class DepVisitor extends ASTVisitor {
 
+    private String path;
     private final CompilationUnit cu;
 
-    private List<LanguageConstructsByLogicalClass> languageConstructsByLogicalClasses;
+    private List<ClassLanguageContructs> languageConstructsByLogicalClasses;
 
-    private LanguageConstructsByLogicalClass languageConstructsByLogicalClass;
+    private ClassLanguageContructs languageConstructsByLogicalClass;
 
-    public DepVisitor(CompilationUnit cuArg) {
+    public DepVisitor(CompilationUnit cuArg, String path) {
 
         this.cu = cuArg;
+        this.path = path;
 
         this.languageConstructsByLogicalClasses = new ArrayList<>();
         this.languageConstructsByLogicalClass = null;
@@ -90,13 +92,14 @@ public class DepVisitor extends ASTVisitor {
             className = null;
         }
 
-        if (languageConstructsByLogicalClass != null) {
-            getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
-        }
-
-        languageConstructsByLogicalClass = new LanguageConstructsByLogicalClass(className);
+        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
 
         return true;
+    }
+
+    @Override
+    public void endVisit(TypeDeclaration node) {
+        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
     }
 
     @Override
@@ -111,7 +114,15 @@ public class DepVisitor extends ASTVisitor {
         } else {
             className = null;
         }
+
+        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
+
         return false;
+    }
+
+    @Override
+    public void endVisit(EnumDeclaration node) {
+        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
     }
 
     @Override
@@ -127,23 +138,43 @@ public class DepVisitor extends ASTVisitor {
             className = null;
         }
 
-        languageConstructsByLogicalClass = new LanguageConstructsByLogicalClass(className);
+        languageConstructsByLogicalClass = new ClassLanguageContructs(className, path);
 
         return true;
+    }
+
+    @Override
+    public void endVisit(AnnotationTypeDeclaration node) {
+        getLanguageConstructsByLogicalClasses().add(languageConstructsByLogicalClass);
     }
 
     /**
      * @return the languageConstructsByLogicalClasses
      */
-    public List<LanguageConstructsByLogicalClass> getLanguageConstructsByLogicalClasses() {
+    public List<ClassLanguageContructs> getLanguageConstructsByLogicalClasses() {
         return languageConstructsByLogicalClasses;
     }
 
     /**
-     * @param languageConstructsByLogicalClasses the languageConstructsByLogicalClasses to set
+     * @param languageConstructsByLogicalClasses the
+     * languageConstructsByLogicalClasses to set
      */
-    public void setLanguageConstructsByLogicalClasses(List<LanguageConstructsByLogicalClass> languageConstructsByLogicalClasses) {
+    public void setLanguageConstructsByLogicalClasses(List<ClassLanguageContructs> languageConstructsByLogicalClasses) {
         this.languageConstructsByLogicalClasses = languageConstructsByLogicalClasses;
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

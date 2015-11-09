@@ -17,16 +17,16 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
  */
 public class Dependencies {
 
-    private String path;
-    private List<LanguageConstructsByLogicalClass> languageConstructsByClasses;
+    private String projectPath;
+    private List<ClassLanguageContructs> languageConstructsByClasses;
 
-    public Dependencies(String path) {
-        this.path = path;
+    public Dependencies(String projectPath) {
+        this.projectPath = projectPath;
         JavaParser javaParser = new JavaParser();
-        languageConstructsByClasses = javaParser.parser(path);
+        languageConstructsByClasses = javaParser.parser(projectPath);
     }
 
-    public List<MethodInvocation> getCalers(MethodDeclaration methodDeclaration) {
+    public List<MethodInvocation> getCallers(MethodDeclaration methodDeclaration, String pathClassDeclaration, String qualifiedNameClassDeclaration) {
         List<MethodInvocation> invocations = new ArrayList<>();
 
         IMethodBinding methodDeclarationBinding = methodDeclaration.resolveBinding();
@@ -35,7 +35,7 @@ public class Dependencies {
             return null;
         }
 
-        for (LanguageConstructsByLogicalClass languageConstructsByClass : languageConstructsByClasses) {
+        for (ClassLanguageContructs languageConstructsByClass : languageConstructsByClasses) {
             for (MethodInvocation methoInvocation : languageConstructsByClass.getMethodInvocations()) {
 
                 IMethodBinding methodInvocationBinding = methoInvocation.resolveMethodBinding();
@@ -48,6 +48,9 @@ public class Dependencies {
                 if (methodDeclarationBinding.equals(methodInvocationBinding)) {
                     invocations.add(methoInvocation);
                     System.out.println("\t\tIs called in class " + languageConstructsByClass.getQualifiedName());
+                    
+                    //Data to select 
+                    
                 }
 
             }
@@ -57,30 +60,30 @@ public class Dependencies {
     }
 
     /**
-     * @return the path
+     * @return the projectPath
      */
-    public String getPath() {
-        return path;
+    public String getProjectPath() {
+        return projectPath;
     }
 
     /**
-     * @param path the path to set
+     * @param projectPath the projectPath to set
      */
-    public void setPath(String path) {
-        this.path = path;
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
     }
 
     /**
      * @return the languageConstructsByClasses
      */
-    public List<LanguageConstructsByLogicalClass> getLanguageConstructsByClasses() {
+    public List<ClassLanguageContructs> getLanguageConstructsByClasses() {
         return languageConstructsByClasses;
     }
 
     /**
      * @param languageConstructsByClasses the languageConstructsByClasses to set
      */
-    public void setLanguageConstructsByClasses(List<LanguageConstructsByLogicalClass> languageConstructsByClasses) {
+    public void setLanguageConstructsByClasses(List<ClassLanguageContructs> languageConstructsByClasses) {
         this.languageConstructsByClasses = languageConstructsByClasses;
     }
 
@@ -88,7 +91,7 @@ public class Dependencies {
 
         Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/repositories/lombok");
 
-        for (LanguageConstructsByLogicalClass languageConstructsByClass : dependencies.getLanguageConstructsByClasses()) {
+        for (ClassLanguageContructs languageConstructsByClass : dependencies.getLanguageConstructsByClasses()) {
 
             String className = languageConstructsByClass.getQualifiedName();
             List<MethodDeclaration> methodDeclarations = languageConstructsByClass.getMethodDeclarations();
@@ -97,7 +100,7 @@ public class Dependencies {
             for (MethodDeclaration methodDeclaration : methodDeclarations) {
 
                 System.out.println("\t" + methodDeclaration.getName().getFullyQualifiedName());
-                List<MethodInvocation> calers = dependencies.getCalers(methodDeclaration);
+                List<MethodInvocation> calers = dependencies.getCallers(methodDeclaration, languageConstructsByClass.getPath(), languageConstructsByClass.getQualifiedName());
 
             }
 
