@@ -31,14 +31,14 @@ public class MergeGuider {
             //Getting conflicting chunks
             List<ConflictingChunkInformation> ccis = ConflictingChunkInformation.extractConflictingChunksInformation(conflictedFilePaths);
             
-            printConflcitingChunksInformation(ccis);
+            printConflictingChunksInformation(ccis);
             
             
         }
 
     }
 
-    public static void printConflcitingChunksInformation(List<ConflictingChunkInformation> ccis) throws IOException {
+    public static void printConflictingChunksInformation(List<ConflictingChunkInformation> ccis) throws IOException {
         for (ConflictingChunkInformation cci : ccis) {
             List<String> fileLines = FileUtils.readLines(new File(cci.getFilePath()));
             
