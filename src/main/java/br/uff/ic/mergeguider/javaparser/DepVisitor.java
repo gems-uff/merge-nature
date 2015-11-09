@@ -9,7 +9,9 @@ import br.uff.ic.mergeguider.languageConstructs.Location;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.Block;
@@ -33,6 +35,8 @@ public class DepVisitor extends ASTVisitor {
 
     private ClassLanguageContructs classLanguageContructs;
 
+    List<ClassLanguageContructs> list;
+
     public DepVisitor(CompilationUnit cuArg, String path) {
 
         this.cu = cuArg;
@@ -40,6 +44,7 @@ public class DepVisitor extends ASTVisitor {
 
         this.classesLanguageConstructs = new ArrayList<>();
         this.classLanguageContructs = null;
+        this.list = new ArrayList<>();
 
     }
 
@@ -55,7 +60,7 @@ public class DepVisitor extends ASTVisitor {
 
         MyMethodInvocation myMethodInvocation = new MyMethodInvocation(node, location);
 
-        classLanguageContructs.getMethodInvocations().add(myMethodInvocation);
+        list.get(list.size() - 1).getMethodInvocations().add(myMethodInvocation);
 
         return true;
     }
@@ -64,7 +69,7 @@ public class DepVisitor extends ASTVisitor {
     public boolean visit(MethodDeclaration node) {
 
         Location location = null;
-        
+
         int elementLineBegin = cu.getLineNumber(node.getStartPosition());
         int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
         int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
@@ -79,14 +84,14 @@ public class DepVisitor extends ASTVisitor {
             int bodyColumnBegin = cu.getColumnNumber(body.getStartPosition());
             int bodyColumnEnd = cu.getColumnNumber(body.getStartPosition() + body.getLength());
 
-            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd, 
+            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd,
                     bodyLineBegin, bodyLineEnd, bodyColumnBegin, bodyColumnEnd);
 
         }
-        
+
         MyMethodDeclaration myMethodDeclaration = new MyMethodDeclaration(node, location);
 
-        classLanguageContructs.getMethodDeclarations().add(myMethodDeclaration);
+        list.get(list.size() - 1).getMethodDeclarations().add(myMethodDeclaration);
 
         return true;
     }
@@ -105,12 +110,18 @@ public class DepVisitor extends ASTVisitor {
 
         classLanguageContructs = new ClassLanguageContructs(className, path);
 
+        list.add(classLanguageContructs);
+
         return true;
     }
 
     @Override
     public void endVisit(TypeDeclaration node) {
-        getClassesLanguageConstructs().add(classLanguageContructs);
+
+        if (!list.isEmpty()) {
+            getClassesLanguageConstructs().add(list.remove(list.size() - 1));
+        }
+
     }
 
     @Override
@@ -128,12 +139,18 @@ public class DepVisitor extends ASTVisitor {
 
         classLanguageContructs = new ClassLanguageContructs(className, path);
 
-        return false;
+        list.add(classLanguageContructs);
+
+        return true;
     }
 
     @Override
     public void endVisit(EnumDeclaration node) {
-        getClassesLanguageConstructs().add(classLanguageContructs);
+
+        if (!list.isEmpty()) {
+            getClassesLanguageConstructs().add(list.remove(list.size() - 1));
+        }
+
     }
 
     @Override
@@ -151,12 +168,18 @@ public class DepVisitor extends ASTVisitor {
 
         classLanguageContructs = new ClassLanguageContructs(className, path);
 
+        list.add(classLanguageContructs);
+
         return true;
     }
 
     @Override
     public void endVisit(AnnotationTypeDeclaration node) {
-        getClassesLanguageConstructs().add(classLanguageContructs);
+
+        if (!list.isEmpty()) {
+            getClassesLanguageConstructs().add(list.remove(list.size() - 1));
+        }
+
     }
 
     /**
