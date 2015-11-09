@@ -13,11 +13,13 @@ import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.Dependencies;
 import br.uff.ic.mergeguider.languageConstructs.Location;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 
 /**
  *
@@ -76,23 +78,92 @@ public class MergeGuider {
 //                System.out.println("------------------------------------------------");
             }
 
-            //Find method declaration that has some intersection with a method declaration
+            //Creating depedency matrix
+            int order = ccis.size();
+            int[][] dependencyMatrix = new int[order][order];
+
+            for (int i = 0; i < order; i++) {
+                for (int j = 0; j < order; j++) {
+                    dependencyMatrix[i][j] = 0;
+                }
+            }
+            
             for (ConflictingChunkInformation cci : ccis) {
 
-                List<MyMethodDeclaration> methodDeclarations = leftHasIntersectionWithMethodDeclaration(projectPath, cci, ASTLeft);
-                methodDeclarations.addAll(rightHasIntersectionWithMethodDeclaration(projectPath, cci, ASTRight));
+                //Find method declaration that has some intersection with a method declaration
+                List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, cci, ASTLeft);
+                List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
 
-                System.out.println("-----------------------------------------------------------------------");
-                System.out.println(cci.toString());
-                for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
-                    System.out.println(methodDeclaration.getMethodDeclaration().getName().getIdentifier());
+                int rowNumber = ccis.indexOf(cci);
+
+                for (ConflictingChunkInformation cciAux : ccis) {
+                    int columnNumber = ccis.indexOf(cciAux);
+
+                    List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, cciAux, ASTLeft);
+                    List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, cciAux, ASTRight);
+                    
+                    boolean hasDependecy =
+                            hasMethodDependency(leftMethodDeclarations, leftMethodInvocations) ||
+                            hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
+                    
+                    if(hasDependecy){
+                        //CC(rowNumber) depends on CC(ColumnNumber)
+                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                    }
+
                 }
-                System.out.println("-----------------------------------------------------------------------");
 
+//                System.out.println("-----------------------------------------------------------------------");
+//                System.out.println(cci.toString());
+//                System.out.println("Left");
+//                for (MyMethodDeclaration methodDeclaration : leftMethodDeclarations) {
+//                    System.out.println("\t" + methodDeclaration.getMethodDeclaration().getName().getIdentifier());
+//                }
+//                
+//                System.out.println("Right");
+//                for (MyMethodDeclaration methodDeclaration : rightMethodDeclarations) {
+//                    System.out.println("\t" + methodDeclaration.getMethodDeclaration().getName().getIdentifier());
+//                }
+//                System.out.println("-----------------------------------------------------------------------");
             }
 
+            
+            for (int i = 0; i < order; i++) {
+                for (int j = 0; j < order; j++) {
+                    System.out.print(dependencyMatrix[i][j] + "  ");
+                }
+                System.out.println("");
+            }
+            
         }
 
+    }
+
+    public static boolean hasMethodDependency(List<MyMethodDeclaration> methodDeclarations, List<MyMethodInvocation> methodInvocations) {
+
+        for (MyMethodInvocation methodInvocation : methodInvocations) {
+            for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
+
+                if (sameMethod(methodDeclaration, methodInvocation)) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameMethod(MyMethodDeclaration methodDeclaration, MyMethodInvocation methodInvocation) {
+
+        IMethodBinding methodDeclarationBinding = methodDeclaration.getMethodDeclaration().resolveBinding();
+        IMethodBinding methodInvocationBinding = methodInvocation.getMethodInvocation().resolveMethodBinding();
+
+        if (methodDeclarationBinding != null && methodInvocationBinding != null && methodDeclarationBinding.equals(methodInvocationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static void printConflictingChunksInformation(List<ConflictingChunkInformation> ccis) throws IOException {
@@ -135,7 +206,7 @@ public class MergeGuider {
 
     }
 
-    public static List<MyMethodDeclaration> leftHasIntersectionWithMethodDeclaration(String projectPath,
+    public static List<MyMethodDeclaration> leftCCMethodDeclarations(String projectPath,
             ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyMethodDeclaration> result = new ArrayList<>();
@@ -159,9 +230,7 @@ public class MergeGuider {
         return result;
     }
 
-    public static boolean leftHasIntersection(MyMethodDeclaration methodDeclaration, ConflictingChunkInformation cci) {
-
-        Location location = methodDeclaration.getLocation();
+    public static boolean leftHasIntersection(Location location, ConflictingChunkInformation cci) {
 
         if (cci.getLeftBegin() > location.getElementLineEnd()) {
             return false;
@@ -173,7 +242,13 @@ public class MergeGuider {
 
     }
 
-    public static List<MyMethodDeclaration> rightHasIntersectionWithMethodDeclaration(String projectPath,
+    public static boolean leftHasIntersection(MyMethodDeclaration methodDeclaration, ConflictingChunkInformation cci) {
+
+        return leftHasIntersection(methodDeclaration.getLocation(), cci);
+
+    }
+
+    public static List<MyMethodDeclaration> rightCCMethodDeclaration(String projectPath,
             ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyMethodDeclaration> result = new ArrayList<>();
@@ -197,9 +272,7 @@ public class MergeGuider {
         return result;
     }
 
-    public static boolean rightHasIntersection(MyMethodDeclaration methodDeclaration, ConflictingChunkInformation cci) {
-
-        Location location = methodDeclaration.getLocation();
+    public static boolean rightHasIntersection(Location location, ConflictingChunkInformation cci) {
 
         if (cci.getRightBegin() > location.getElementLineEnd()) {
             return false;
@@ -209,6 +282,60 @@ public class MergeGuider {
             return true;
         }
 
+    }
+
+    public static boolean rightHasIntersection(MyMethodDeclaration methodDeclaration, ConflictingChunkInformation cci) {
+
+        return rightHasIntersection(methodDeclaration.getLocation(), cci);
+
+    }
+
+    public static List<MyMethodInvocation> leftCCMethodInvocations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyMethodInvocation> result = new ArrayList<>();
+
+        String relativePath = cci.getFilePath().replace(projectPath, "");
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
+
+                for (MyMethodInvocation methodInvocation : methodInvocations) {
+                    if (leftHasIntersection(methodInvocation.getLocation(), cci)) {
+                        result.add(methodInvocation);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyMethodInvocation> rightCCMethodInvocations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyMethodInvocation> result = new ArrayList<>();
+
+        String relativePath = cci.getFilePath().replace(projectPath, "");
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
+
+                for (MyMethodInvocation methodInvocation : methodInvocations) {
+                    if (rightHasIntersection(methodInvocation.getLocation(), cci)) {
+                        result.add(methodInvocation);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
 }
