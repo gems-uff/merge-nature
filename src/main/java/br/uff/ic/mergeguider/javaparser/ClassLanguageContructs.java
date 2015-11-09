@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.kraken.mergeguider.javaparser;
+package br.uff.ic.mergeguider.javaparser;
 
-import br.uff.ic.kraken.mergeguider.languageConstructs.MyMethodDeclaration;
-import br.uff.ic.kraken.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
 

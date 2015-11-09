@@ -1,4 +1,4 @@
-package br.uff.ic.kraken.mergeguider.javaparser;
+package br.uff.ic.mergeguider.javaparser;
 
 import java.util.HashMap;
 import java.util.Map;
