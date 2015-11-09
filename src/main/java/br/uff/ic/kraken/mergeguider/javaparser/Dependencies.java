@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.kraken.javaparser;
+package br.uff.ic.kraken.mergeguider.javaparser;
 
-import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodDeclaration;
-import br.uff.ic.kraken.javaparser.languageConstructs.MyMethodInvocation;
+import br.uff.ic.kraken.mergeguider.languageConstructs.MyMethodDeclaration;
+import br.uff.ic.kraken.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 
 /**
  *

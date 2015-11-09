@@ -1,4 +1,4 @@
-package br.uff.ic.kraken.javaparser;
+package br.uff.ic.kraken.mergeguider.javaparser;
 
 import java.io.File;
 import java.util.ArrayList;

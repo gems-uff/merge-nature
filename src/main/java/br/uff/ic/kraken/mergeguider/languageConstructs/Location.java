@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uff.ic.kraken.javaparser.languageConstructs;
+package br.uff.ic.kraken.mergeguider.languageConstructs;
 
 /**
  *
