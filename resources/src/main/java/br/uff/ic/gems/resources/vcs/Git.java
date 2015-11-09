@@ -603,6 +603,42 @@ public class Git {
 
         return output;
     }
+    
+    public static List<String> clean(String repositoryPath) {
+//        String command = "git rev-list --parents -n 1 " + revision;
+        String command = "git clean -df";
+
+        List<String> output = new ArrayList<String>();
+
+        try {
+            Process exec = Runtime.getRuntime().exec(command, null, new File(repositoryPath));
+
+            String s;
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+
+            // read the output from the command
+            while ((s = stdInput.readLine()) != null) {
+//                String[] split = s.split(" ");
+//                for (String rev : split) {
+//                    output.add(rev);
+//                }
+                output.add(s);
+            }
+
+            // read any errors from the attempted command
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Git.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return output;
+    }
 
     public static List<String> mergeAbort(String repositoryPath) {
 //        String command = "git rev-list --parents -n 1 " + revision;
