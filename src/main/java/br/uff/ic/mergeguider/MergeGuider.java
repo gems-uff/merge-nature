@@ -5,7 +5,6 @@
  */
 package br.uff.ic.mergeguider;
 
-import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
@@ -60,59 +59,69 @@ public class MergeGuider {
 
             List<ClassLanguageContructs> ASTRight = extractAST(repositoryRight);
 
-            //Repositioning conflicting chunk information to both sides
-            for (ConflictingChunkInformation cci : ccis) {
+            repositioningConflictingChunksInformation(ccis, repositoryLeft, projectPath, repositoryRight);
 
-                String baseFilePath = cci.getFilePath();
-                String leftFilePath = repositoryLeft + File.separator
-                        + baseFilePath.replace(projectPath, "");
-                String rightFilePath = repositoryRight + File.separator
-                        + baseFilePath.replace(projectPath, "");
+            //Creating depedency matrix
+            int order = ccis.size();
+            int[][] dependencyMatrix = instanciatingDepedencyMatrix(order);
+            
+            fillingDepedencyMatrix(ccis, projectPath, 
+                    ASTLeft, ASTRight, dependencyMatrix);
 
-                cci.reposition(baseFilePath, leftFilePath, rightFilePath);
+            
+            printDepedencyMatrix(dependencyMatrix);
+            
+        }
 
+    }
+
+    public static void repositioningConflictingChunksInformation(List<ConflictingChunkInformation> ccis, String repositoryLeft, String projectPath, String repositoryRight) {
+        //Repositioning conflicting chunk information to both sides
+        for (ConflictingChunkInformation cci : ccis) {
+            
+            String baseFilePath = cci.getFilePath();
+            String leftFilePath = repositoryLeft + File.separator
+                    + baseFilePath.replace(projectPath, "");
+            String rightFilePath = repositoryRight + File.separator
+                    + baseFilePath.replace(projectPath, "");
+            
+            cci.reposition(baseFilePath, leftFilePath, rightFilePath);
+            
 //                System.out.println("------------------------------------------------");
 //                System.out.println(cci.getFilePath());
 //                System.out.println(cci.getBegin() + " -> " + cci.getLeftBegin() + " -> " + cci.getRightBegin());
 //                System.out.println(cci.getEnd() + " -> " + cci.getLeftEnd() + " -> " + cci.getRightEnd());
 //                System.out.println("------------------------------------------------");
-            }
+        }
+    }
 
-            //Creating depedency matrix
-            int order = ccis.size();
-            int[][] dependencyMatrix = new int[order][order];
-
-            for (int i = 0; i < order; i++) {
-                for (int j = 0; j < order; j++) {
-                    dependencyMatrix[i][j] = 0;
+    public static void fillingDepedencyMatrix(List<ConflictingChunkInformation> ccis, String projectPath, 
+            List<ClassLanguageContructs> ASTLeft, List<ClassLanguageContructs> ASTRight, int[][] dependencyMatrix) {
+        for (ConflictingChunkInformation cci : ccis) {
+            
+            //Find method declaration that has some intersection with a method declaration
+            List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, cci, ASTLeft);
+            List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
+            
+            int rowNumber = ccis.indexOf(cci);
+            
+            for (ConflictingChunkInformation cciAux : ccis) {
+                int columnNumber = ccis.indexOf(cciAux);
+                
+                List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, cciAux, ASTLeft);
+                List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, cciAux, ASTRight);
+                
+                boolean hasDependecy =
+                        hasMethodDependency(leftMethodDeclarations, leftMethodInvocations) ||
+                        hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
+                
+                if(hasDependecy){
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    dependencyMatrix[columnNumber][rowNumber] = 1;
                 }
+
             }
             
-            for (ConflictingChunkInformation cci : ccis) {
-
-                //Find method declaration that has some intersection with a method declaration
-                List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, cci, ASTLeft);
-                List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
-
-                int rowNumber = ccis.indexOf(cci);
-
-                for (ConflictingChunkInformation cciAux : ccis) {
-                    int columnNumber = ccis.indexOf(cciAux);
-
-                    List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, cciAux, ASTLeft);
-                    List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, cciAux, ASTRight);
-                    
-                    boolean hasDependecy =
-                            hasMethodDependency(leftMethodDeclarations, leftMethodInvocations) ||
-                            hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
-                    
-                    if(hasDependecy){
-                        //CC(rowNumber) depends on CC(ColumnNumber)
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
-                    }
-
-                }
-
 //                System.out.println("-----------------------------------------------------------------------");
 //                System.out.println(cci.toString());
 //                System.out.println("Left");
@@ -125,18 +134,28 @@ public class MergeGuider {
 //                    System.out.println("\t" + methodDeclaration.getMethodDeclaration().getName().getIdentifier());
 //                }
 //                System.out.println("-----------------------------------------------------------------------");
-            }
-
-            
-            for (int i = 0; i < order; i++) {
-                for (int j = 0; j < order; j++) {
-                    System.out.print(dependencyMatrix[i][j] + "  ");
-                }
-                System.out.println("");
-            }
-            
         }
+    }
 
+    public static int[][] instanciatingDepedencyMatrix(int order) {
+        int[][] dependencyMatrix = new int[order][order];
+        for (int i = 0; i < order; i++) {
+            for (int j = 0; j < order; j++) {
+                dependencyMatrix[i][j] = 0;
+            }
+        }
+        return dependencyMatrix;
+    }
+
+    public static void printDepedencyMatrix(int[][] dependencyMatrix) {
+        
+        int order = dependencyMatrix.length;
+        for (int i = 0; i < order; i++) {
+            for (int j = 0; j < order; j++) {
+                System.out.print(dependencyMatrix[i][j] + "  ");
+            }
+            System.out.println("");
+        }
     }
 
     public static boolean hasMethodDependency(List<MyMethodDeclaration> methodDeclarations, List<MyMethodInvocation> methodInvocations) {
