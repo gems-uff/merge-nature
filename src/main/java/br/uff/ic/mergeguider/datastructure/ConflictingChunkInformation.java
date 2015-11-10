@@ -34,6 +34,11 @@ public class ConflictingChunkInformation {
     private int rightBegin;
     private int rightEnd;
 
+    //Verify whether files were renamed
+    boolean renamed;
+    String relativePathLeft;
+    String relativePathRight;
+    
     public ConflictingChunkInformation(String filePath, int begin, int separator, int end) {
         this.filePath = filePath;
         this.begin = begin;
@@ -56,6 +61,8 @@ public class ConflictingChunkInformation {
             int separatorLine = conflictingChunk.getSeparatorLine();
             int endLine = conflictingChunk.getEndLine();
 
+            
+            
             conflictingChunkInformation = new ConflictingChunkInformation(filePath, beginLine, separatorLine, endLine);
 
             result.add(conflictingChunkInformation);

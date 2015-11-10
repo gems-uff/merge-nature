@@ -7,6 +7,7 @@ package br.uff.ic.mergeguider;
 
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
+import br.uff.ic.mergeguider.datastructure.CCDependency;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.Dependencies;
@@ -26,12 +27,50 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
  */
 public class MergeGuider {
 
-    public static void main(String[] args) throws IOException {
-        String projectPath = "/Users/gleiph/Dropbox/doutorado/repositories/lombok";
-        String SHALeft = "e557413";
-        String SHARight = "fbab1ca";
-        String sandbox = "/Users/gleiph/Dropbox/doutorado/repositories/";
+    public static void main(String[] args) {
+        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
+//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
+        //        String projectPath = "/Users/gleiph/repositories/icse/mct";
+        //        String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
+//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
 
+        String sandbox = "/Users/gleiph/repositories/icse";
+
+//        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
+//
+//        for (String mergeRevision : mergeRevisions) {
+//
+//            List<String> parents = Git.getParents(projectPath, mergeRevision);
+//
+//            if (parents.size() == 2) {
+//                String SHALeft = parents.get(0);
+//                String SHARight = parents.get(1);
+        
+        String SHALeft = "75f79b9ef18dcc70c0ca234426096109a9a855d6";
+        String SHARight = "53a6ff65640c9ade9459d1974ac14c0d6f8cbbcc";
+
+        System.out.println("Merging revisions " + SHALeft + " and " + SHARight);
+
+        List<CCDependency> performMerge;
+        try {
+            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+            if (performMerge == null || performMerge.isEmpty()) {
+                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+            } else {
+                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+            }
+        } catch (IOException ex) {
+            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+
+        }
+
+//            }
+//        }
+//        String SHALeft = "e557413";
+//        String SHARight = "fbab1ca";
+    }
+
+    public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
         if (isFailedMerge(projectPath, SHALeft, SHARight)) {
 
             List<String> conflictedFilePaths = Git.conflictedFiles(projectPath);
@@ -64,29 +103,34 @@ public class MergeGuider {
             //Creating depedency matrix
             int order = ccis.size();
             int[][] dependencyMatrix = instanciatingDepedencyMatrix(order);
-            
-            fillingDepedencyMatrix(ccis, projectPath, 
+
+            fillingDepedencyMatrix(ccis, projectPath,
                     ASTLeft, ASTRight, dependencyMatrix);
 
-            
             printDepedencyMatrix(dependencyMatrix);
-            
+
+            List<CCDependency> extractDependencies = extractDependencies(dependencyMatrix);
+
+            printDependencies(dependencyMatrix);
+
+            return extractDependencies;
         }
 
+        return null;
     }
 
     public static void repositioningConflictingChunksInformation(List<ConflictingChunkInformation> ccis, String repositoryLeft, String projectPath, String repositoryRight) {
         //Repositioning conflicting chunk information to both sides
         for (ConflictingChunkInformation cci : ccis) {
-            
+
             String baseFilePath = cci.getFilePath();
             String leftFilePath = repositoryLeft + File.separator
                     + baseFilePath.replace(projectPath, "");
             String rightFilePath = repositoryRight + File.separator
                     + baseFilePath.replace(projectPath, "");
-            
+
             cci.reposition(baseFilePath, leftFilePath, rightFilePath);
-            
+
 //                System.out.println("------------------------------------------------");
 //                System.out.println(cci.getFilePath());
 //                System.out.println(cci.getBegin() + " -> " + cci.getLeftBegin() + " -> " + cci.getRightBegin());
@@ -95,33 +139,33 @@ public class MergeGuider {
         }
     }
 
-    public static void fillingDepedencyMatrix(List<ConflictingChunkInformation> ccis, String projectPath, 
+    public static void fillingDepedencyMatrix(List<ConflictingChunkInformation> ccis, String projectPath,
             List<ClassLanguageContructs> ASTLeft, List<ClassLanguageContructs> ASTRight, int[][] dependencyMatrix) {
         for (ConflictingChunkInformation cci : ccis) {
-            
+
             //Find method declaration that has some intersection with a method declaration
             List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, cci, ASTLeft);
             List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
-            
+
             int rowNumber = ccis.indexOf(cci);
-            
+
             for (ConflictingChunkInformation cciAux : ccis) {
                 int columnNumber = ccis.indexOf(cciAux);
-                
+
                 List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, cciAux, ASTLeft);
                 List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, cciAux, ASTRight);
-                
-                boolean hasDependecy =
-                        hasMethodDependency(leftMethodDeclarations, leftMethodInvocations) ||
-                        hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
-                
-                if(hasDependecy){
+
+                boolean hasDependecy
+                        = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
+                        || hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
+
+                if (hasDependecy) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     dependencyMatrix[columnNumber][rowNumber] = 1;
                 }
 
             }
-            
+
 //                System.out.println("-----------------------------------------------------------------------");
 //                System.out.println(cci.toString());
 //                System.out.println("Left");
@@ -148,7 +192,7 @@ public class MergeGuider {
     }
 
     public static void printDepedencyMatrix(int[][] dependencyMatrix) {
-        
+
         int order = dependencyMatrix.length;
         for (int i = 0; i < order; i++) {
             for (int j = 0; j < order; j++) {
@@ -352,6 +396,37 @@ public class MergeGuider {
                     }
                 }
             }
+        }
+
+        return result;
+    }
+
+    public static void printDependencies(int[][] dependencyMatrix) {
+
+        for (int i = 0; i < dependencyMatrix.length; i++) {
+            int[] row = dependencyMatrix[i];
+            for (int j = 0; j < row.length; j++) {
+                if (dependencyMatrix[i][j] == 1) {
+                    System.out.println("CC" + (i + 1) + " depends on CC" + (j + 1));
+                }
+            }
+
+        }
+
+    }
+
+    public static List<CCDependency> extractDependencies(int[][] dependencyMatrix) {
+
+        List<CCDependency> result = new ArrayList<>();
+
+        for (int i = 0; i < dependencyMatrix.length; i++) {
+            int[] row = dependencyMatrix[i];
+            for (int j = 0; j < row.length; j++) {
+                if (dependencyMatrix[i][j] == 1) {
+                    result.add(new CCDependency(i, j));
+                }
+            }
+
         }
 
         return result;
