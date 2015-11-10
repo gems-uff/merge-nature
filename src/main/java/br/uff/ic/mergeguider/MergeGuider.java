@@ -28,44 +28,41 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 public class MergeGuider {
 
     public static void main(String[] args) {
-        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
-//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
+//        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
+        String projectPath = "/Users/gleiph/repositories/icse/lombok";
         //        String projectPath = "/Users/gleiph/repositories/icse/mct";
         //        String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
 //        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
 
         String sandbox = "/Users/gleiph/repositories/icse";
 
-//        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
-//
-//        for (String mergeRevision : mergeRevisions) {
-//
-//            List<String> parents = Git.getParents(projectPath, mergeRevision);
-//
-//            if (parents.size() == 2) {
-//                String SHALeft = parents.get(0);
-//                String SHARight = parents.get(1);
-        
-        String SHALeft = "75f79b9ef18dcc70c0ca234426096109a9a855d6";
-        String SHARight = "53a6ff65640c9ade9459d1974ac14c0d6f8cbbcc";
+        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
 
-        System.out.println("Merging revisions " + SHALeft + " and " + SHARight);
+        for (String mergeRevision : mergeRevisions) {
 
-        List<CCDependency> performMerge;
-        try {
-            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-            if (performMerge == null || performMerge.isEmpty()) {
-                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-            } else {
-                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+            List<String> parents = Git.getParents(projectPath, mergeRevision);
+
+            if (parents.size() == 2) {
+                String SHALeft = parents.get(0);
+                String SHARight = parents.get(1);
+
+                System.out.println("Merging revisions " + SHALeft + " and " + SHARight);
+
+                List<CCDependency> performMerge;
+                try {
+                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+                    if (performMerge == null || performMerge.isEmpty()) {
+                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+                    } else {
+                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+                    }
+                } catch (IOException ex) {
+                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+
+                }
+
             }
-        } catch (IOException ex) {
-            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
-
         }
-
-//            }
-//        }
 //        String SHALeft = "e557413";
 //        String SHARight = "fbab1ca";
     }
@@ -124,10 +121,24 @@ public class MergeGuider {
         for (ConflictingChunkInformation cci : ccis) {
 
             String baseFilePath = cci.getFilePath();
-            String leftFilePath = repositoryLeft + File.separator
-                    + baseFilePath.replace(projectPath, "");
-            String rightFilePath = repositoryRight + File.separator
-                    + baseFilePath.replace(projectPath, "");
+            String leftFilePath = null;
+
+            if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+                leftFilePath = repositoryLeft + File.separator
+                        + cci.getRelativePathLeft();
+            } else {
+                leftFilePath = repositoryLeft + File.separator
+                        + baseFilePath.replace(projectPath, "");
+            }
+
+            String rightFilePath = null;
+
+            if (cci.isRenamed() && cci.getRelativePathRight() != null) {
+                rightFilePath = repositoryRight + File.separator + cci.getRelativePathRight();
+            } else {
+                rightFilePath = repositoryRight + File.separator
+                        + baseFilePath.replace(projectPath, "");
+            }
 
             cci.reposition(baseFilePath, leftFilePath, rightFilePath);
 
@@ -274,7 +285,13 @@ public class MergeGuider {
 
         List<MyMethodDeclaration> result = new ArrayList<>();
 
-        String relativePath = cci.getFilePath().replace(projectPath, "");
+        String relativePath = null;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
@@ -316,7 +333,13 @@ public class MergeGuider {
 
         List<MyMethodDeclaration> result = new ArrayList<>();
 
-        String relativePath = cci.getFilePath().replace(projectPath, "");
+        String relativePath = null;
+
+        if (cci.isRenamed() && cci.getRelativePathRight() != null) {
+            relativePath = cci.getRelativePathRight();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
 
         for (ClassLanguageContructs AST : ASTRight) {
 
@@ -358,7 +381,13 @@ public class MergeGuider {
 
         List<MyMethodInvocation> result = new ArrayList<>();
 
-        String relativePath = cci.getFilePath().replace(projectPath, "");
+        String relativePath = null;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
@@ -382,7 +411,13 @@ public class MergeGuider {
 
         List<MyMethodInvocation> result = new ArrayList<>();
 
-        String relativePath = cci.getFilePath().replace(projectPath, "");
+        String relativePath = null;
+
+        if (cci.isRenamed() && cci.getRelativePathRight() != null) {
+            relativePath = cci.getRelativePathRight();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
 
         for (ClassLanguageContructs AST : ASTRight) {
 

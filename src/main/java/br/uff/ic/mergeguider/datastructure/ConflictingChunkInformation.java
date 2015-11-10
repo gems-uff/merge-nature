@@ -35,15 +35,21 @@ public class ConflictingChunkInformation {
     private int rightEnd;
 
     //Verify whether files were renamed
-    boolean renamed;
-    String relativePathLeft;
-    String relativePathRight;
-    
+    private boolean renamed;
+    private String relativePathLeft;
+    private String relativePathRight;
+
     public ConflictingChunkInformation(String filePath, int begin, int separator, int end) {
         this.filePath = filePath;
         this.begin = begin;
         this.separator = separator;
         this.end = end;
+
+        //Treating rename
+        renamed = false;
+        relativePathLeft = null;
+        relativePathRight = null;
+
     }
 
     public static List<ConflictingChunkInformation> extractConflictingChunksInformation(String filePath) throws IOException {
@@ -61,9 +67,25 @@ public class ConflictingChunkInformation {
             int separatorLine = conflictingChunk.getSeparatorLine();
             int endLine = conflictingChunk.getEndLine();
 
-            
-            
             conflictingChunkInformation = new ConflictingChunkInformation(filePath, beginLine, separatorLine, endLine);
+
+            //Treating rename
+            String beginLineContent = conflictedFileContent.get(beginLine);
+            String endLineContent = conflictedFileContent.get(endLine);
+
+            if (beginLineContent.contains(":") || endLineContent.contains(":")) {
+                conflictingChunkInformation.setRenamed(true);
+
+                String[] beginLineSplit = beginLineContent.split(":");
+                if(beginLineSplit.length > 1){
+                    conflictingChunkInformation.setRelativePathLeft(beginLineSplit[beginLineSplit.length - 1]);
+                }
+                
+                String[] endLineSplit = endLineContent.split(":");
+                if(endLineSplit.length > 1){
+                    conflictingChunkInformation.setRelativePathRight(endLineSplit[endLineSplit.length - 1]);
+                }
+            }
 
             result.add(conflictingChunkInformation);
         }
@@ -165,9 +187,9 @@ public class ConflictingChunkInformation {
 
         }
 
-        return filePath + "(" + begin + ", " + separator + ", " + end + ") \n\t->" + v1 + "\n\t->" + v2 + 
-                "\n\t\trepositioning left: ("+ leftBegin + ", " + leftEnd + ") " +
-                "\n\t\trepositioning right: ("+ rightBegin + ", " + rightEnd + ") ";
+        return filePath + "(" + begin + ", " + separator + ", " + end + ") \n\t->" + v1 + "\n\t->" + v2
+                + "\n\t\trepositioning left: (" + leftBegin + ", " + leftEnd + ") "
+                + "\n\t\trepositioning right: (" + rightBegin + ", " + rightEnd + ") ";
     }
 
     public void reposition(String baseFilePath, String leftFilePath, String rightFilePath) {
@@ -248,5 +270,47 @@ public class ConflictingChunkInformation {
      */
     public void setRightEnd(int rightEnd) {
         this.rightEnd = rightEnd;
+    }
+
+    /**
+     * @return the renamed
+     */
+    public boolean isRenamed() {
+        return renamed;
+    }
+
+    /**
+     * @param renamed the renamed to set
+     */
+    public void setRenamed(boolean renamed) {
+        this.renamed = renamed;
+    }
+
+    /**
+     * @return the relativePathLeft
+     */
+    public String getRelativePathLeft() {
+        return relativePathLeft;
+    }
+
+    /**
+     * @param relativePathLeft the relativePathLeft to set
+     */
+    public void setRelativePathLeft(String relativePathLeft) {
+        this.relativePathLeft = relativePathLeft;
+    }
+
+    /**
+     * @return the relativePathRight
+     */
+    public String getRelativePathRight() {
+        return relativePathRight;
+    }
+
+    /**
+     * @param relativePathRight the relativePathRight to set
+     */
+    public void setRelativePathRight(String relativePathRight) {
+        this.relativePathRight = relativePathRight;
     }
 }
