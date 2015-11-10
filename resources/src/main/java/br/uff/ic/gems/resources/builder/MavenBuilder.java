@@ -92,14 +92,4 @@ public class MavenBuilder implements Builder {
         this.showProgress = showProgress;
     }
 
-    public static void main(String[] args) {
-        Builder builder = new MavenBuilder("/Users/gleiph/Dropbox/doutorado/repositories/left", "/usr/local/apache-maven/apache-maven-3.3.3/", true);
-        boolean compile = builder.compile();
-
-        if (compile) {
-            System.out.println("OK!");
-        } else {
-            System.out.println("Fail!");
-        }
-    }
 }
