@@ -6,6 +6,7 @@
 package br.uff.ic.mergeguider.javaparser;
 
 import br.uff.ic.mergeguider.languageConstructs.Location;
+import br.uff.ic.mergeguider.languageConstructs.MyAttribute;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
@@ -46,6 +48,7 @@ public class DepVisitor extends ASTVisitor {
 
     }
 
+    //Treating method calls
     @Override
     public boolean visit(MethodInvocation node) {
 
@@ -63,10 +66,11 @@ public class DepVisitor extends ASTVisitor {
         return true;
     }
 
+    //Treating method declarations
     @Override
     public boolean visit(MethodDeclaration node) {
 
-        Location location = null;
+        Location location;
 
         int elementLineBegin = cu.getLineNumber(node.getStartPosition());
         int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
@@ -94,10 +98,30 @@ public class DepVisitor extends ASTVisitor {
         return true;
     }
 
+    //Treating attributes
+    @Override
+    public boolean visit(FieldDeclaration node) {
+
+        Location location;
+
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyAttribute myAttribute = new MyAttribute(node, location);
+
+        list.get(list.size() - 1).getAttributes().add(myAttribute);
+        
+        return true;
+    }
+    
     @Override
     public boolean visit(TypeDeclaration node) {
 
-        String className = null;
+        String className;
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {
             String packageName = aPackage.getName().getFullyQualifiedName();
@@ -125,7 +149,7 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(EnumDeclaration node) {
 
-        String className = null;
+        String className;
 
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {
@@ -154,7 +178,7 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(AnnotationTypeDeclaration node) {
 
-        String className = null;
+        String className;
 
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {

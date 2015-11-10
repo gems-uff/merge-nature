@@ -59,12 +59,13 @@ public class JavaParser {
 
                 if (qualifiedName != null) {
 
-                    ClassLanguageContructs classLanguageContructs = new ClassLanguageContructs(qualifiedName, classPath);
+                    ClassLanguageContructs clc = new ClassLanguageContructs(qualifiedName, classPath);
 
-                    classLanguageContructs.setMethodDeclarations(classLanguageConstructs.getMethodDeclarations());
-                    classLanguageContructs.setMethodInvocations(classLanguageConstructs.getMethodInvocations());
+                    clc.setMethodDeclarations(classLanguageConstructs.getMethodDeclarations());
+                    clc.setMethodInvocations(classLanguageConstructs.getMethodInvocations());
+                    clc.setAttributes(classLanguageConstructs.getAttributes());
 
-                    classesLanguageConstructs.add(classLanguageContructs);
+                    classesLanguageConstructs.add(clc);
                 }
 
             }

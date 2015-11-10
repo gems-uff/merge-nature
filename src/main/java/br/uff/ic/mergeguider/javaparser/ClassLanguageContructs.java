@@ -5,6 +5,7 @@
  */
 package br.uff.ic.mergeguider.javaparser;
 
+import br.uff.ic.mergeguider.languageConstructs.MyAttribute;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class ClassLanguageContructs {
 
     private List<MyMethodDeclaration> methodDeclarations;
     private List<MyMethodInvocation> methodInvocations;
+    private List<MyAttribute> attributes;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -28,6 +30,7 @@ public class ClassLanguageContructs {
         
         methodDeclarations = new ArrayList<>();
         methodInvocations = new ArrayList<>();
+        attributes = new ArrayList<>();
         
     }
 
@@ -98,6 +101,20 @@ public class ClassLanguageContructs {
     @Override
     public String toString() {
         return qualifiedName;
+    }
+
+    /**
+     * @return the attributes
+     */
+    public List<MyAttribute> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attributes the attributes to set
+     */
+    public void setAttributes(List<MyAttribute> attributes) {
+        this.attributes = attributes;
     }
     
     

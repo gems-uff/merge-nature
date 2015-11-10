@@ -5,7 +5,7 @@
  */
 package br.uff.ic.mergeguider.javaparser;
 
-import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
+
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
 import java.util.List;
