@@ -12,6 +12,7 @@ import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.Dependencies;
 import br.uff.ic.mergeguider.languageConstructs.Location;
+import br.uff.ic.mergeguider.languageConstructs.MyAttribute;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.io.File;
@@ -32,13 +33,17 @@ public class MergeGuider {
         //Home
 //        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
 //        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-//                String projectPath = "/Users/gleiph/repositories/icse/mct";
+                String projectPath = "/Users/gleiph/repositories/icse/mct";
 //                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
 //        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
-//        String sandbox = "/Users/gleiph/repositories/icse";
+        String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
-        String projectPath = "/home/gmenezes/repositorios/lombok";
-        String sandbox = "/home/gmenezes/repositorios/";
+//        String projectPath = "/home/gmenezes/repositorios/antlr4";
+//        String projectPath = "/home/gmenezes/repositorios/lombok";
+//        String projectPath = "/home/gmenezes/repositorios/twitter4j";
+//        String projectPath = "/home/gmenezes/repositorios/mct";
+
+//        String sandbox = "/home/gmenezes/repositorios/";
 
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
 
@@ -169,6 +174,14 @@ public class MergeGuider {
             //Find method declaration that has some intersection with a method declaration
             List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, cci, ASTLeft);
             List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
+
+            //Find attribute declarations
+            List<MyAttribute> leftAttributes = leftAttributes(projectPath, cci, ASTLeft);
+            List<MyAttribute> rightAttributes = rightAttributes(projectPath, cci, ASTRight);
+
+            if (!leftAttributes.isEmpty() || !rightAttributes.isEmpty()) {
+                System.out.println(cci.toString() + " has attributes!");
+            }
 
             int rowNumber = ccis.indexOf(cci);
 
@@ -474,6 +487,66 @@ public class MergeGuider {
                 }
             }
 
+        }
+
+        return result;
+    }
+
+    public static List<MyAttribute> leftAttributes(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyAttribute> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAttribute> attributeDeclarations = AST.getAttributes();
+
+                for (MyAttribute attributeDeclaration : attributeDeclarations) {
+                    if (leftHasIntersection(attributeDeclaration.getLocation(), cci)) {
+                        result.add(attributeDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAttribute> rightAttributes(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyAttribute> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAttribute> attributeDeclarations = AST.getAttributes();
+
+                for (MyAttribute attributeDeclaration : attributeDeclarations) {
+                    if (rightHasIntersection(attributeDeclaration.getLocation(), cci)) {
+                        result.add(attributeDeclaration);
+                    }
+                }
+            }
         }
 
         return result;
