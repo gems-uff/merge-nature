@@ -12,7 +12,8 @@ import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.Dependencies;
 import br.uff.ic.mergeguider.languageConstructs.Location;
-import br.uff.ic.mergeguider.languageConstructs.MyAttribute;
+import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.io.File;
@@ -20,7 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 
 /**
  *
@@ -28,60 +31,89 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
  */
 public class MergeGuider {
 
+//    public static void main(String[] args) {
+//
+//        //Home
+////        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
+////        String projectPath = "/Users/gleiph/repositories/icse/lombok";
+//        String projectPath = "/Users/gleiph/repositories/icse/mct";
+////                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
+////        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+//        String sandbox = "/Users/gleiph/repositories/icse";
+//        //UFF
+////        String projectPath = "/home/gmenezes/repositorios/antlr4";
+////        String projectPath = "/home/gmenezes/repositorios/lombok";
+////        String projectPath = "/home/gmenezes/repositorios/twitter4j";
+////        String projectPath = "/home/gmenezes/repositorios/mct";
+//
+////        String sandbox = "/home/gmenezes/repositorios/";
+//        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
+//
+//        int hasDependencies = 0, hasNoDependencies = 0;
+//
+//        for (String mergeRevision : mergeRevisions) {
+//
+//            List<String> parents = Git.getParents(projectPath, mergeRevision);
+//
+//            if (parents.size() == 2) {
+//                String SHALeft = parents.get(0);
+//                String SHARight = parents.get(1);
+//
+//                List<CCDependency> performMerge;
+//                try {
+//                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+//                    if (performMerge == null) {
+//                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+//                    } else if (performMerge.isEmpty()) {
+//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
+//                        hasNoDependencies++;
+//                    } else {
+//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+//                        hasDependencies++;
+//                    }
+//                } catch (IOException ex) {
+//                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+//
+//                }
+//
+//            }
+//        }
+//
+//        System.out.println("hasNoDependencies = " + hasNoDependencies);
+//        System.out.println("hasDependencies = " + hasDependencies);
+//
+////        String SHALeft = "e557413";
+////        String SHARight = "fbab1ca";
+//    }
+
     public static void main(String[] args) {
-
-        //Home
-//        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
-//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-                String projectPath = "/Users/gleiph/repositories/icse/mct";
-//                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+        String projectPath = "/Users/gleiph/repositories/icse/mct";
         String sandbox = "/Users/gleiph/repositories/icse";
-        //UFF
-//        String projectPath = "/home/gmenezes/repositorios/antlr4";
-//        String projectPath = "/home/gmenezes/repositorios/lombok";
-//        String projectPath = "/home/gmenezes/repositorios/twitter4j";
-//        String projectPath = "/home/gmenezes/repositorios/mct";
 
-//        String sandbox = "/home/gmenezes/repositorios/";
-
-        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
+        String SHALeft = "38ebddc99d9a3514c3114089ee1dc5887af014d4";
+        String SHARight = "0e810501d8cdcdf7847f72dfd8b3a915438f6291";
 
         int hasDependencies = 0, hasNoDependencies = 0;
 
-        for (String mergeRevision : mergeRevisions) {
-
-            List<String> parents = Git.getParents(projectPath, mergeRevision);
-
-            if (parents.size() == 2) {
-                String SHALeft = parents.get(0);
-                String SHARight = parents.get(1);
-
-                List<CCDependency> performMerge;
-                try {
-                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-                    if (performMerge == null) {
-                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-                    } else if (performMerge.isEmpty()) {
-                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
-                        hasNoDependencies++;
-                    } else {
-                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
-                        hasDependencies++;
-                    }
-                } catch (IOException ex) {
-                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
-
-                }
-
+        List<CCDependency> performMerge;
+        try {
+            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+            if (performMerge == null) {
+                System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+            } else if (performMerge.isEmpty()) {
+                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
+                hasNoDependencies++;
+            } else {
+                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+                hasDependencies++;
             }
-        }
+        } catch (IOException ex) {
+            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
 
+        }
+        
         System.out.println("hasNoDependencies = " + hasNoDependencies);
         System.out.println("hasDependencies = " + hasDependencies);
-
-//        String SHALeft = "e557413";
-//        String SHARight = "fbab1ca";
     }
 
     public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
@@ -176,10 +208,10 @@ public class MergeGuider {
             List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, cci, ASTRight);
 
             //Find attribute declarations
-            List<MyAttribute> leftAttributes = leftAttributes(projectPath, cci, ASTLeft);
-            List<MyAttribute> rightAttributes = rightAttributes(projectPath, cci, ASTRight);
+            List<MyAttributeDeclaration> leftAttributeDeclarations = leftAttributes(projectPath, cci, ASTLeft);
+            List<MyAttributeDeclaration> rightAttributeDeclarations = rightAttributes(projectPath, cci, ASTRight);
 
-            if (!leftAttributes.isEmpty() || !rightAttributes.isEmpty()) {
+            if (!leftAttributeDeclarations.isEmpty() || !rightAttributeDeclarations.isEmpty()) {
                 System.out.println(cci.toString() + " has attributes!");
             }
 
@@ -191,11 +223,22 @@ public class MergeGuider {
                 List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, cciAux, ASTLeft);
                 List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, cciAux, ASTRight);
 
-                boolean hasDependecy
+                List<MyAttributeCall> leftAttributeCalls = leftAttributeCalls(projectPath, cciAux, ASTLeft);
+                List<MyAttributeCall> rightAttributeCalls = rightAttributeCalls(projectPath, cciAux, ASTRight);
+
+                boolean hasMethodDependecy
                         = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
                         || hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
+                boolean hasAttributeDepedency
+                        = hasAttributeDependency(leftAttributeDeclarations, leftAttributeCalls)
+                        || hasAttributeDependency(rightAttributeDeclarations, rightAttributeCalls);
 
-                if (hasDependecy) {
+                if (hasMethodDependecy) {
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    dependencyMatrix[columnNumber][rowNumber] = 1;
+                }
+
+                if (hasAttributeDepedency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     dependencyMatrix[columnNumber][rowNumber] = 1;
                 }
@@ -259,6 +302,33 @@ public class MergeGuider {
         IMethodBinding methodInvocationBinding = methodInvocation.getMethodInvocation().resolveMethodBinding();
 
         if (methodDeclarationBinding != null && methodInvocationBinding != null && methodDeclarationBinding.equals(methodInvocationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean hasAttributeDependency(List<MyAttributeDeclaration> attributeDeclarations, List<MyAttributeCall> attributeCalls) {
+
+        for (MyAttributeCall attributeCall : attributeCalls) {
+            for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
+
+                if (sameAttribute(attributeDeclaration, attributeCall)) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameAttribute(MyAttributeDeclaration attributeDeclaration, MyAttributeCall attributeCall) {
+
+        IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
+        IBinding attributeCallBinding = attributeCall.getSimpleName().resolveBinding();
+
+        if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeDeclarationBinding.equals(attributeCallBinding)) {
             return true;
         } else {
             return false;
@@ -492,10 +562,10 @@ public class MergeGuider {
         return result;
     }
 
-    public static List<MyAttribute> leftAttributes(String projectPath,
+    public static List<MyAttributeDeclaration> leftAttributes(String projectPath,
             ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
 
-        List<MyAttribute> result = new ArrayList<>();
+        List<MyAttributeDeclaration> result = new ArrayList<>();
 
         String relativePath;
 
@@ -509,9 +579,9 @@ public class MergeGuider {
 
             if (AST.getPath().contains(relativePath)) {
 
-                List<MyAttribute> attributeDeclarations = AST.getAttributes();
+                List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
-                for (MyAttribute attributeDeclaration : attributeDeclarations) {
+                for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
                     if (leftHasIntersection(attributeDeclaration.getLocation(), cci)) {
                         result.add(attributeDeclaration);
                     }
@@ -522,10 +592,10 @@ public class MergeGuider {
         return result;
     }
 
-    public static List<MyAttribute> rightAttributes(String projectPath,
+    public static List<MyAttributeDeclaration> rightAttributes(String projectPath,
             ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
 
-        List<MyAttribute> result = new ArrayList<>();
+        List<MyAttributeDeclaration> result = new ArrayList<>();
 
         String relativePath;
 
@@ -539,11 +609,71 @@ public class MergeGuider {
 
             if (AST.getPath().contains(relativePath)) {
 
-                List<MyAttribute> attributeDeclarations = AST.getAttributes();
+                List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
-                for (MyAttribute attributeDeclaration : attributeDeclarations) {
+                for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
                     if (rightHasIntersection(attributeDeclaration.getLocation(), cci)) {
                         result.add(attributeDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAttributeCall> leftAttributeCalls(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyAttributeCall> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
+
+                for (MyAttributeCall attributeCall : attributeCalls) {
+                    if (leftHasIntersection(attributeCall.getLocation(), cci)) {
+                        result.add(attributeCall);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAttributeCall> rightAttributeCalls(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyAttributeCall> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
+
+                for (MyAttributeCall attributeCall : attributeCalls) {
+                    if (rightHasIntersection(attributeCall.getLocation(), cci)) {
+                        result.add(attributeCall);
                     }
                 }
             }

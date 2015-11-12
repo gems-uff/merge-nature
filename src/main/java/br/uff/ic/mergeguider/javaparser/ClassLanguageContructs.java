@@ -5,7 +5,8 @@
  */
 package br.uff.ic.mergeguider.javaparser;
 
-import br.uff.ic.mergeguider.languageConstructs.MyAttribute;
+import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class ClassLanguageContructs {
 
     private List<MyMethodDeclaration> methodDeclarations;
     private List<MyMethodInvocation> methodInvocations;
-    private List<MyAttribute> attributes;
+    private List<MyAttributeDeclaration> attributes;
+    private List<MyAttributeCall> attributeCalls;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -31,6 +33,7 @@ public class ClassLanguageContructs {
         methodDeclarations = new ArrayList<>();
         methodInvocations = new ArrayList<>();
         attributes = new ArrayList<>();
+        attributeCalls = new ArrayList<>();
         
     }
 
@@ -106,15 +109,29 @@ public class ClassLanguageContructs {
     /**
      * @return the attributes
      */
-    public List<MyAttribute> getAttributes() {
+    public List<MyAttributeDeclaration> getAttributes() {
         return attributes;
     }
 
     /**
      * @param attributes the attributes to set
      */
-    public void setAttributes(List<MyAttribute> attributes) {
+    public void setAttributes(List<MyAttributeDeclaration> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * @return the attributeCalls
+     */
+    public List<MyAttributeCall> getAttributeCalls() {
+        return attributeCalls;
+    }
+
+    /**
+     * @param attributeCalls the attributeCalls to set
+     */
+    public void setAttributeCalls(List<MyAttributeCall> attributeCalls) {
+        this.attributeCalls = attributeCalls;
     }
     
     

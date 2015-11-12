@@ -5,18 +5,18 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
-import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
  *
  * @author gmenezes
  */
-public class MyAttribute {
+public class MyAttributeDeclaration {
     
-    private FieldDeclaration fieldDeclaration;
+    private VariableDeclarationFragment fieldDeclaration;
     private Location location;
 
-    public MyAttribute(FieldDeclaration fieldDeclaration, Location location) {
+    public MyAttributeDeclaration(VariableDeclarationFragment fieldDeclaration, Location location) {
         this.fieldDeclaration = fieldDeclaration;
         this.location = location;
     }
@@ -24,14 +24,14 @@ public class MyAttribute {
     /**
      * @return the fieldDeclaration
      */
-    public FieldDeclaration getFieldDeclaration() {
+    public VariableDeclarationFragment getFieldDeclaration() {
         return fieldDeclaration;
     }
 
     /**
      * @param fieldDeclaration the fieldDeclaration to set
      */
-    public void setFieldDeclaration(FieldDeclaration fieldDeclaration) {
+    public void setFieldDeclaration(VariableDeclarationFragment fieldDeclaration) {
         this.fieldDeclaration = fieldDeclaration;
     }
 

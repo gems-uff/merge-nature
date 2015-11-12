@@ -171,4 +171,26 @@ public class Location {
         }
     }
 
+    public boolean contains(Location location) {
+
+        if (this.elementLineBegin < location.getElementLineBegin()
+                && this.elementLineEnd > location.getElementLineEnd()) {
+            return true;
+        } else if (elementLineBegin == location.getElementLineBegin()
+                && elementColumnBegin <= location.getElementColumnBegin()
+                && elementLineEnd == location.getElementLineEnd()
+                && elementColumnEnd >= location.getElementColumnEnd()) {
+            return true;
+        } else if (elementLineBegin < location.getElementLineBegin()
+                && elementLineEnd == location.getElementLineEnd()
+                && elementColumnEnd >= location.getElementColumnEnd()) {
+            return true;
+        } else if (elementLineBegin == location.getElementLineBegin()
+                && elementColumnBegin <= location.getElementColumnBegin()
+                && elementLineEnd > location.getElementLineEnd()) {
+            return true;
+        }
+        return false;
+    }
+
 }

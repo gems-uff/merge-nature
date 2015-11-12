@@ -26,10 +26,15 @@ public class JavaParser {
         parser.setResolveBindings(true);
         parser.setBindingsRecovery(true);
 
-        Map<?, ?> options = JavaCore.getOptions();
-        JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+        Map options = JavaCore.getOptions();
+//        JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+//        parser.setCompilerOptions(options);
+        
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
         parser.setCompilerOptions(options);
-
+        
         String[] srcDirs = FileUtils.getAllDirs(path);
         String[] javaFiles = FileUtils.getAllJavaFiles(path);
 
@@ -64,7 +69,8 @@ public class JavaParser {
                     clc.setMethodDeclarations(classLanguageConstructs.getMethodDeclarations());
                     clc.setMethodInvocations(classLanguageConstructs.getMethodInvocations());
                     clc.setAttributes(classLanguageConstructs.getAttributes());
-
+                    clc.setAttributeCalls(classLanguageConstructs.getAttributeCalls());
+                    
                     classesLanguageConstructs.add(clc);
                 }
 
