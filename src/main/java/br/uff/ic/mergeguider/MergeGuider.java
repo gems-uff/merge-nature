@@ -16,6 +16,8 @@ import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
+import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,7 +117,6 @@ public class MergeGuider {
 //        System.out.println("hasNoDependencies = " + hasNoDependencies);
 //        System.out.println("hasDependencies = " + hasDependencies);
 //    }
-
     public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
         if (isFailedMerge(projectPath, SHALeft, SHARight)) {
 
@@ -211,6 +212,10 @@ public class MergeGuider {
             List<MyAttributeDeclaration> leftAttributeDeclarations = leftAttributes(projectPath, cci, ASTLeft);
             List<MyAttributeDeclaration> rightAttributeDeclarations = rightAttributes(projectPath, cci, ASTRight);
 
+            //Find variable declarations
+            List<MyVariableDeclaration> leftVariableDeclarations = leftVariableDeclarations(projectPath, cci, ASTLeft);
+            List<MyVariableDeclaration> rightVariableDeclarations = rightVariableDeclarations(projectPath, cci, ASTRight);
+
             if (!leftAttributeDeclarations.isEmpty() || !rightAttributeDeclarations.isEmpty()) {
                 System.out.println(cci.toString() + " has attributes!");
             }
@@ -226,12 +231,19 @@ public class MergeGuider {
                 List<MyAttributeCall> leftAttributeCalls = leftAttributeCalls(projectPath, cciAux, ASTLeft);
                 List<MyAttributeCall> rightAttributeCalls = rightAttributeCalls(projectPath, cciAux, ASTRight);
 
+                List<MyVariableCall> leftVariableCalls = leftVariableCalls(projectPath, cciAux, ASTLeft);
+                List<MyVariableCall> rightVariableCalls = rightVariableCalls(projectPath, cciAux, ASTRight);
+
                 boolean hasMethodDependecy
                         = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
                         || hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
                 boolean hasAttributeDepedency
                         = hasAttributeDependency(leftAttributeDeclarations, leftAttributeCalls)
                         || hasAttributeDependency(rightAttributeDeclarations, rightAttributeCalls);
+
+                boolean hasVariableDepedency
+                        = hasVariableDependency(leftVariableDeclarations, leftVariableCalls)
+                        || hasVariableDependency(rightVariableDeclarations, rightVariableCalls);
 
                 if (hasMethodDependecy) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
@@ -243,6 +255,12 @@ public class MergeGuider {
                     dependencyMatrix[columnNumber][rowNumber] = 1;
                 }
 
+                if (hasVariableDepedency) {
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    if (columnNumber != rowNumber) {
+                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                    }
+                }
             }
 
 //                System.out.println("-----------------------------------------------------------------------");
@@ -327,6 +345,33 @@ public class MergeGuider {
 
         IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
         IBinding attributeCallBinding = attributeCall.getSimpleName().resolveBinding();
+
+        if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeDeclarationBinding.equals(attributeCallBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean hasVariableDependency(List<MyVariableDeclaration> variableDeclarations, List<MyVariableCall> variableCalls) {
+
+        for (MyVariableCall variableCall : variableCalls) {
+            for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+
+                if (sameAttribute(variableDeclaration, variableCall)) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameAttribute(MyVariableDeclaration variableDeclaration, MyVariableCall variableCall) {
+
+        IVariableBinding attributeDeclarationBinding = variableDeclaration.resolveBinding();
+        IBinding attributeCallBinding = variableCall.getSimpleName().resolveBinding();
 
         if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeDeclarationBinding.equals(attributeCallBinding)) {
             return true;
@@ -674,6 +719,126 @@ public class MergeGuider {
                 for (MyAttributeCall attributeCall : attributeCalls) {
                     if (rightHasIntersection(attributeCall.getLocation(), cci)) {
                         result.add(attributeCall);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableDeclaration> leftVariableDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyVariableDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
+
+                for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+                    if (leftHasIntersection(variableDeclaration.getLocation(), cci)) {
+                        result.add(variableDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableDeclaration> rightVariableDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyVariableDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
+
+                for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+                    if (rightHasIntersection(variableDeclaration.getLocation(), cci)) {
+                        result.add(variableDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableCall> leftVariableCalls(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyVariableCall> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyVariableCall> variableCalls = AST.getVariableCalls();
+
+                for (MyVariableCall variableCall : variableCalls) {
+                    if (leftHasIntersection(variableCall.getLocation(), cci)) {
+                        result.add(variableCall);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableCall> rightVariableCalls(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyVariableCall> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyVariableCall> variableCalls = AST.getVariableCalls();
+
+                for (MyVariableCall variableCall : variableCalls) {
+                    if (rightHasIntersection(variableCall.getLocation(), cci)) {
+                        result.add(variableCall);
                     }
                 }
             }
