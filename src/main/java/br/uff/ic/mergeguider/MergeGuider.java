@@ -31,90 +31,90 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
  */
 public class MergeGuider {
 
-//    public static void main(String[] args) {
-//
-//        //Home
-////        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
-////        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-//        String projectPath = "/Users/gleiph/repositories/icse/mct";
-////                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-////        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
-//        String sandbox = "/Users/gleiph/repositories/icse";
-//        //UFF
-////        String projectPath = "/home/gmenezes/repositorios/antlr4";
-////        String projectPath = "/home/gmenezes/repositorios/lombok";
-////        String projectPath = "/home/gmenezes/repositorios/twitter4j";
-////        String projectPath = "/home/gmenezes/repositorios/mct";
-//
-////        String sandbox = "/home/gmenezes/repositorios/";
-//        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
-//
-//        int hasDependencies = 0, hasNoDependencies = 0;
-//
-//        for (String mergeRevision : mergeRevisions) {
-//
-//            List<String> parents = Git.getParents(projectPath, mergeRevision);
-//
-//            if (parents.size() == 2) {
-//                String SHALeft = parents.get(0);
-//                String SHARight = parents.get(1);
-//
-//                List<CCDependency> performMerge;
-//                try {
-//                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-//                    if (performMerge == null) {
-//                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-//                    } else if (performMerge.isEmpty()) {
-//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
-//                        hasNoDependencies++;
-//                    } else {
-//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
-//                        hasDependencies++;
-//                    }
-//                } catch (IOException ex) {
-//                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
-//
-//                }
-//
-//            }
-//        }
-//
-//        System.out.println("hasNoDependencies = " + hasNoDependencies);
-//        System.out.println("hasDependencies = " + hasDependencies);
-//
-////        String SHALeft = "e557413";
-////        String SHARight = "fbab1ca";
-//    }
-
     public static void main(String[] args) {
-        String projectPath = "/Users/gleiph/repositories/icse/mct";
-        String sandbox = "/Users/gleiph/repositories/icse";
 
-        String SHALeft = "38ebddc99d9a3514c3114089ee1dc5887af014d4";
-        String SHARight = "0e810501d8cdcdf7847f72dfd8b3a915438f6291";
+        //Home
+//        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
+//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
+//        String projectPath = "/Users/gleiph/repositories/icse/mct";
+//                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
+        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+        String sandbox = "/Users/gleiph/repositories/icse";
+        //UFF
+//        String projectPath = "/home/gmenezes/repositorios/antlr4";
+//        String projectPath = "/home/gmenezes/repositorios/lombok";
+//        String projectPath = "/home/gmenezes/repositorios/twitter4j";
+//        String projectPath = "/home/gmenezes/repositorios/mct";
+
+//        String sandbox = "/home/gmenezes/repositorios/";
+        List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
 
         int hasDependencies = 0, hasNoDependencies = 0;
 
-        List<CCDependency> performMerge;
-        try {
-            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-            if (performMerge == null) {
-                System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-            } else if (performMerge.isEmpty()) {
-                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
-                hasNoDependencies++;
-            } else {
-                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
-                hasDependencies++;
-            }
-        } catch (IOException ex) {
-            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+        for (String mergeRevision : mergeRevisions) {
 
+            List<String> parents = Git.getParents(projectPath, mergeRevision);
+
+            if (parents.size() == 2) {
+                String SHALeft = parents.get(0);
+                String SHARight = parents.get(1);
+
+                List<CCDependency> performMerge;
+                try {
+                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+                    if (performMerge == null) {
+                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+                    } else if (performMerge.isEmpty()) {
+                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
+                        hasNoDependencies++;
+                    } else {
+                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+                        hasDependencies++;
+                    }
+                } catch (IOException ex) {
+                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+
+                }
+
+            }
         }
-        
+
         System.out.println("hasNoDependencies = " + hasNoDependencies);
         System.out.println("hasDependencies = " + hasDependencies);
+
+//        String SHALeft = "e557413";
+//        String SHARight = "fbab1ca";
     }
+
+//    public static void main(String[] args) {
+//        String projectPath = "/Users/gleiph/repositories/icse/mct";
+//        String sandbox = "/Users/gleiph/repositories/icse";
+//
+//        String SHALeft = "38ebddc99d9a3514c3114089ee1dc5887af014d4";
+//        String SHARight = "0e810501d8cdcdf7847f72dfd8b3a915438f6291";
+//
+//        int hasDependencies = 0, hasNoDependencies = 0;
+//
+//        List<CCDependency> performMerge;
+//        try {
+//            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
+//            if (performMerge == null) {
+//                System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+//            } else if (performMerge.isEmpty()) {
+//                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
+//                hasNoDependencies++;
+//            } else {
+//                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
+//                hasDependencies++;
+//            }
+//        } catch (IOException ex) {
+//            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+//
+//        }
+//        
+//        System.out.println("hasNoDependencies = " + hasNoDependencies);
+//        System.out.println("hasDependencies = " + hasDependencies);
+//    }
 
     public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
         if (isFailedMerge(projectPath, SHALeft, SHARight)) {

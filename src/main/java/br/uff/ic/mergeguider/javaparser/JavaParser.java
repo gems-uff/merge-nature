@@ -70,6 +70,7 @@ public class JavaParser {
                     clc.setMethodInvocations(classLanguageConstructs.getMethodInvocations());
                     clc.setAttributes(classLanguageConstructs.getAttributes());
                     clc.setAttributeCalls(classLanguageConstructs.getAttributeCalls());
+                    clc.setVariableDeclarations(classLanguageConstructs.getVariableDeclarations());
                     
                     classesLanguageConstructs.add(clc);
                 }

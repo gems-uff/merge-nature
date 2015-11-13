@@ -10,6 +10,7 @@ import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -27,7 +28,9 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
@@ -62,6 +65,11 @@ public class DepVisitor extends ASTVisitor {
 
     }
 
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+    //  Treating Language Constructs
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
     //Treating method calls
     @Override
     public boolean visit(MethodInvocation node) {
@@ -227,8 +235,55 @@ public class DepVisitor extends ASTVisitor {
         return false;
     }
 
+    //Treating Variables 
+    @Override
+    public boolean visit(SingleVariableDeclaration node) {
+        Location location;
+
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+
+        return true;
+    }
+
+    @Override
+    public boolean visit(VariableDeclarationExpression node) {
+        
+        Location location;
+
+        List<VariableDeclarationFragment> fragments = node.fragments();
+
+        for (VariableDeclarationFragment fragment : fragments) {
+
+            int elementLineBegin = cu.getLineNumber(fragment.getStartPosition());
+            int elementLineEnd = cu.getLineNumber(fragment.getStartPosition() + node.getLength());
+            int elementColumnBegin = cu.getColumnNumber(fragment.getStartPosition());
+            int elementColumnEnd = cu.getColumnNumber(fragment.getStartPosition() + node.getLength());
+
+            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+            MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(fragment, location);
+
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+
+        }
+
+        return true;
+        
+    }
+
+    //----------------------------------------------------------------------
     //----------------------------------------------------------------------
     //  Treating cases where a new type, annotation, or Enum declaration starts
+    //----------------------------------------------------------------------
     //----------------------------------------------------------------------
     @Override
     public boolean visit(TypeDeclaration node) {
@@ -288,12 +343,10 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public void endVisit(EnumDeclaration node) {
 
+        treatingSimpleNames(simpleNamesList.remove(simpleNamesList.size() - 1));
+
         if (!classLanguageConstructsList.isEmpty()) {
             getClassesLanguageConstructs().add(classLanguageConstructsList.remove(classLanguageConstructsList.size() - 1));
-        }
-
-        if (!simpleNamesList.isEmpty()) {
-            simpleNamesList.remove(simpleNamesList.size() - 1);
         }
 
     }
@@ -323,16 +376,19 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public void endVisit(AnnotationTypeDeclaration node) {
 
+        treatingSimpleNames(simpleNamesList.remove(simpleNamesList.size() - 1));
+
         if (!classLanguageConstructsList.isEmpty()) {
             getClassesLanguageConstructs().add(classLanguageConstructsList.remove(classLanguageConstructsList.size() - 1));
         }
 
-        if (!simpleNamesList.isEmpty()) {
-            simpleNamesList.remove(simpleNamesList.size() - 1);
-        }
-
     }
 
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+    //  Getters and Setters
+    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
     /**
      * @return the classesLanguageConstructs
      */
