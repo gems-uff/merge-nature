@@ -38,15 +38,15 @@ public class MergeGuider {
 //        String projectPath = "/Users/gleiph/repositories/icse/lombok";
 //        String projectPath = "/Users/gleiph/repositories/icse/mct";
 //                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
-        String sandbox = "/Users/gleiph/repositories/icse";
+//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+//        String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
-//        String projectPath = "/home/gmenezes/repositorios/antlr4";
+        String projectPath = "/home/gmenezes/repositorios/antlr4";
 //        String projectPath = "/home/gmenezes/repositorios/lombok";
 //        String projectPath = "/home/gmenezes/repositorios/twitter4j";
 //        String projectPath = "/home/gmenezes/repositorios/mct";
 
-//        String sandbox = "/home/gmenezes/repositorios/";
+        String sandbox = "/home/gmenezes/repositorios/";
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
 
         int hasDependencies = 0, hasNoDependencies = 0;

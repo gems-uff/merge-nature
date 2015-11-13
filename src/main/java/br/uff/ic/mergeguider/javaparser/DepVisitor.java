@@ -10,6 +10,7 @@ import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.util.ArrayList;
 import java.util.List;
@@ -215,6 +216,33 @@ public class DepVisitor extends ASTVisitor {
                         MyAttributeCall myAttributeCall = new MyAttributeCall(node, location);
 
                         classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAttributeCalls().add(myAttributeCall);
+                    }
+                }
+
+            }
+            
+            //Treating variables
+            for (MyVariableDeclaration variableDeclaration : classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations()) {
+
+                IVariableBinding attributeBinding = variableDeclaration.resolveBinding();
+                if (attributeBinding == null) {
+                    continue;
+                }
+
+                if (simpleNameBinding.equals(attributeBinding)) {
+
+                    int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+                    int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+                    int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+                    int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+                    Location location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+                    if (!variableDeclaration.getLocation().contains(location)) {
+
+                        MyVariableCall myVariableCall = new MyVariableCall(node, location);
+
+                        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableCalls().add(myVariableCall);
                     }
                 }
 

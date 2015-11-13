@@ -5,6 +5,7 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
@@ -13,10 +14,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * @author gleiph
  */
 public class MyVariableDeclaration {
-    
+
     private VariableDeclarationFragment variableDeclaration;
     private SingleVariableDeclaration singleVariableDeclaration;
-    
+
     private Location location;
 
     public MyVariableDeclaration(VariableDeclarationFragment variableDeclaration, Location location) {
@@ -28,7 +29,7 @@ public class MyVariableDeclaration {
         this.singleVariableDeclaration = singleVariableDeclaration;
         this.location = location;
     }
-    
+
     /**
      * @return the location
      */
@@ -69,6 +70,16 @@ public class MyVariableDeclaration {
      */
     public void setSingleVariableDeclaration(SingleVariableDeclaration singleVariableDeclaration) {
         this.singleVariableDeclaration = singleVariableDeclaration;
+    }
+
+    public IVariableBinding resolveBinding() {
+        if (this.singleVariableDeclaration != null) {
+            return this.singleVariableDeclaration.resolveBinding();
+        } else if (this.variableDeclaration != null) {
+            return this.variableDeclaration.resolveBinding();
+        } else {
+            return null;
+        }
     }
 
 }
