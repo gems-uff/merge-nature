@@ -27,6 +27,12 @@ public class KindConflictJDBCDAO {
 
     public static final String CONFLICTING_CHUNK_ID = "conflictingchunk_id";
 
+    private final String database;
+
+    public KindConflictJDBCDAO(String database) {
+        this.database = database;
+    }
+
     public Long insert(KindConflict kindConflict, Long conflictingChunkId, Side side) throws SQLException {
         String insertSQL = "INSERT INTO " + Tables.KIND_CONFLICT
                 + "("
@@ -40,13 +46,13 @@ public class KindConflictJDBCDAO {
                 + side.toString() + "\', \'"
                 + conflictingChunkId + "\')";
 
-        return DefaultOperations.insert(insertSQL);
+        return DefaultOperations.insert(insertSQL, database);
 
     }
 
     public Long insertAll(KindConflict kindConflict, Long conflictingChunkId, Side side) throws SQLException {
 
-        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO();
+        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(database);
 
         Long kindConflictId = this.insert(kindConflict, conflictingChunkId, side);
 
@@ -65,7 +71,7 @@ public class KindConflictJDBCDAO {
         String query = "SELECT * FROM " + Tables.KIND_CONFLICT
                 + " WHERE " + CONFLICTING_CHUNK_ID + " = " + conflictingChunkId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 
@@ -97,7 +103,7 @@ public class KindConflictJDBCDAO {
     }
 
     public List<KindConflict> selectAllByConflictingChunkId(Long conflictingChunkId) throws SQLException {
-        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO();
+        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(database);
 
         List<KindConflict> kindConflicts = this.selectByConflictingChunkId(conflictingChunkId);
 

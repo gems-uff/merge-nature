@@ -23,6 +23,12 @@ public class ConflictingContentJDBCDAO {
 
     public static final String CONFLICTING_CHUNK_ID = "conflictingchunk_id";
 
+    private final String database;
+
+    public ConflictingContentJDBCDAO(String database) {
+        this.database = database;
+    }
+
     public Long insert(String content, Long conflictingChunkId) throws SQLException {
         String insertSQL = "INSERT INTO " + Tables.CONFLICTING_CONTENT
                 + "("
@@ -31,7 +37,7 @@ public class ConflictingContentJDBCDAO {
                 + ") "
                 + "VALUES(?,?)";
 
-        return DefaultOperations.insertContent(insertSQL, content, conflictingChunkId);
+        return DefaultOperations.insertContent(insertSQL, content, conflictingChunkId, database);
 
     }
 
@@ -45,7 +51,7 @@ public class ConflictingContentJDBCDAO {
         String query = "SELECT * FROM " + Tables.CONFLICTING_CONTENT
                 + " WHERE " + CONFLICTING_CHUNK_ID + " = " + conflictingChunkId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 

@@ -26,6 +26,12 @@ public class LanguageJDBCDAO {
 
     public static final String PROJECT_ID = "project_id";
 
+    private final String database;
+
+    public LanguageJDBCDAO(String database) {
+        this.database = database;
+    }
+
     public Long insert(Language language, Long projectId) throws SQLException {
 
         String insertSQL = "INSERT INTO " + Tables.LANGUAGE
@@ -42,21 +48,21 @@ public class LanguageJDBCDAO {
                 + projectId
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL);
+        return DefaultOperations.insert(insertSQL, database);
 
     }
 
     public Long insertAll(Language language, Long projectId) throws SQLException {
         return this.insert(language, projectId);
     }
-    
+
     public List<Language> selectByProjectId(Long projectId) throws SQLException {
         List<Language> languages = new ArrayList<>();
 
         String query = "SELECT * FROM " + Tables.LANGUAGE
                 + " WHERE " + PROJECT_ID + " = " + projectId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 
@@ -64,7 +70,7 @@ public class LanguageJDBCDAO {
 
             while (results.next()) {
                 Language language = new Language();
-                
+
                 language.setId(results.getLong(ID));
                 language.setName(results.getString(NAME));
                 language.setPercentage(results.getDouble(PERCENTAGE));
@@ -77,9 +83,9 @@ public class LanguageJDBCDAO {
 
         return languages;
     }
-    
-        public List<Language> selectAllByProjectId(Long projectId) throws SQLException {
-            return this.selectByProjectId(projectId);
-        }
+
+    public List<Language> selectAllByProjectId(Long projectId) throws SQLException {
+        return this.selectByProjectId(projectId);
+    }
 
 }

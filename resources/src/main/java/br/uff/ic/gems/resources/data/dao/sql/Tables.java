@@ -11,8 +11,6 @@ package br.uff.ic.gems.resources.data.dao.sql;
  */
 public class Tables {
 
-    public static final String DATABASE = "auto";
-
     public static final String PROJECT = "project";
     public static final String REVISION = "revision";
     public static final String LANGUAGE = "language";

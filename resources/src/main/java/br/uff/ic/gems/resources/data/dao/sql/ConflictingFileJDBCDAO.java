@@ -28,6 +28,12 @@ public class ConflictingFileJDBCDAO {
 
     public static final String REVISION_ID = "revision_id";
 
+    private final String database;
+
+    public ConflictingFileJDBCDAO(String database) {
+        this.database = database;
+    }
+
     public Long insert(ConflictingFile conflictingFile, Long revisionId) throws SQLException {
         String insertSQL = "INSERT INTO " + Tables.CONFLICTING_FILE
                 + "("
@@ -45,7 +51,7 @@ public class ConflictingFileJDBCDAO {
                 + revisionId
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL);
+        return DefaultOperations.insert(insertSQL, database);
 
     }
 
@@ -54,7 +60,7 @@ public class ConflictingFileJDBCDAO {
         long conflictingFile_id = this.insert(conflictingFile, revisionId);
 
         //Adding conflicting chunks
-        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(database);
 
         for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
             conflictingChunkDAO.insertAll(conflictingChunk, conflictingFile_id);
@@ -70,7 +76,7 @@ public class ConflictingFileJDBCDAO {
         String query = "SELECT * FROM " + Tables.CONFLICTING_FILE
                 + " WHERE " + REVISION_ID + " = " + revisionId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 
@@ -95,7 +101,7 @@ public class ConflictingFileJDBCDAO {
     public List<ConflictingFile> selectAllByRevisionId(Long revisionId) throws SQLException {
         List<ConflictingFile> conflictingFiles = this.selectByRevisionId(revisionId);
 
-        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(database);
 
         for (ConflictingFile conflictingFile : conflictingFiles) {
             conflictingFile.setConflictingChunks(conflictingChunkDAO.selectAllByConflictingFileId(conflictingFile.getId()));
@@ -110,7 +116,7 @@ public class ConflictingFileJDBCDAO {
         String query = "SELECT * FROM " + Tables.CONFLICTING_FILE
                 + " WHERE " + ID + " = " + conflictingFileId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 
@@ -133,7 +139,7 @@ public class ConflictingFileJDBCDAO {
     public ConflictingFile selectAllByConflictingFileId(Long conflictingFileId) throws SQLException {
         ConflictingFile conflictingFile = this.selectByConflictingFileId(conflictingFileId);
 
-        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(database);
 
         conflictingFile.setConflictingChunks(conflictingChunkDAO.selectAllByConflictingFileId(conflictingFile.getId()));
 

@@ -33,6 +33,12 @@ public class LanguageConstructJDBCDAO {
 
     public static final String KIND_CONFLICT_ID = "kindconflict_id";
 
+    private final String database;
+
+    public LanguageConstructJDBCDAO(String database) {
+        this.database = database;
+    }
+
     public Long insert(LanguageConstruct languageConstruct, Long kindConflict_id) throws SQLException {
         String insertSQL = "INSERT INTO " + Tables.LANGUAGE_CONSTRUCT + "("
                 + BEGIN_COLUMN + ", "
@@ -61,7 +67,7 @@ public class LanguageConstructJDBCDAO {
                 + kindConflict_id
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL);
+        return DefaultOperations.insert(insertSQL, database);
 
     }
 
@@ -75,7 +81,7 @@ public class LanguageConstructJDBCDAO {
         String query = "SELECT * FROM " + Tables.LANGUAGE_CONSTRUCT
                 + " WHERE " + KIND_CONFLICT_ID + " = " + kindConflictId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(Tables.DATABASE);
+        try (Connection connection = (new JDBCConnection()).getConnection(database);
                 Statement statement = connection.createStatement()) {
             statement.execute(query);
 
@@ -95,7 +101,7 @@ public class LanguageConstructJDBCDAO {
                 languageConstruct.setHasBlock(results.getBoolean(HAS_BLOCK));
                 languageConstruct.setId(results.getLong(ID));
                 languageConstruct.setName(results.getString(NAME));
-                
+
                 languageConstructs.add(languageConstruct);
             }
         }
@@ -103,8 +109,8 @@ public class LanguageConstructJDBCDAO {
         return languageConstructs;
     }
 
-        public List<LanguageConstruct> selectAllByKindConflictId(Long kindConflictId) throws SQLException {
-            return this.selectByKindConflictId(kindConflictId);
-        }
+    public List<LanguageConstruct> selectAllByKindConflictId(Long kindConflictId) throws SQLException {
+        return this.selectByKindConflictId(kindConflictId);
+    }
 
 }
