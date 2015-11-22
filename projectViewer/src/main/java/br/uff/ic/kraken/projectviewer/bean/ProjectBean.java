@@ -8,6 +8,7 @@ package br.uff.ic.kraken.projectviewer.bean;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ProjectBean implements Serializable {
      */
     public ProjectBean() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
 
         projects = new ArrayList<>();
 
@@ -55,7 +56,7 @@ public class ProjectBean implements Serializable {
      */
     public List<Project> getProjects() {
         try {
-            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
             projects = projectDAO.select();
             return projects;
         } catch (SQLException ex) {

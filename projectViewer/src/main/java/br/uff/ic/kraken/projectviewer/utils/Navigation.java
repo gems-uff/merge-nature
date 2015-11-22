@@ -46,19 +46,19 @@ public class Navigation {
                 System.out.println("Implement...");
                 break;
             case DataTypes.REVISION:
-                RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
+                RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(DatabaseConfiguration.database);
                 setRevision(revisionDAO.selectAllByRevisionId(id));
                 revisionVisibility = "visible";
                 System.out.println(revision.getSha());
                 break;
             case DataTypes.CONFLICTING_FILE:
-                ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO();
+                ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(DatabaseConfiguration.database);
                 setConflictingFile(conflictingFileDAO.selectAllByConflictingFileId(id));
                 conflictingFileVisibility = "visible";
                 System.out.println(conflictingFile.getName());
                 break;
             case DataTypes.CONFLICTING_CHUNK:
-                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
                 setConflictingChunk(conflictingChunkDAO.selectAllByConflictingChunkId(id));
                 conflictingChunkVisibility = "visible";
                 System.out.println(conflictingChunk.getIdentifier());

@@ -14,6 +14,7 @@ import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DataTypes;
+import br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration;
 import br.uff.ic.kraken.projectviewer.utils.ProjectAnalyses;
 import br.uff.ic.kraken.projectviewer.utils.ProjectOverview;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
@@ -79,7 +80,7 @@ public class AnalysisViewerBean implements Serializable {
 
     public String actionNavigator() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
         Project projectById;
         try {
             projectById = projectDAO.selectAllByProjectId(projectId);
@@ -114,9 +115,9 @@ public class AnalysisViewerBean implements Serializable {
 
     public String showConflictingChunk() {
 
-        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
         try {
-            selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(conflictingChunkId);
+        selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(conflictingChunkId);
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -127,11 +128,11 @@ public class AnalysisViewerBean implements Serializable {
     public String analyze() {
 
         System.out.println("Begin: " + new Date());
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
 
         Project project = null;
         try {
-            project = projectDAO.selectAllByProjectId(projectId);
+        project = projectDAO.selectAllByProjectId(projectId);
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -149,11 +150,11 @@ public class AnalysisViewerBean implements Serializable {
 
     public String overview() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
 
         Project project = null;
         try {
-            project = projectDAO.selectAllByProjectId(projectId);
+        project = projectDAO.selectAllByProjectId(projectId);
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -232,7 +233,7 @@ public class AnalysisViewerBean implements Serializable {
     public String presenter() {
 
         if (dataType.equals(DataTypes.CONFLICTING_CHUNK)) {
-            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO();
+            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
 
             try {
                 selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(Long.parseLong(selectedId));

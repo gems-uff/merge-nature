@@ -9,6 +9,7 @@ import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +46,7 @@ public class AddGithubProjectBean implements Serializable {
         if(githubURL.endsWith("/"))
            githubURL = githubURL.substring(0, githubURL.length() - 1);
         
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
 
         Project project;
         GithubAPI.init();
