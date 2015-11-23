@@ -11,8 +11,10 @@ import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
 import br.uff.ic.gems.resources.data.dao.sql.ConflictingFileJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
 import br.uff.ic.gems.resources.data.dao.sql.RevisionJDBCDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -41,24 +43,26 @@ public class Navigation {
         conflictingFileVisibility = "hidden";
         conflictingChunkVisibility = "hidden";
 
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
         switch (dataType) {
             case DataTypes.PROJECT:
                 System.out.println("Implement...");
                 break;
             case DataTypes.REVISION:
-                RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(DatabaseConfiguration.database);
+                
+                RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
                 setRevision(revisionDAO.selectAllByRevisionId(id));
                 revisionVisibility = "visible";
                 System.out.println(revision.getSha());
                 break;
             case DataTypes.CONFLICTING_FILE:
-                ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(DatabaseConfiguration.database);
+                ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(connection);
                 setConflictingFile(conflictingFileDAO.selectAllByConflictingFileId(id));
                 conflictingFileVisibility = "visible";
                 System.out.println(conflictingFile.getName());
                 break;
             case DataTypes.CONFLICTING_CHUNK:
-                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
+                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(connection);
                 setConflictingChunk(conflictingChunkDAO.selectAllByConflictingChunkId(id));
                 conflictingChunkVisibility = "visible";
                 System.out.println(conflictingChunk.getIdentifier());
@@ -66,6 +70,7 @@ public class Navigation {
         }
 
         return PagesName.showConflicts + "?faces-redirect=true";
+        }
     }
 
     /**

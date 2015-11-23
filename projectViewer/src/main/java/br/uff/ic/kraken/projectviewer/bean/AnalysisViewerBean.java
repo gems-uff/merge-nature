@@ -10,6 +10,7 @@ import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
@@ -19,6 +20,7 @@ import br.uff.ic.kraken.projectviewer.utils.ProjectAnalyses;
 import br.uff.ic.kraken.projectviewer.utils.ProjectOverview;
 import br.uff.ic.kraken.projectviewer.utils.TreeTableNode;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,121 +82,138 @@ public class AnalysisViewerBean implements Serializable {
 
     public String actionNavigator() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
-        Project projectById;
-        try {
-            projectById = projectDAO.selectAllByProjectId(projectId);
-        } catch (SQLException ex) {
-            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-
-        revisions = projectById.getRevisions();
-
-        if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
-
-            root = new DefaultTreeNode("root", null);
-
-            for (Revision revision : revisions) {
-                TreeNode rev = new DefaultTreeNode(new TreeTableNode(revision.getSha(), revision.getId(), DataTypes.REVISION), root);
-
-                for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
-                    TreeNode cf = new DefaultTreeNode(new TreeTableNode(conflictingFile.getName(), conflictingFile.getId(), DataTypes.CONFLICTING_FILE), rev);
-
-                    for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                        TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier() + "(" + conflictingChunk.getDeveloperDecision().toString() + ")", conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
-                    }
-                }
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
+            Project projectById;
+            try {
+                projectById = projectDAO.selectAllByProjectId(projectId);
+            } catch (SQLException ex) {
+                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
 
-            return PagesName.showConflicts;
-        } else {
+            revisions = projectById.getRevisions();
+
+            if (getRevisions() != null && !revisions.isEmpty() && getRevisions().get(0) != null) {
+
+                root = new DefaultTreeNode("root", null);
+
+                for (Revision revision : revisions) {
+                    TreeNode rev = new DefaultTreeNode(new TreeTableNode(revision.getSha(), revision.getId(), DataTypes.REVISION), root);
+
+                    for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
+                        TreeNode cf = new DefaultTreeNode(new TreeTableNode(conflictingFile.getName(), conflictingFile.getId(), DataTypes.CONFLICTING_FILE), rev);
+
+                        for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+                            TreeNode cc = new DefaultTreeNode(new TreeTableNode(conflictingChunk.getIdentifier() + "(" + conflictingChunk.getDeveloperDecision().toString() + ")", conflictingChunk.getId(), DataTypes.CONFLICTING_CHUNK), cf);
+                        }
+                    }
+                }
+
+                return PagesName.showConflicts;
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
             return null;
         }
     }
 
     public String showConflictingChunk() {
 
-        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
-        try {
-        selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(conflictingChunkId);
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(connection);
+            try {
+                selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(conflictingChunkId);
+            } catch (SQLException ex) {
+                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            return PagesName.showConflictingChunk;
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-
-        return PagesName.showConflictingChunk;
     }
 
     public String analyze() {
 
         System.out.println("Begin: " + new Date());
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
 
-        Project project = null;
-        try {
-        project = projectDAO.selectAllByProjectId(projectId);
+            Project project = null;
+            try {
+                project = projectDAO.selectAllByProjectId(projectId);
+            } catch (SQLException ex) {
+                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            String repositoriesPath = "/Users/gleiph/Desktop/repositories";
+//        String repositoriesPath = "/home/gmenezes/repositories";
+
+            ProjectAnalyses projectAnalyses = new ProjectAnalyses();
+            projectAnalyses.analyze(repositoriesPath, project);
+
+            System.out.println("End: " + new Date());
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        String repositoriesPath = "/Users/gleiph/Desktop/repositories";
-//        String repositoriesPath = "/home/gmenezes/repositories";
-
-        ProjectAnalyses projectAnalyses = new ProjectAnalyses();
-        projectAnalyses.analyze(repositoriesPath, project);
-
-        System.out.println("End: " + new Date());
-
         return null;
     }
 
     public String overview() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
 
-        Project project = null;
-        try {
-        project = projectDAO.selectAllByProjectId(projectId);
-        } catch (SQLException ex) {
-            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        projectSummarization = new ArrayList<>();
-
-        projectName = project.getName();
-        String sha1 = "";
-        String fileName = "";
-        String ccIdentifier = "";
-        String developerDecision = "";
-        String kindConflict = "";
-
-        for (Revision revision : project.getRevisions()) {
-            sha1 = revision.getSha();
-
-            for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
-                fileName = conflictingFile.getName();
-
-                for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                    ccIdentifier = conflictingChunk.getIdentifier();
-                    developerDecision = conflictingChunk.getDeveloperDecision().toString();
-                    List<String> generalKindConflict = conflictingChunk.generalKindConflict();
-
-                    kindConflict = "";
-
-                    for (int i = 0; i < generalKindConflict.size(); i++) {
-                        String get = generalKindConflict.get(i);
-
-                        if (i < generalKindConflict.size() - 1) {
-                            kindConflict += get + ", ";
-                        } else {
-                            kindConflict += get;
-                        }
-                    }
-
-                    projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId()));
-                }
+            Project project = null;
+            try {
+                project = projectDAO.selectAllByProjectId(projectId);
+            } catch (SQLException ex) {
+                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            projectSummarization = new ArrayList<>();
+
+            projectName = project.getName();
+            String sha1 = "";
+            String fileName = "";
+            String ccIdentifier = "";
+            String developerDecision = "";
+            String kindConflict = "";
+
+            for (Revision revision : project.getRevisions()) {
+                sha1 = revision.getSha();
+
+                for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
+                    fileName = conflictingFile.getName();
+
+                    for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+                        ccIdentifier = conflictingChunk.getIdentifier();
+                        developerDecision = conflictingChunk.getDeveloperDecision().toString();
+                        List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+
+                        kindConflict = "";
+
+                        for (int i = 0; i < generalKindConflict.size(); i++) {
+                            String get = generalKindConflict.get(i);
+
+                            if (i < generalKindConflict.size() - 1) {
+                                kindConflict += get + ", ";
+                            } else {
+                                kindConflict += get;
+                            }
+                        }
+
+                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId()));
+                    }
+                }
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
 
         return PagesName.projectOverview;
@@ -232,18 +251,21 @@ public class AnalysisViewerBean implements Serializable {
 
     public String presenter() {
 
-        if (dataType.equals(DataTypes.CONFLICTING_CHUNK)) {
-            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(DatabaseConfiguration.database);
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            if (dataType.equals(DataTypes.CONFLICTING_CHUNK)) {
+                ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(connection);
 
-            try {
-                selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(Long.parseLong(selectedId));
-            } catch (SQLException ex) {
-                Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    selectedConflictingChunk = conflictingChunkDAO.selectAllByConflictingChunkId(Long.parseLong(selectedId));
+                } catch (SQLException ex) {
+                    Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                return PagesName.showConflicts;
             }
-
-            return PagesName.showConflicts;
+        } catch (SQLException ex) {
+            Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return null;
     }
 

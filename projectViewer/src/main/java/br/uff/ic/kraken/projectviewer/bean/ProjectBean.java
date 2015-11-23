@@ -6,10 +6,12 @@
 package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.Project;
+import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,8 @@ public class ProjectBean implements Serializable {
      */
     public ProjectBean() {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
 
         projects = new ArrayList<>();
 
@@ -48,6 +51,9 @@ public class ProjectBean implements Serializable {
         }
 
         projects.addAll(all);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -55,8 +61,9 @@ public class ProjectBean implements Serializable {
      * @return the projects
      */
     public List<Project> getProjects() {
-        try {
-            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(DatabaseConfiguration.database);
+        
+        try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
             projects = projectDAO.select();
             return projects;
         } catch (SQLException ex) {
