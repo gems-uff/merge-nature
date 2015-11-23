@@ -86,35 +86,6 @@ public class MergeGuider {
 
     }
 
-//    public static void main(String[] args) {
-//        String projectPath = "/Users/gleiph/repositories/icse/mct";
-//        String sandbox = "/Users/gleiph/repositories/icse";
-//
-//        String SHALeft = "38ebddc99d9a3514c3114089ee1dc5887af014d4";
-//        String SHARight = "0e810501d8cdcdf7847f72dfd8b3a915438f6291";
-//
-//        int hasDependencies = 0, hasNoDependencies = 0;
-//
-//        List<CCDependency> performMerge;
-//        try {
-//            performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-//            if (performMerge == null) {
-//                System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-//            } else if (performMerge.isEmpty()) {
-//                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
-//                hasNoDependencies++;
-//            } else {
-//                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
-//                hasDependencies++;
-//            }
-//        } catch (IOException ex) {
-//            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
-//
-//        }
-//        
-//        System.out.println("hasNoDependencies = " + hasNoDependencies);
-//        System.out.println("hasDependencies = " + hasDependencies);
-//    }
     public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
         if (isFailedMerge(projectPath, SHALeft, SHARight)) {
 
@@ -190,11 +161,6 @@ public class MergeGuider {
 
             cci.reposition(baseFilePath, leftFilePath, rightFilePath);
 
-//                System.out.println("------------------------------------------------");
-//                System.out.println(cci.getFilePath());
-//                System.out.println(cci.getBegin() + " -> " + cci.getLeftBegin() + " -> " + cci.getRightBegin());
-//                System.out.println(cci.getEnd() + " -> " + cci.getLeftEnd() + " -> " + cci.getRightEnd());
-//                System.out.println("------------------------------------------------");
         }
     }
 
@@ -265,18 +231,6 @@ public class MergeGuider {
                 }
             }
 
-//                System.out.println("-----------------------------------------------------------------------");
-//                System.out.println(cci.toString());
-//                System.out.println("Left");
-//                for (MyMethodDeclaration methodDeclaration : leftMethodDeclarations) {
-//                    System.out.println("\t" + methodDeclaration.getMethodDeclaration().getName().getIdentifier());
-//                }
-//                
-//                System.out.println("Right");
-//                for (MyMethodDeclaration methodDeclaration : rightMethodDeclarations) {
-//                    System.out.println("\t" + methodDeclaration.getMethodDeclaration().getName().getIdentifier());
-//                }
-//                System.out.println("-----------------------------------------------------------------------");
         }
     }
 
