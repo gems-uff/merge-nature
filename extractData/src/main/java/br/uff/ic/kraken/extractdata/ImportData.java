@@ -24,11 +24,12 @@ public class ImportData {
 
     public static void main(String[] args) throws IOException {
 
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO();
-        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO();
-        
         String dir = args[0];
+        String database = args[1];
 //        String dir = "/Users/gleiph/Desktop/teste/out1";
+
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(database);
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(database);
 
         File directory = new File(dir);
 
@@ -48,26 +49,34 @@ public class ImportData {
                     }
 
                     Project project = AutomaticAnalysis.readProject(new File(projectDirectory, projectDirectory.getName()));
+                    
+                    Project selectByProjectId = projectDAO.selectByProjectId(project.getId());
+                    
+                    if (selectByProjectId.getId() != null) {
+                        System.out.println("Skiping " + selectByProjectId.getName());
+                        continue;
+                    }
+                    
                     projectDAO.insertAll(project);
-                    
-                    
+
                     System.out.println("Importing " + project.getName() + "...");
                     for (String line : lines) {
                         int index = lines.indexOf(line) + 1;
 
-                        System.out.println(lines.indexOf(line) + "/" + lines.size() + "(" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1000000 + ")");
+                        if (index / 10 == 0) {
+                            System.out.println(lines.indexOf(line) + "/" + lines.size() + "(" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000 + ")");
+                        }
+                        
                         File currentRevisionPath = new File(projectDirectory, (index / 1000) + File.separator + line);
                         Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionPath.getAbsolutePath());
 
                         revisionDAO.insertAll(currentRevision, project.getId());
 
-
-
                     }
 
                 }
             } catch (Exception e) {
-                
+
                 e.printStackTrace();
                 System.out.println("Problem during " + projectDirectory.getName() + " importation...");
             }
