@@ -35,10 +35,10 @@ public class ProjectJDBCDAO {
     public static final String SEARCH_URL = "searchurl";
     public static final String UPDATED_AT = "updatedat";
 
-    private final String database;
+    private final Connection connection;
 
-    public ProjectJDBCDAO(String database) {
-        this.database = database;
+    public ProjectJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public void insert(Project project) throws SQLException {
@@ -58,7 +58,7 @@ public class ProjectJDBCDAO {
                 + project.getNumberRevisions() + "\', \'" + project.isPriva() + "\', \'" + project.getRepositoryPath()
                 + "\', \'" + project.getSearchUrl() + "\', \'" + project.getUpdatedAt() + "\')";
 
-        DefaultOperations.insert(insertSQL, database);
+        DefaultOperations.insert(insertSQL, connection);
 
     }
 
@@ -66,14 +66,14 @@ public class ProjectJDBCDAO {
         this.insert(project);
 
         //Adding languages
-        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(database);
+        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(connection);
 
         for (Language language : project.getLanguages()) {
             languageDAO.insertAll(language, project.getId());
         }
 
         //Adding revisions
-        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(database);
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
 
         for (Revision revision : project.getRevisions()) {
             revisionDAO.insertAll(revision, project.getId());
@@ -86,8 +86,7 @@ public class ProjectJDBCDAO {
 
         String query = "SELECT * FROM " + Tables.PROJECT;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -119,8 +118,8 @@ public class ProjectJDBCDAO {
     public List<Project> selectAll() throws SQLException {
         List<Project> projects = this.select();
 
-        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(database);
-        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(database);
+        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(connection);
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
 
         for (Project project : projects) {
 
@@ -138,8 +137,7 @@ public class ProjectJDBCDAO {
         String query = "SELECT * FROM " + Tables.PROJECT
                 + " WHERE " + ID + " = " + projectId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -168,10 +166,10 @@ public class ProjectJDBCDAO {
     public Project selectAllByProjectId(Long projectId) throws SQLException {
         Project project = this.selectByProjectId(projectId);
 
-        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(database);
+        LanguageJDBCDAO languageDAO = new LanguageJDBCDAO(connection);
         project.setLanguages(languageDAO.selectAllByProjectId(project.getId()));
 
-        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(database);
+        RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
         project.setRevisions(revisionDAO.selectAllByProjectId(project.getId()));
 
         return project;

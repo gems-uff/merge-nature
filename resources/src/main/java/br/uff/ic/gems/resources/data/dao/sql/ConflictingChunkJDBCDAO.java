@@ -30,12 +30,12 @@ public class ConflictingChunkJDBCDAO {
 
     public static final String CONFLICTING_FILE_ID = "conflictingfile_id";
 
-    private final String database;
+    private final Connection connection;
 
-    public ConflictingChunkJDBCDAO(String database) {
-        this.database = database;
+    public ConflictingChunkJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
-    
+
     public Long insert(ConflictingChunk conflictingChunk, Long conflictingFileId) throws SQLException {
         String insertSQL = "INSERT INTO " + Tables.CONFLICTING_CHUNK
                 + "("
@@ -55,7 +55,7 @@ public class ConflictingChunkJDBCDAO {
                 + conflictingFileId
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL, database);
+        return DefaultOperations.insert(insertSQL, connection);
 
     }
 
@@ -63,9 +63,9 @@ public class ConflictingChunkJDBCDAO {
 
         Long conflictingChunkId = this.insert(conflictingChunk, conflictingFileId);
 
-        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(database);
-        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(database);
-        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(database);
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(connection);
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(connection);
 
         //persisting kinds of conflicts
         //Left
@@ -94,8 +94,7 @@ public class ConflictingChunkJDBCDAO {
         String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK
                 + " WHERE " + CONFLICTING_FILE_ID + " = " + conflictingFileId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -120,9 +119,9 @@ public class ConflictingChunkJDBCDAO {
     public List<ConflictingChunk> selectAllByConflictingFileId(Long conflictingFileId) throws SQLException {
         List<ConflictingChunk> conflictingChunks = this.selectByConflictingFileId(conflictingFileId);
 
-        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(database);
-        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(database);
-        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(database);
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(connection);
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(connection);
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
 
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
@@ -151,15 +150,14 @@ public class ConflictingChunkJDBCDAO {
         return conflictingChunks;
     }
 
-    public ConflictingChunk selectByConflictingChunkId(Long conflictingChunkId, String database) throws SQLException {
+    public ConflictingChunk selectByConflictingChunkId(Long conflictingChunkId) throws SQLException {
 
         ConflictingChunk conflictingChunk = new ConflictingChunk();
 
         String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK
                 + " WHERE " + ID + " = " + conflictingChunkId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -181,11 +179,11 @@ public class ConflictingChunkJDBCDAO {
 
     public ConflictingChunk selectAllByConflictingChunkId(Long conflictingChunkId) throws SQLException {
 
-        ConflictingChunk conflictingChunk = this.selectByConflictingChunkId(conflictingChunkId, database);
+        ConflictingChunk conflictingChunk = this.selectByConflictingChunkId(conflictingChunkId);
 
-        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(database);
-        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(database);
-        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(database);
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(connection);
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(connection);
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
 
         //Adding conflicting content
         conflictingChunk.setConflictingContent(conflictingContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));

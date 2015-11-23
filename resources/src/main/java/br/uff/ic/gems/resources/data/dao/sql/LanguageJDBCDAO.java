@@ -26,10 +26,10 @@ public class LanguageJDBCDAO {
 
     public static final String PROJECT_ID = "project_id";
 
-    private final String database;
+    private final Connection connection;
 
-    public LanguageJDBCDAO(String database) {
-        this.database = database;
+    public LanguageJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public Long insert(Language language, Long projectId) throws SQLException {
@@ -48,7 +48,7 @@ public class LanguageJDBCDAO {
                 + projectId
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL, database);
+        return DefaultOperations.insert(insertSQL, connection);
 
     }
 
@@ -62,8 +62,7 @@ public class LanguageJDBCDAO {
         String query = "SELECT * FROM " + Tables.LANGUAGE
                 + " WHERE " + PROJECT_ID + " = " + projectId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();

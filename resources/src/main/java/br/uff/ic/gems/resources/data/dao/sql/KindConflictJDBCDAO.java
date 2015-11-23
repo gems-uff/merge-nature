@@ -27,10 +27,10 @@ public class KindConflictJDBCDAO {
 
     public static final String CONFLICTING_CHUNK_ID = "conflictingchunk_id";
 
-    private final String database;
+    private final Connection connection;
 
-    public KindConflictJDBCDAO(String database) {
-        this.database = database;
+    public KindConflictJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public Long insert(KindConflict kindConflict, Long conflictingChunkId, Side side) throws SQLException {
@@ -46,13 +46,13 @@ public class KindConflictJDBCDAO {
                 + side.toString() + "\', \'"
                 + conflictingChunkId + "\')";
 
-        return DefaultOperations.insert(insertSQL, database);
+        return DefaultOperations.insert(insertSQL, connection);
 
     }
 
     public Long insertAll(KindConflict kindConflict, Long conflictingChunkId, Side side) throws SQLException {
 
-        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(database);
+        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(connection);
 
         Long kindConflictId = this.insert(kindConflict, conflictingChunkId, side);
 
@@ -71,8 +71,7 @@ public class KindConflictJDBCDAO {
         String query = "SELECT * FROM " + Tables.KIND_CONFLICT
                 + " WHERE " + CONFLICTING_CHUNK_ID + " = " + conflictingChunkId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -103,7 +102,7 @@ public class KindConflictJDBCDAO {
     }
 
     public List<KindConflict> selectAllByConflictingChunkId(Long conflictingChunkId) throws SQLException {
-        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(database);
+        LanguageConstructJDBCDAO languageConstructDAO = new LanguageConstructJDBCDAO(connection);
 
         List<KindConflict> kindConflicts = this.selectByConflictingChunkId(conflictingChunkId);
 

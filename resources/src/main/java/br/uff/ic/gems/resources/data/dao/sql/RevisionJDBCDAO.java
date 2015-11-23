@@ -32,10 +32,10 @@ public class RevisionJDBCDAO {
 
     public static final String PROJECT_ID = "project_id";
 
-    private final String database;
+    private final Connection connection;
 
-    public RevisionJDBCDAO(String database) {
-        this.database = database;
+    public RevisionJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public Long insert(Revision revision, Long projectId) throws SQLException {
@@ -61,7 +61,7 @@ public class RevisionJDBCDAO {
                 + projectId
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL, database);
+        return DefaultOperations.insert(insertSQL, connection);
 
     }
 
@@ -69,7 +69,7 @@ public class RevisionJDBCDAO {
         Long revision_id = this.insert(revision, projectId);
 
         //Adding conflicting files
-        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(database);
+        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(connection);
 
         for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
             conflictingFileDAO.insertAll(conflictingFile, revision_id);
@@ -84,8 +84,7 @@ public class RevisionJDBCDAO {
         String query = "SELECT * FROM " + Tables.REVISION
                 + " WHERE " + PROJECT_ID + " = " + projectId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -123,7 +122,7 @@ public class RevisionJDBCDAO {
 
     public List<Revision> selectAllByProjectId(Long projectId) throws SQLException {
         List<Revision> revisions = this.selectByProjectId(projectId);
-        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(database);
+        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(connection);
 
         for (Revision revision : revisions) {
             revision.setConflictingFiles(conflictingFileDAO.selectAllByRevisionId(revision.getId()));
@@ -138,8 +137,7 @@ public class RevisionJDBCDAO {
         String query = "SELECT * FROM " + Tables.REVISION
                 + " WHERE " + ID + " = " + revisionId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();
@@ -174,7 +172,7 @@ public class RevisionJDBCDAO {
 
     public Revision selectAllByRevisionId(Long revisionId) throws SQLException {
         Revision revision = this.selectByRevisionId(revisionId);
-        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(database);
+        ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(connection);
 
         revision.setConflictingFiles(conflictingFileDAO.selectAllByRevisionId(revision.getId()));
 

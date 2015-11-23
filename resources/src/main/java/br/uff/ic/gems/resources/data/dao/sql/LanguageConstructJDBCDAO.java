@@ -33,10 +33,10 @@ public class LanguageConstructJDBCDAO {
 
     public static final String KIND_CONFLICT_ID = "kindconflict_id";
 
-    private final String database;
+    private final Connection connection;
 
-    public LanguageConstructJDBCDAO(String database) {
-        this.database = database;
+    public LanguageConstructJDBCDAO(Connection connection) {
+        this.connection = connection;
     }
 
     public Long insert(LanguageConstruct languageConstruct, Long kindConflict_id) throws SQLException {
@@ -67,7 +67,7 @@ public class LanguageConstructJDBCDAO {
                 + kindConflict_id
                 + "\')";
 
-        return DefaultOperations.insert(insertSQL, database);
+        return DefaultOperations.insert(insertSQL, connection);
 
     }
 
@@ -81,8 +81,7 @@ public class LanguageConstructJDBCDAO {
         String query = "SELECT * FROM " + Tables.LANGUAGE_CONSTRUCT
                 + " WHERE " + KIND_CONFLICT_ID + " = " + kindConflictId;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute(query);
 
             ResultSet results = statement.getResultSet();

@@ -19,15 +19,14 @@ public class DefaultOperations {
 
     private static final boolean debug = false;
 
-    public static Long insert(String insertSQL, String database) throws SQLException {
+    public static Long insert(String insertSQL, Connection connection) throws SQLException {
         long id;
 
         if (debug) {
             System.out.println(insertSQL);
         }
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(insertSQL, Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -41,11 +40,10 @@ public class DefaultOperations {
 
     }
 
-    public static Long insertContent(String insertSQL, String content, Long conflictingChunkId, String database) throws SQLException {
+    public static Long insertContent(String insertSQL, String content, Long conflictingChunkId, Connection connection) throws SQLException {
         long id;
 
-        try (Connection connection = (new JDBCConnection()).getConnection(database);
-                PreparedStatement statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, content);
             statement.setLong(2, conflictingChunkId);
 
