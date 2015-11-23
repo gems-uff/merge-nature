@@ -5,6 +5,9 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 /**
@@ -54,6 +57,18 @@ public class MyMethodDeclaration {
         return methodDeclaration.getName().getIdentifier() + " " + location.toString();
     }
 
-    
+    public List<MyMethodInvocation> getCalls(List<ClassLanguageContructs> languageContructs){
+        
+        List<MyMethodInvocation> calls = new ArrayList<>();
+        
+        for (ClassLanguageContructs languageContruct : languageContructs) {
+            for (MyMethodInvocation methodInvocation : languageContruct.getMethodInvocations()) {
+                if(methodInvocation.getMethodInvocation().resolveMethodBinding().equals(this.getMethodDeclaration().resolveBinding()))
+                    calls.add(methodInvocation);
+            }
+        }
+        
+        return calls;
+    }
     
 }
