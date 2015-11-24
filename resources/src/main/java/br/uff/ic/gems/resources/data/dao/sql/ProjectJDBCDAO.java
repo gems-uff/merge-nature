@@ -99,6 +99,7 @@ public class ProjectJDBCDAO {
                 project.setHtmlUrl(results.getString(HTML_URL));
                 project.setId(results.getLong(ID));
                 project.setMessage(results.getString(MESSAGE));
+                project.setName(results.getString(NAME));
                 project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
                 project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
                 project.setNumberRevisions(results.getInt(REVISIONS));
@@ -149,6 +150,7 @@ public class ProjectJDBCDAO {
                 project.setHtmlUrl(results.getString(HTML_URL));
                 project.setId(results.getLong(ID));
                 project.setMessage(results.getString(MESSAGE));
+                project.setName(results.getString(NAME));
                 project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
                 project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
                 project.setNumberRevisions(results.getInt(REVISIONS));
