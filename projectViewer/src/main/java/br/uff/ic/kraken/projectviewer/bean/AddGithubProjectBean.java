@@ -11,7 +11,6 @@ import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration;
-import static br.uff.ic.kraken.projectviewer.utils.DatabaseConfiguration.database;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
