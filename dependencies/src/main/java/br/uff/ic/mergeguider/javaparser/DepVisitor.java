@@ -10,6 +10,7 @@ import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.util.ArrayList;
@@ -220,7 +221,7 @@ public class DepVisitor extends ASTVisitor {
                 }
 
             }
-            
+
             //Treating variables
             for (MyVariableDeclaration variableDeclaration : classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations()) {
 
@@ -284,7 +285,7 @@ public class DepVisitor extends ASTVisitor {
 
     @Override
     public boolean visit(VariableDeclarationExpression node) {
-        
+
         Location location;
 
         List<VariableDeclarationFragment> fragments = node.fragments();
@@ -305,7 +306,7 @@ public class DepVisitor extends ASTVisitor {
         }
 
         return true;
-        
+
     }
 
     //----------------------------------------------------------------------
@@ -316,6 +317,21 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(TypeDeclaration node) {
 
+        //Treating location and structure
+        Location location;
+
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyTypeDeclaration typeDeclaration = new MyTypeDeclaration(node, location);
+        
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getTypeDeclarations().add(typeDeclaration);
+        
+        //Treating class name
         String className;
         PackageDeclaration aPackage = cu.getPackage();
         if (aPackage != null) {

@@ -27,7 +27,7 @@ public class Dependencies {
         classesLanguageConstructs = javaParser.parser(projectPath);
     }
 
-    public List<MyMethodInvocation> getCallers(MethodDeclaration methodDeclaration, String pathClassDeclaration, String qualifiedNameClassDeclaration) {
+    public List<MyMethodInvocation> getCallers(MethodDeclaration methodDeclaration) {
         List<MyMethodInvocation> invocations = new ArrayList<>();
 
         IMethodBinding methodDeclarationBinding = methodDeclaration.resolveBinding();
@@ -87,26 +87,4 @@ public class Dependencies {
     public void setClassesLanguageConstructs(List<ClassLanguageContructs> languageConstructsByClasses) {
         this.classesLanguageConstructs = languageConstructsByClasses;
     }
-
-//    public static void main(String[] args) {
-//
-//        Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/repositories/lombok");
-////        Dependencies dependencies = new Dependencies("/Users/gleiph/Dropbox/doutorado/implementation/JavaParser");
-//
-//        for (ClassLanguageContructs languageConstructsByClass : dependencies.getClassesLanguageConstructs()) {
-//
-//            String className = languageConstructsByClass.getQualifiedName();
-//            List<MyMethodDeclaration> methodDeclarations = languageConstructsByClass.getMethodDeclarations();
-//
-//            System.out.println(className);
-//            for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
-//
-//                System.out.println("\t" + methodDeclaration.toString());
-//                List<MyMethodInvocation> calers = dependencies.getCallers(methodDeclaration.getMethodDeclaration(), languageConstructsByClass.getPath(), languageConstructsByClass.getQualifiedName());
-//
-//            }
-//
-//        }
-//
-//    }
 }

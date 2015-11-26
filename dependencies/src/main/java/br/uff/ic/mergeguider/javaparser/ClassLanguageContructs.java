@@ -9,6 +9,7 @@ import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class ClassLanguageContructs {
     private List<MyAttributeCall> attributeCalls;
     private List<MyVariableDeclaration> variableDeclarations;
     private List<MyVariableCall> variableCalls;
+    private List<MyTypeDeclaration> typeDeclarations;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -40,6 +42,7 @@ public class ClassLanguageContructs {
         attributeCalls = new ArrayList<>();
         variableDeclarations = new ArrayList<>();
         variableCalls = new ArrayList<>();
+        typeDeclarations = new ArrayList<>();
         
     }
 
@@ -166,6 +169,20 @@ public class ClassLanguageContructs {
      */
     public void setVariableCalls(List<MyVariableCall> variableCalls) {
         this.variableCalls = variableCalls;
+    }
+
+    /**
+     * @return the typeDeclarations
+     */
+    public List<MyTypeDeclaration> getTypeDeclarations() {
+        return typeDeclarations;
+    }
+
+    /**
+     * @param typeDeclarations the typeDeclarations to set
+     */
+    public void setTypeDeclarations(List<MyTypeDeclaration> typeDeclarations) {
+        this.typeDeclarations = typeDeclarations;
     }
     
     
