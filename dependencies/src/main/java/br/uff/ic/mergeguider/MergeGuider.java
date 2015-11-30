@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.SimpleType;
 
 /**
  *
@@ -199,6 +200,9 @@ public class MergeGuider {
                 List<MyVariableCall> leftVariableCalls = leftVariableCalls(projectPath, cciAux, ASTLeft);
                 List<MyVariableCall> rightVariableCalls = rightVariableCalls(projectPath, cciAux, ASTRight);
 
+                List<MyTypeDeclaration> leftTypeDeclarationsAux = leftTypeDeclarations(projectPath, cci, ASTLeft);
+                List<MyTypeDeclaration> rightTypeDeclarationsAux = rightTypeDeclarations(projectPath, cci, ASTRight);
+
                 boolean hasMethodDependecy
                         = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
                         || hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
@@ -239,6 +243,17 @@ public class MergeGuider {
                         || hasTypeDeclarationDependencyVariable(rightTypeDeclarations, rightVariableDeclarations);
 
                 if (hasTypeDeclarationDependency) {
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    if (columnNumber != rowNumber) {
+                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                    }
+                }
+
+                boolean hasDependencyTypeDeclarationInterface = 
+                        hasDependencyTypeDeclarationInterface(leftTypeDeclarations, leftTypeDeclarationsAux) ||
+                        hasDependencyTypeDeclarationInterface(rightTypeDeclarations, rightTypeDeclarationsAux);
+                
+                if (hasDependencyTypeDeclarationInterface) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         dependencyMatrix[columnNumber][rowNumber] = 1;
@@ -298,6 +313,7 @@ public class MergeGuider {
         }
     }
 
+    //Treating attribute dependency between declaration and usage
     public static boolean hasAttributeDependency(List<MyAttributeDeclaration> attributeDeclarations, List<MyAttributeCall> attributeCalls) {
 
         for (MyAttributeCall attributeCall : attributeCalls) {
@@ -325,6 +341,7 @@ public class MergeGuider {
         }
     }
 
+    //Treating variable dependency between declaration and usage
     public static boolean hasVariableDependency(List<MyVariableDeclaration> variableDeclarations, List<MyVariableCall> variableCalls) {
 
         for (MyVariableCall variableCall : variableCalls) {
@@ -352,6 +369,7 @@ public class MergeGuider {
         }
     }
 
+    //Treating dependency between a type declaration and its usage as variable declaration
     public static boolean hasTypeDeclarationDependencyVariable(List<MyTypeDeclaration> typeDeclarations, List<MyVariableDeclaration> variableDeclarations) {
 
         for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
@@ -379,6 +397,7 @@ public class MergeGuider {
         }
     }
 
+    //Treating dependency between a type declaration and its usage as attribute declaration
     public static boolean hasTypeDeclarationDependencyAttribute(List<MyTypeDeclaration> typeDeclarations, List<MyAttributeDeclaration> attributeDeclarations) {
 
         for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
@@ -398,6 +417,35 @@ public class MergeGuider {
 
         ITypeBinding typeDeclarationBinding = typeDeclaration.getTypeDeclaration().resolveBinding();
         IBinding variableDeclarationBinding = attributeDeclaration.resolveTypeBinding();
+
+        if (typeDeclarationBinding != null && variableDeclarationBinding != null && typeDeclarationBinding.equals(variableDeclarationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Treating dependency between a type declaration its interfaces
+    public static boolean hasDependencyTypeDeclarationInterface(List<MyTypeDeclaration> typeDeclarations, List<MyTypeDeclaration> typeDeclarationsAux) {
+
+        for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
+            for (MyTypeDeclaration typeDeclarationAux : typeDeclarationsAux) {
+                List<SimpleType> interfaces = typeDeclarationAux.getInterfaces();
+                for (SimpleType aInterface : interfaces) {
+                    if(sameTypeDeclaration(typeDeclaration, aInterface))
+                        return true;
+                }
+                
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameTypeDeclaration(MyTypeDeclaration typeDeclaration, SimpleType interfaace) {
+
+        ITypeBinding typeDeclarationBinding = typeDeclaration.getTypeDeclaration().resolveBinding();
+        ITypeBinding variableDeclarationBinding = interfaace.resolveBinding();
 
         if (typeDeclarationBinding != null && variableDeclarationBinding != null && typeDeclarationBinding.equals(variableDeclarationBinding)) {
             return true;

@@ -9,6 +9,7 @@ import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
@@ -83,5 +84,21 @@ public class MyTypeDeclaration {
         }
 
         return calls;
+    }
+
+    public List<SimpleType> getInterfaces() {
+        List<SimpleType> interfaces = new ArrayList<>();
+        List superInterfaceTypes = this.getTypeDeclaration().superInterfaceTypes();
+
+        for (Object superInterfaceType : superInterfaceTypes) {
+
+            SimpleType interfaace;
+            if (superInterfaceType instanceof SimpleType) {
+                interfaace = (SimpleType) superInterfaceType;
+                interfaces.add(interfaace);
+            } 
+        }
+
+        return interfaces;
     }
 }

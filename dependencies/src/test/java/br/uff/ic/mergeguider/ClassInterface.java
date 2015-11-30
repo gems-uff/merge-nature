@@ -7,10 +7,10 @@ package br.uff.ic.mergeguider;
 
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.ProjectAST;
-import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
-import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.util.List;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,9 +22,9 @@ import static org.junit.Assert.*;
  *
  * @author gleiph
  */
-public class TypeDeclarationUsage {
+public class ClassInterface {
 
-    public TypeDeclarationUsage() {
+    public ClassInterface() {
     }
 
     @BeforeClass
@@ -44,57 +44,50 @@ public class TypeDeclarationUsage {
     }
 
     @Test
-    public void attributeCallers() {
+    public void getInterface() {
 
         boolean result = true;
         ProjectAST projectAST = new ProjectAST("src/test/java/project1");
 
-        List<ClassLanguageContructs> classesLanguageConstructs = projectAST.getClassesLanguageConstructs();
-
-        for (ClassLanguageContructs classesLanguageConstruct : classesLanguageConstructs) {
+        for (ClassLanguageContructs classesLanguageConstruct : projectAST.getClassesLanguageConstructs()) {
             List<MyTypeDeclaration> typeDeclarations = classesLanguageConstruct.getTypeDeclarations();
 
             for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
-
-                String name = typeDeclaration.getTypeDeclaration().getName().getIdentifier();
-                if (name.equals("ClassA")) {
-                    List<MyAttributeDeclaration> attributeCalls = typeDeclaration.getAttributeCalls(classesLanguageConstructs);
-                    if (attributeCalls.size() == 1 && attributeCalls.get(0).getFieldDeclaration().getName().getIdentifier().equals("attribute")) {
+                if (typeDeclaration.getTypeDeclaration().getName().getIdentifier().equals("ConcreteClass")) {
+                    List<SimpleType> interfaces = typeDeclaration.getInterfaces();
+                    if (interfaces.size() == 1 && interfaces.get(0).getName().getFullyQualifiedName().equals("Interface")) {
                         result = false;
                     }
                 }
             }
-
         }
-        assertFalse(result);
 
+        assertFalse(result);
     }
 
     @Test
-    public void variableCallers() {
+    public void getInterfaces() {
 
         boolean result = true;
         ProjectAST projectAST = new ProjectAST("src/test/java/project1");
 
-        List<ClassLanguageContructs> classesLanguageConstructs = projectAST.getClassesLanguageConstructs();
-
-        for (ClassLanguageContructs classesLanguageConstruct : classesLanguageConstructs) {
+        for (ClassLanguageContructs classesLanguageConstruct : projectAST.getClassesLanguageConstructs()) {
             List<MyTypeDeclaration> typeDeclarations = classesLanguageConstruct.getTypeDeclarations();
 
             for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
-
-                String name = typeDeclaration.getTypeDeclaration().getName().getIdentifier();
-                if (name.equals("ClassA")) {
-                    List<MyVariableDeclaration> variableDeclarations = typeDeclaration.getVariableCalls(classesLanguageConstructs);
-                    if (variableDeclarations.size() == 1 && variableDeclarations.get(0).getName().equals("classA")) {
+                if (typeDeclaration.getTypeDeclaration().getName().getIdentifier().equals("ConcreteClass2")) {
+                    List<SimpleType> interfaces = typeDeclaration.getInterfaces();
+                    if (interfaces.size() == 2 && interfaces.get(0).getName().getFullyQualifiedName().equals("Interface")
+                            && interfaces.get(1).getName().getFullyQualifiedName().equals("Interface2")) {
                         result = false;
                     }
                 }
             }
-
         }
-        assertFalse(result);
 
+        assertFalse(result);
     }
+
+    
     
 }
