@@ -5,6 +5,12 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
@@ -12,7 +18,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * @author gmenezes
  */
 public class MyAttributeDeclaration {
-    
+
     private VariableDeclarationFragment fieldDeclaration;
     private Location location;
 
@@ -48,7 +54,20 @@ public class MyAttributeDeclaration {
     public void setLocation(Location location) {
         this.location = location;
     }
-    
-    
-    
+
+    public IVariableBinding resolveBinding() {
+        return this.fieldDeclaration.resolveBinding();
+    }
+
+    public ITypeBinding resolveTypeBinding() {
+        ASTNode parent = this.getFieldDeclaration().getParent();
+
+        if (parent instanceof FieldDeclaration) {
+            FieldDeclaration type = (FieldDeclaration) parent;
+            return type.getType().resolveBinding();
+        }
+        
+        return null;
+    }
+
 }

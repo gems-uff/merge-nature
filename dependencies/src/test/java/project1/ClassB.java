@@ -12,7 +12,9 @@ package project1;
  */
 public class ClassB {
     
-    public static void main(String[] args) {
+    ClassA attribute;
+    
+    public void hello() {
         ClassA classA = new ClassA();
         classA.methodA();
     }

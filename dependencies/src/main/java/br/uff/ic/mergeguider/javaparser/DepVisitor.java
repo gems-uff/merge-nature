@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 /**
  *
@@ -308,6 +309,32 @@ public class DepVisitor extends ASTVisitor {
         return true;
 
     }
+    
+    @Override
+    public boolean visit(VariableDeclarationStatement node) {
+
+        Location location;
+
+        List<VariableDeclarationFragment> fragments = node.fragments();
+
+        for (VariableDeclarationFragment fragment : fragments) {
+
+            int elementLineBegin = cu.getLineNumber(fragment.getStartPosition());
+            int elementLineEnd = cu.getLineNumber(fragment.getStartPosition() + node.getLength());
+            int elementColumnBegin = cu.getColumnNumber(fragment.getStartPosition());
+            int elementColumnEnd = cu.getColumnNumber(fragment.getStartPosition() + node.getLength());
+
+            location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+            MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(fragment, location);
+
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+
+        }
+
+        return true;
+
+    }
 
     //----------------------------------------------------------------------
     //----------------------------------------------------------------------
@@ -317,20 +344,6 @@ public class DepVisitor extends ASTVisitor {
     @Override
     public boolean visit(TypeDeclaration node) {
 
-        //Treating location and structure
-        Location location;
-
-        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
-        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
-        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
-        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
-
-        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
-
-        MyTypeDeclaration typeDeclaration = new MyTypeDeclaration(node, location);
-        
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getTypeDeclarations().add(typeDeclaration);
-        
         //Treating class name
         String className;
         PackageDeclaration aPackage = cu.getPackage();
@@ -347,6 +360,20 @@ public class DepVisitor extends ASTVisitor {
 
         simpleNames = new ArrayList<>();
         simpleNamesList.add(simpleNames);
+
+        //Treating location and structure
+        Location location;
+
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyTypeDeclaration typeDeclaration = new MyTypeDeclaration(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getTypeDeclarations().add(typeDeclaration);
 
         return true;
     }

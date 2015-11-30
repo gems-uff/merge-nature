@@ -16,23 +16,23 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
  *
  * @author gleiph
  */
-public class Dependencies {
+public class ProjectAST {
 
     private String projectPath;
     private List<ClassLanguageContructs> classesLanguageConstructs;
 
-    public Dependencies(String projectPath) {
+    public ProjectAST(String projectPath) {
         this.projectPath = projectPath;
         JavaParser javaParser = new JavaParser();
         classesLanguageConstructs = javaParser.parser(projectPath);
     }
 
-    public List<MyMethodInvocation> getCallers(MethodDeclaration methodDeclaration) {
+    public List<MyMethodInvocation> getMethodCallers(MethodDeclaration methodDeclaration) {
         List<MyMethodInvocation> invocations = new ArrayList<>();
 
         IMethodBinding methodDeclarationBinding = methodDeclaration.resolveBinding();
         if (methodDeclarationBinding == null) {
-            System.out.println("\t\tMethod does not have binding! ");
+            //Method does not have binding
             return null;
         }
 
@@ -42,24 +42,21 @@ public class Dependencies {
                 IMethodBinding methodInvocationBinding = methoInvocation.getMethodInvocation().resolveMethodBinding();
 
                 if (methodInvocationBinding == null) {
-//                    System.out.println("Method invocation " + methodDeclaration.getName().getIdentifier() + " does not have binding! ");
+                    //no binding
                     continue;
                 }
 
                 if (methodDeclarationBinding.equals(methodInvocationBinding)) {
                     invocations.add(methoInvocation);
-                    System.out.println("\t\tIs called in class " + languageConstructsByClass.getQualifiedName() + " " + methoInvocation.toString());
-                    
-                    //Data to select 
-                    
                 }
-
             }
         }
 
         return invocations;
     }
 
+    
+    
     /**
      * @return the projectPath
      */

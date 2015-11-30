@@ -5,9 +5,14 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 /**
  *
@@ -77,6 +82,41 @@ public class MyVariableDeclaration {
             return this.singleVariableDeclaration.resolveBinding();
         } else if (this.variableDeclaration != null) {
             return this.variableDeclaration.resolveBinding();
+        } else {
+            return null;
+        }
+    }
+
+    public ITypeBinding resolveTypeBinding() {
+
+        Type type = null;
+
+        if (this.singleVariableDeclaration != null) {
+            type = this.singleVariableDeclaration.getType();
+        } else if (this.variableDeclaration != null) {
+            ASTNode parent = this.variableDeclaration.getParent();
+
+            if (parent instanceof VariableDeclarationStatement) {
+                VariableDeclarationStatement variable = (VariableDeclarationStatement) parent;
+                type = variable.getType();
+            } else if (parent instanceof VariableDeclarationExpression) {
+                VariableDeclarationExpression variable = (VariableDeclarationExpression) parent;
+                type = variable.getType();
+            }
+        }
+
+        if (type != null) {
+            return type.resolveBinding();
+        } else {
+            return null;
+        }
+    }
+
+    public String getName() {
+        if (this.singleVariableDeclaration != null) {
+            return this.singleVariableDeclaration.getName().getIdentifier();
+        } else if (this.variableDeclaration != null) {
+            return this.variableDeclaration.getName().getIdentifier();
         } else {
             return null;
         }

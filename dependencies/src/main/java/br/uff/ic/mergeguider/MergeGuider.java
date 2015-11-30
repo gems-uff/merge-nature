@@ -10,12 +10,13 @@ import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.mergeguider.datastructure.CCDependency;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
-import br.uff.ic.mergeguider.javaparser.Dependencies;
+import br.uff.ic.mergeguider.javaparser.ProjectAST;
 import br.uff.ic.mergeguider.languageConstructs.Location;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodInvocation;
+import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.io.File;
@@ -25,6 +26,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 
 /**
@@ -37,10 +39,10 @@ public class MergeGuider {
 
         //Home
 //        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
-        String projectPath = "/Users/gleiph/repositories/icse/lombok";
+//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
 //        String projectPath = "/Users/gleiph/repositories/icse/mct";
 //                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
         String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
 //        String projectPath = "/home/gmenezes/repositorios/antlr4";
@@ -140,7 +142,7 @@ public class MergeGuider {
         for (ConflictingChunkInformation cci : ccis) {
 
             String baseFilePath = cci.getFilePath();
-            String leftFilePath = null;
+            String leftFilePath;
 
             if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
                 leftFilePath = repositoryLeft + File.separator
@@ -150,7 +152,7 @@ public class MergeGuider {
                         + baseFilePath.replace(projectPath, "");
             }
 
-            String rightFilePath = null;
+            String rightFilePath;
 
             if (cci.isRenamed() && cci.getRelativePathRight() != null) {
                 rightFilePath = repositoryRight + File.separator + cci.getRelativePathRight();
@@ -180,9 +182,8 @@ public class MergeGuider {
             List<MyVariableDeclaration> leftVariableDeclarations = leftVariableDeclarations(projectPath, cci, ASTLeft);
             List<MyVariableDeclaration> rightVariableDeclarations = rightVariableDeclarations(projectPath, cci, ASTRight);
 
-            if (!leftAttributeDeclarations.isEmpty() || !rightAttributeDeclarations.isEmpty()) {
-                System.out.println(cci.toString() + " has attributes!");
-            }
+            List<MyTypeDeclaration> leftTypeDeclarations = leftTypeDeclarations(projectPath, cci, ASTLeft);
+            List<MyTypeDeclaration> rightTypeDeclarations = rightTypeDeclarations(projectPath, cci, ASTRight);
 
             int rowNumber = ccis.indexOf(cci);
 
@@ -201,13 +202,6 @@ public class MergeGuider {
                 boolean hasMethodDependecy
                         = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
                         || hasMethodDependency(rightMethodDeclarations, rightMethodInvocations);
-                boolean hasAttributeDepedency
-                        = hasAttributeDependency(leftAttributeDeclarations, leftAttributeCalls)
-                        || hasAttributeDependency(rightAttributeDeclarations, rightAttributeCalls);
-
-                boolean hasVariableDepedency
-                        = hasVariableDependency(leftVariableDeclarations, leftVariableCalls)
-                        || hasVariableDependency(rightVariableDeclarations, rightVariableCalls);
 
                 if (hasMethodDependecy) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
@@ -216,6 +210,10 @@ public class MergeGuider {
                     }
                 }
 
+                boolean hasAttributeDepedency
+                        = hasAttributeDependency(leftAttributeDeclarations, leftAttributeCalls)
+                        || hasAttributeDependency(rightAttributeDeclarations, rightAttributeCalls);
+
                 if (hasAttributeDepedency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
@@ -223,10 +221,28 @@ public class MergeGuider {
                     }
                 }
 
+                boolean hasVariableDepedency
+                        = hasVariableDependency(leftVariableDeclarations, leftVariableCalls)
+                        || hasVariableDependency(rightVariableDeclarations, rightVariableCalls);
+
                 if (hasVariableDepedency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         dependencyMatrix[columnNumber][rowNumber] = 1;
+                    }
+                }
+
+                boolean hasTypeDeclarationDependency
+                        = hasTypeDeclarationDependencyAttribute(leftTypeDeclarations, leftAttributeDeclarations)
+                        || hasTypeDeclarationDependencyAttribute(rightTypeDeclarations, rightAttributeDeclarations)
+                        || hasTypeDeclarationDependencyVariable(leftTypeDeclarations, leftVariableDeclarations)
+                        || hasTypeDeclarationDependencyVariable(rightTypeDeclarations, rightVariableDeclarations);
+
+                if (hasTypeDeclarationDependency) {
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    if (columnNumber != rowNumber) {
+                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        System.out.println("Has!!!!!");
                     }
                 }
             }
@@ -314,7 +330,7 @@ public class MergeGuider {
         for (MyVariableCall variableCall : variableCalls) {
             for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
 
-                if (sameAttribute(variableDeclaration, variableCall)) {
+                if (sameVariable(variableDeclaration, variableCall)) {
                     return true;
                 }
 
@@ -324,12 +340,66 @@ public class MergeGuider {
         return false;
     }
 
-    public static boolean sameAttribute(MyVariableDeclaration variableDeclaration, MyVariableCall variableCall) {
+    public static boolean sameVariable(MyVariableDeclaration variableDeclaration, MyVariableCall variableCall) {
 
         IVariableBinding attributeDeclarationBinding = variableDeclaration.resolveBinding();
         IBinding attributeCallBinding = variableCall.getSimpleName().resolveBinding();
 
         if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeDeclarationBinding.equals(attributeCallBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean hasTypeDeclarationDependencyVariable(List<MyTypeDeclaration> typeDeclarations, List<MyVariableDeclaration> variableDeclarations) {
+
+        for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+            for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
+
+                if (sameTypeDeclaration(typeDeclaration, variableDeclaration)) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameTypeDeclaration(MyTypeDeclaration typeDeclaration, MyVariableDeclaration variableDeclaration) {
+
+        ITypeBinding typeDeclarationBinding = typeDeclaration.getTypeDeclaration().resolveBinding();
+        ITypeBinding variableDeclarationBinding = variableDeclaration.resolveTypeBinding();
+
+        if (typeDeclarationBinding != null && variableDeclarationBinding != null && typeDeclarationBinding.equals(variableDeclarationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean hasTypeDeclarationDependencyAttribute(List<MyTypeDeclaration> typeDeclarations, List<MyAttributeDeclaration> attributeDeclarations) {
+
+        for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
+            for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
+
+                if (sameTypeDeclaration(typeDeclaration, attributeDeclaration)) {
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean sameTypeDeclaration(MyTypeDeclaration typeDeclaration, MyAttributeDeclaration attributeDeclaration) {
+
+        ITypeBinding typeDeclarationBinding = typeDeclaration.getTypeDeclaration().resolveBinding();
+        IBinding variableDeclarationBinding = attributeDeclaration.resolveTypeBinding();
+
+        if (typeDeclarationBinding != null && variableDeclarationBinding != null && typeDeclarationBinding.equals(variableDeclarationBinding)) {
             return true;
         } else {
             return false;
@@ -359,9 +429,9 @@ public class MergeGuider {
 
     public static List<ClassLanguageContructs> extractAST(String projectPath) {
 
-        Dependencies dependencies = new Dependencies(projectPath);
+        ProjectAST projectAST = new ProjectAST(projectPath);
 
-        return dependencies.getClassesLanguageConstructs();
+        return projectAST.getClassesLanguageConstructs();
     }
 
     public static void clone(String projectPath, String target) throws IOException {
@@ -795,6 +865,66 @@ public class MergeGuider {
                 for (MyVariableCall variableCall : variableCalls) {
                     if (rightHasIntersection(variableCall.getLocation(), cci)) {
                         result.add(variableCall);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyTypeDeclaration> leftTypeDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyTypeDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
+
+                for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
+                    if (leftHasIntersection(typeDeclaration.getLocation(), cci)) {
+                        result.add(typeDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyTypeDeclaration> rightTypeDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyTypeDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
+
+                for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
+                    if (rightHasIntersection(typeDeclaration.getLocation(), cci)) {
+                        result.add(typeDeclaration);
                     }
                 }
             }

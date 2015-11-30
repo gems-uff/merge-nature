@@ -5,6 +5,10 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 /**
@@ -12,7 +16,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  * @author gleiph
  */
 public class MyTypeDeclaration {
-    
+
     private TypeDeclaration typeDeclaration;
     private Location location;
 
@@ -48,5 +52,36 @@ public class MyTypeDeclaration {
     public void setLocation(Location location) {
         this.location = location;
     }
-    
+
+    public List<MyAttributeDeclaration> getAttributeCalls(List<ClassLanguageContructs> languageContructs) {
+
+        List<MyAttributeDeclaration> calls = new ArrayList<>();
+
+        for (ClassLanguageContructs languageContruct : languageContructs) {
+            for (MyAttributeDeclaration attributeDeclaration : languageContruct.getAttributes()) {
+                if (this.getTypeDeclaration().resolveBinding().equals(attributeDeclaration.resolveTypeBinding())) {
+                    calls.add(attributeDeclaration);
+                }
+            }
+        }
+
+        return calls;
+    }
+
+    public List<MyVariableDeclaration> getVariableCalls(List<ClassLanguageContructs> languageContructs) {
+
+        List<MyVariableDeclaration> calls = new ArrayList<>();
+
+        for (ClassLanguageContructs languageContruct : languageContructs) {
+            for (MyVariableDeclaration variableDeclaration : languageContruct.getVariableDeclarations()) {
+                ITypeBinding typeBindingTypeDeclaration = this.getTypeDeclaration().resolveBinding();
+                ITypeBinding typeBindingVariableDeclaration = variableDeclaration.resolveTypeBinding();
+                if (typeBindingTypeDeclaration.equals(typeBindingVariableDeclaration)) {
+                    calls.add(variableDeclaration);
+                }
+            }
+        }
+
+        return calls;
+    }
 }
