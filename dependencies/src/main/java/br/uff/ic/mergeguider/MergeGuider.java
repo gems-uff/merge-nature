@@ -7,8 +7,10 @@ package br.uff.ic.mergeguider;
 
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
-import br.uff.ic.mergeguider.datastructure.CCDependency;
+import br.uff.ic.mergeguider.datastructure.ConflictingChunksDependency;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
+import br.uff.ic.mergeguider.datastructure.MergeDependency;
+import br.uff.ic.mergeguider.dependency.DependencyType;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.ProjectAST;
 import br.uff.ic.mergeguider.languageConstructs.Location;
@@ -41,9 +43,9 @@ public class MergeGuider {
         //Home
 //        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
 //        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-//        String projectPath = "/Users/gleiph/repositories/icse/mct";
+        String projectPath = "/Users/gleiph/repositories/icse/mct";
 //                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
         String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
 //        String projectPath = "/home/gmenezes/repositorios/antlr4";
@@ -64,17 +66,29 @@ public class MergeGuider {
                 String SHALeft = parents.get(0);
                 String SHARight = parents.get(1);
 
-                List<CCDependency> performMerge;
+                MergeDependency mergeDependency;
                 try {
-                    performMerge = performMerge(projectPath, SHALeft, SHARight, sandbox);
-                    if (performMerge == null) {
+                    mergeDependency = performMerge(projectPath, SHALeft, SHARight, sandbox);
+                    
+                    if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() <= 0)
+                        continue;
+                    
+                    //Treating dependencies 
+                    if (mergeDependency == null) {
                         System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-                    } else if (performMerge.isEmpty()) {
+                    } else if (mergeDependency.getConflictingChunksDependencies().isEmpty()) {
                         System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
                         hasNoDependencies++;
-                    } else {
+                    } else if(!mergeDependency.getConflictingChunksDependencies().isEmpty()){
                         System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
                         hasDependencies++;
+                    }
+                    
+                    //Treating amount of conflicting chunks
+                    if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() == 1){
+                        oneCC++;
+                    } else if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() > 1){
+                        moreThanOneCC++;
                     }
                 } catch (IOException ex) {
                     System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
@@ -86,10 +100,11 @@ public class MergeGuider {
 
         System.out.println("hasNoDependencies = " + hasNoDependencies);
         System.out.println("hasDependencies = " + hasDependencies);
-
+        System.out.println("moreThanOneCC = " + moreThanOneCC);
+        System.out.println("oneCC = " + oneCC);
     }
 
-    public static List<CCDependency> performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
+    public static MergeDependency performMerge(String projectPath, String SHALeft, String SHARight, String sandbox) throws IOException {
         if (isFailedMerge(projectPath, SHALeft, SHARight)) {
 
             List<String> conflictedFilePaths = Git.conflictedFiles(projectPath);
@@ -120,19 +135,10 @@ public class MergeGuider {
             repositioningConflictingChunksInformation(ccis, repositoryLeft, projectPath, repositoryRight);
 
             //Creating depedency matrix
-            int order = ccis.size();
-            int[][] dependencyMatrix = instanciatingDepedencyMatrix(order);
+            MergeDependency mergeDependency = extractDepedencies(ccis, projectPath, ASTLeft, ASTRight);
 
-            fillingDepedencyMatrix(ccis, projectPath,
-                    ASTLeft, ASTRight, dependencyMatrix);
 
-            printDepedencyMatrix(dependencyMatrix);
-
-            List<CCDependency> extractDependencies = extractDependencies(dependencyMatrix);
-
-            printDependencies(dependencyMatrix);
-
-            return extractDependencies;
+            return mergeDependency;
         }
 
         return null;
@@ -167,8 +173,12 @@ public class MergeGuider {
         }
     }
 
-    public static void fillingDepedencyMatrix(List<ConflictingChunkInformation> ccis, String projectPath,
-            List<ClassLanguageContructs> ASTLeft, List<ClassLanguageContructs> ASTRight, int[][] dependencyMatrix) {
+    public static MergeDependency extractDepedencies(List<ConflictingChunkInformation> ccis, String projectPath,
+            List<ClassLanguageContructs> ASTLeft, List<ClassLanguageContructs> ASTRight) {
+
+        MergeDependency mergeDependency = new MergeDependency();
+        mergeDependency.setConflictingChunksAmount(ccis.size());
+
         for (ConflictingChunkInformation cci : ccis) {
 
             //Find method declaration that has some intersection with a method declaration
@@ -210,7 +220,9 @@ public class MergeGuider {
                 if (hasMethodDependecy) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.METHOD_DECLARATION_CALL);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
 
@@ -221,7 +233,9 @@ public class MergeGuider {
                 if (hasAttributeDepedency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.ATTRIBUTE_DECLARATION_USAGE);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
 
@@ -232,7 +246,9 @@ public class MergeGuider {
                 if (hasVariableDepedency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.VARIABLE_DECLARATION_USAGE);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
 
@@ -245,24 +261,30 @@ public class MergeGuider {
                 if (hasTypeDeclarationDependency) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DECLARATION_USAGE);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
 
-                boolean hasDependencyTypeDeclarationInterface = 
-                        hasDependencyTypeDeclarationInterface(leftTypeDeclarations, leftTypeDeclarationsAux) ||
-                        hasDependencyTypeDeclarationInterface(rightTypeDeclarations, rightTypeDeclarationsAux);
-                
+                boolean hasDependencyTypeDeclarationInterface
+                        = hasDependencyTypeDeclarationInterface(leftTypeDeclarations, leftTypeDeclarationsAux)
+                        || hasDependencyTypeDeclarationInterface(rightTypeDeclarations, rightTypeDeclarationsAux);
+
                 if (hasDependencyTypeDeclarationInterface) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
-                        dependencyMatrix[columnNumber][rowNumber] = 1;
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DELCARATION_INTERFACE);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                         System.out.println("Has!!!!!");
                     }
                 }
             }
 
         }
+
+        return mergeDependency;
     }
 
     public static int[][] instanciatingDepedencyMatrix(int order) {
@@ -432,10 +454,11 @@ public class MergeGuider {
             for (MyTypeDeclaration typeDeclarationAux : typeDeclarationsAux) {
                 List<SimpleType> interfaces = typeDeclarationAux.getInterfaces();
                 for (SimpleType aInterface : interfaces) {
-                    if(sameTypeDeclaration(typeDeclaration, aInterface))
+                    if (sameTypeDeclaration(typeDeclaration, aInterface)) {
                         return true;
+                    }
                 }
-                
+
             }
         }
 
@@ -664,23 +687,22 @@ public class MergeGuider {
 
     }
 
-    public static List<CCDependency> extractDependencies(int[][] dependencyMatrix) {
-
-        List<CCDependency> result = new ArrayList<>();
-
-        for (int i = 0; i < dependencyMatrix.length; i++) {
-            int[] row = dependencyMatrix[i];
-            for (int j = 0; j < row.length; j++) {
-                if (dependencyMatrix[i][j] == 1) {
-                    result.add(new CCDependency(i, j));
-                }
-            }
-
-        }
-
-        return result;
-    }
-
+//    public static List<CCDependency> extractDependencies(int[][] dependencyMatrix) {
+//
+//        List<CCDependency> result = new ArrayList<>();
+//
+//        for (int i = 0; i < dependencyMatrix.length; i++) {
+//            int[] row = dependencyMatrix[i];
+//            for (int j = 0; j < row.length; j++) {
+//                if (dependencyMatrix[i][j] == 1) {
+//                    result.add(new ConflictingChunksDependency(i, j));
+//                }
+//            }
+//
+//        }
+//
+//        return result;
+//    }
     public static List<MyAttributeDeclaration> leftAttributes(String projectPath,
             ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
 
