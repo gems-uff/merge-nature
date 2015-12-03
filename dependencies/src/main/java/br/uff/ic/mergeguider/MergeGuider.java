@@ -43,9 +43,9 @@ public class MergeGuider {
         //Home
 //        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
 //        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-        String projectPath = "/Users/gleiph/repositories/icse/mct";
+//        String projectPath = "/Users/gleiph/repositories/icse/mct";
 //                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-//        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
         String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
 //        String projectPath = "/home/gmenezes/repositorios/antlr4";

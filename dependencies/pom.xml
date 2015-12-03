@@ -35,7 +35,38 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        
+        <!--JUNG-->
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-graph-impl</artifactId>
+            <version>2.0.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-visualization</artifactId>
+            <version>2.0.1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
+    
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
