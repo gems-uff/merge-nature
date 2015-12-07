@@ -10,7 +10,6 @@ import br.uff.ic.mergeguider.javaparser.ProjectAST;
 import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
 import java.util.List;
 import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

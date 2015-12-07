@@ -5,6 +5,8 @@
  */
 package br.uff.ic.mergeguider.languageConstructs;
 
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
@@ -18,7 +20,7 @@ public class MyAnnotationUsage {
     private MarkerAnnotation markerAnnotation;
     private NormalAnnotation normalAnnotation;
     private SingleMemberAnnotation singleMemberAnnotation;
-    
+
     private Location location;
 
     public MyAnnotationUsage(MarkerAnnotation markerAnnotation, Location location) {
@@ -91,5 +93,29 @@ public class MyAnnotationUsage {
     public void setLocation(Location location) {
         this.location = location;
     }
-    
+
+    public IAnnotationBinding resolveAnnotationBinding() {
+        if (markerAnnotation != null) {
+            return markerAnnotation.resolveAnnotationBinding();
+        } else if (normalAnnotation != null) {
+            return normalAnnotation.resolveAnnotationBinding();
+        } else if (singleMemberAnnotation != null) {
+            return singleMemberAnnotation.resolveAnnotationBinding();
+        } else {
+            return null;
+        }
+    }
+
+    public ITypeBinding resolveTypeBinding() {
+        if (markerAnnotation != null) {
+            return markerAnnotation.resolveTypeBinding();
+        } else if (normalAnnotation != null) {
+            return normalAnnotation.resolveTypeBinding();
+        } else if (singleMemberAnnotation != null) {
+            return singleMemberAnnotation.resolveTypeBinding();
+        } else {
+            return null;
+        }
+    }
+
 }

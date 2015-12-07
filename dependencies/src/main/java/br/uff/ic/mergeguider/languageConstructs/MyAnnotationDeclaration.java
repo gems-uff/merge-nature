@@ -6,6 +6,7 @@
 package br.uff.ic.mergeguider.languageConstructs;
 
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
  *
@@ -47,6 +48,10 @@ public class MyAnnotationDeclaration {
      */
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public ITypeBinding resolveTypeBinding() {
+        return annotationTypeDeclaration.resolveBinding();
     }
 
 }
