@@ -6,6 +6,7 @@
 package br.uff.ic.mergeguider.javaparser;
 
 import br.uff.ic.mergeguider.languageConstructs.Location;
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
@@ -361,7 +363,7 @@ public class DepVisitor extends ASTVisitor {
         simpleNames = new ArrayList<>();
         simpleNamesList.add(simpleNames);
 
-        //Treating location and structure
+        //Treating location and language construct
         Location location;
 
         int elementLineBegin = cu.getLineNumber(node.getStartPosition());
@@ -441,6 +443,20 @@ public class DepVisitor extends ASTVisitor {
         simpleNames = new ArrayList<>();
         simpleNamesList.add(simpleNames);
 
+        //Treating location and language construct
+        Location location;
+
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyAnnotationDeclaration annotationDeclaration = new MyAnnotationDeclaration(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationDeclarations().add(annotationDeclaration);
+        
         return true;
     }
 

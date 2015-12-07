@@ -5,6 +5,7 @@
  */
 package br.uff.ic.mergeguider.javaparser;
 
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
@@ -31,6 +32,7 @@ public class ClassLanguageContructs {
     private List<MyVariableDeclaration> variableDeclarations;
     private List<MyVariableCall> variableCalls;
     private List<MyTypeDeclaration> typeDeclarations;
+    private List<MyAnnotationDeclaration> annotationDeclarations;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -43,6 +45,7 @@ public class ClassLanguageContructs {
         variableDeclarations = new ArrayList<>();
         variableCalls = new ArrayList<>();
         typeDeclarations = new ArrayList<>();
+        annotationDeclarations = new ArrayList<>();
         
     }
 
@@ -183,6 +186,20 @@ public class ClassLanguageContructs {
      */
     public void setTypeDeclarations(List<MyTypeDeclaration> typeDeclarations) {
         this.typeDeclarations = typeDeclarations;
+    }
+
+    /**
+     * @return the annotationDeclarations
+     */
+    public List<MyAnnotationDeclaration> getAnnotationDeclarations() {
+        return annotationDeclarations;
+    }
+
+    /**
+     * @param annotationDeclarations the annotationDeclarations to set
+     */
+    public void setAnnotationDeclarations(List<MyAnnotationDeclaration> annotationDeclarations) {
+        this.annotationDeclarations = annotationDeclarations;
     }
     
     

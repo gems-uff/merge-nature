@@ -27,8 +27,6 @@ public class JavaParser {
         parser.setBindingsRecovery(true);
 
         Map options = JavaCore.getOptions();
-//        JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
-//        parser.setCompilerOptions(options);
         
         options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
         options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
@@ -73,6 +71,7 @@ public class JavaParser {
                     clc.setVariableDeclarations(classLanguageConstructs.getVariableDeclarations());
                     clc.setVariableCalls(classLanguageConstructs.getVariableCalls());
                     clc.setTypeDeclarations(classLanguageConstructs.getTypeDeclarations());
+                    clc.setAnnotationDeclarations(classLanguageConstructs.getAnnotationDeclarations());
                     
                     classesLanguageConstructs.add(clc);
                 }
