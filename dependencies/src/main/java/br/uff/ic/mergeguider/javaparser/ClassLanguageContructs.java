@@ -6,6 +6,7 @@
 package br.uff.ic.mergeguider.javaparser;
 
 import br.uff.ic.mergeguider.languageConstructs.MyAnnotationDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationUsage;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
@@ -33,6 +34,7 @@ public class ClassLanguageContructs {
     private List<MyVariableCall> variableCalls;
     private List<MyTypeDeclaration> typeDeclarations;
     private List<MyAnnotationDeclaration> annotationDeclarations;
+    private List<MyAnnotationUsage> annotationUsages;
 
     public ClassLanguageContructs(String qualifiedName, String path) {
         this.qualifiedName = qualifiedName;
@@ -46,6 +48,7 @@ public class ClassLanguageContructs {
         variableCalls = new ArrayList<>();
         typeDeclarations = new ArrayList<>();
         annotationDeclarations = new ArrayList<>();
+        annotationUsages = new ArrayList<>();
         
     }
 
@@ -200,6 +203,20 @@ public class ClassLanguageContructs {
      */
     public void setAnnotationDeclarations(List<MyAnnotationDeclaration> annotationDeclarations) {
         this.annotationDeclarations = annotationDeclarations;
+    }
+
+    /**
+     * @return the annotationUsages
+     */
+    public List<MyAnnotationUsage> getAnnotationUsages() {
+        return annotationUsages;
+    }
+
+    /**
+     * @param annotationUsages the annotationUsages to set
+     */
+    public void setAnnotationUsages(List<MyAnnotationUsage> annotationUsages) {
+        this.annotationUsages = annotationUsages;
     }
     
     

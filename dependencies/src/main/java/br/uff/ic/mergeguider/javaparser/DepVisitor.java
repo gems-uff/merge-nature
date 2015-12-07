@@ -7,6 +7,7 @@ package br.uff.ic.mergeguider.javaparser;
 
 import br.uff.ic.mergeguider.languageConstructs.Location;
 import br.uff.ic.mergeguider.languageConstructs.MyAnnotationDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationUsage;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
@@ -27,11 +28,13 @@ import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
@@ -75,7 +78,59 @@ public class DepVisitor extends ASTVisitor {
     //  Treating Language Constructs
     //----------------------------------------------------------------------
     //----------------------------------------------------------------------
-    //Treating method calls
+//Treating annotation usages
+    @Override
+    public boolean visit(MarkerAnnotation node) {
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        Location location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+
+        //I am not interested on language constructs inside Annotations 
+        return false;
+    }
+
+    @Override
+    public boolean visit(NormalAnnotation node) {
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        Location location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+
+        //I am not interested on language constructs inside Annotations 
+        return false;
+    }
+
+    @Override
+    public boolean visit(SingleMemberAnnotation node) {
+        int elementLineBegin = cu.getLineNumber(node.getStartPosition());
+        int elementLineEnd = cu.getLineNumber(node.getStartPosition() + node.getLength());
+        int elementColumnBegin = cu.getColumnNumber(node.getStartPosition());
+        int elementColumnEnd = cu.getColumnNumber(node.getStartPosition() + node.getLength());
+
+        Location location = new Location(elementLineBegin, elementLineEnd, elementColumnBegin, elementColumnEnd);
+
+        MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
+
+        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+
+        //I am not interested on language constructs inside Annotations 
+        return false;
+    }
+
+//Treating method calls
     @Override
     public boolean visit(MethodInvocation node) {
 
@@ -261,12 +316,6 @@ public class DepVisitor extends ASTVisitor {
         return false;
     }
 
-    //Treating annotations like @javax.xml.bind.annotation.XmlSchema(namespace = "http://gov.nasa.arc.mct", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-    @Override
-    public boolean visit(NormalAnnotation node) {
-        return false;
-    }
-
     //Treating Variables 
     @Override
     public boolean visit(SingleVariableDeclaration node) {
@@ -311,7 +360,7 @@ public class DepVisitor extends ASTVisitor {
         return true;
 
     }
-    
+
     @Override
     public boolean visit(VariableDeclarationStatement node) {
 
@@ -456,7 +505,7 @@ public class DepVisitor extends ASTVisitor {
         MyAnnotationDeclaration annotationDeclaration = new MyAnnotationDeclaration(node, location);
 
         classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationDeclarations().add(annotationDeclaration);
-        
+
         return true;
     }
 
