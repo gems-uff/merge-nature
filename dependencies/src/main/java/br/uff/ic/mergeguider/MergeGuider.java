@@ -68,42 +68,39 @@ public class MergeGuider {
         //        String sandbox = "/home/gmenezes/repositorios/";
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
         int hasDependencies = 0, hasNoDependencies = 0, oneCC = 0, moreThanOneCC = 0;
+
+        int conflictingChunks, dependecies/*, files, filesDepedency*/;
+        String project, mergeSHA, leftSHA, rightSHA, mergebaseSHA;
+
+        project = projectPath;
+
         for (String mergeRevision : mergeRevisions) {
+
+            mergeSHA = mergeRevision;
 
             List<String> parents = Git.getParents(projectPath, mergeRevision);
 
             if (parents.size() == 2) {
-                String SHALeft = parents.get(0);
-                String SHARight = parents.get(1);
+                leftSHA = parents.get(0);
+                rightSHA = parents.get(1);
 
                 MergeDependency mergeDependency;
                 try {
 //                    System.out.println("\tMerging " + SHALeft + " and " + SHARight);
-                    mergeDependency = performMerge(projectPath, SHALeft, SHARight, sandbox);
-
-                    if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() <= 0) {
-                        continue;
-                    }
+                    mergeDependency = performMerge(projectPath, leftSHA, rightSHA, sandbox);
 
                     //Treating dependencies 
                     if (mergeDependency == null) {
-//                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
-                    } else if (mergeDependency.getConflictingChunksDependencies().isEmpty()) {
-//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
-                        hasNoDependencies++;
-                    } else if (!mergeDependency.getConflictingChunksDependencies().isEmpty()) {
-                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
-                        hasDependencies++;
+                        conflictingChunks = 0;
+                        dependecies = 0;
+                    } else {
+                        conflictingChunks = mergeDependency.getConflictingChunksAmount();
+                        dependecies = mergeDependency.getConflictingChunksDependencies().size();
                     }
 
-                    //Treating amount of conflicting chunks
-                    if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() == 1) {
-                        oneCC++;
-                    } else if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() > 1) {
-                        moreThanOneCC++;
-                    }
+                    System.out.println(project + ", " + conflictingChunks + ", " + dependecies + ", " + mergeSHA + ", " + leftSHA + ", " + rightSHA);
                 } catch (IOException ex) {
-                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+                    System.out.println("Merge between revisions " + leftSHA + " and " + rightSHA + " was not performed.");
 
                 }
 
@@ -308,7 +305,6 @@ public class MergeGuider {
                         ConflictingChunksDependency conflictingChunksDependency
                                 = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.ANNOTATION_DECLARATION_USAGE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
-                        System.out.println("has annotation");
                     }
                 }
 
