@@ -14,6 +14,8 @@ import br.uff.ic.mergeguider.dependency.DependencyType;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
 import br.uff.ic.mergeguider.javaparser.ProjectAST;
 import br.uff.ic.mergeguider.languageConstructs.Location;
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationDeclaration;
+import br.uff.ic.mergeguider.languageConstructs.MyAnnotationUsage;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyAttributeCall;
 import br.uff.ic.mergeguider.languageConstructs.MyMethodDeclaration;
@@ -41,11 +43,13 @@ public class MergeGuider {
     public static void main(String[] args) {
 
         //Home
-//        String projectPath = "/Users/gleiph/repositories/icse/antlr4";
-//        String projectPath = "/Users/gleiph/repositories/icse/lombok";
-//        String projectPath = "/Users/gleiph/repositories/icse/mct";
-//                String projectPath = "/Users/gleiph/repositories/icse/twitter4j";
-        String projectPath = "/Users/gleiph/repositories/icse/voldemort";
+        List<String> projectsPath = new ArrayList<>();
+        projectsPath.add("/Users/gleiph/repositories/icse/antlr4");
+        projectsPath.add("/Users/gleiph/repositories/icse/lombok");
+        projectsPath.add("/Users/gleiph/repositories/icse/mct");
+        projectsPath.add("/Users/gleiph/repositories/icse/twitter4j");
+        projectsPath.add("/Users/gleiph/repositories/icse/voldemort");
+
         String sandbox = "/Users/gleiph/repositories/icse";
         //UFF
 //        String projectPath = "/home/gmenezes/repositorios/antlr4";
@@ -53,11 +57,17 @@ public class MergeGuider {
 //        String projectPath = "/home/gmenezes/repositorios/twitter4j";
 //        String projectPath = "/home/gmenezes/repositorios/mct";
 
-//        String sandbox = "/home/gmenezes/repositorios/";
+        for (String projectPath : projectsPath) {
+            System.out.println("Project: " + projectPath);
+            analyzeProject(projectPath, sandbox);
+        }
+
+    }
+
+    public static void analyzeProject(String projectPath, String sandbox) {
+        //        String sandbox = "/home/gmenezes/repositorios/";
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
-
         int hasDependencies = 0, hasNoDependencies = 0, oneCC = 0, moreThanOneCC = 0;
-
         for (String mergeRevision : mergeRevisions) {
 
             List<String> parents = Git.getParents(projectPath, mergeRevision);
@@ -68,26 +78,28 @@ public class MergeGuider {
 
                 MergeDependency mergeDependency;
                 try {
+//                    System.out.println("\tMerging " + SHALeft + " and " + SHARight);
                     mergeDependency = performMerge(projectPath, SHALeft, SHARight, sandbox);
-                    
-                    if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() <= 0)
+
+                    if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() <= 0) {
                         continue;
-                    
+                    }
+
                     //Treating dependencies 
                     if (mergeDependency == null) {
-                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
+//                        System.out.println("No conflict between revisions " + SHALeft + " and " + SHARight + " has not dependencies.");
                     } else if (mergeDependency.getConflictingChunksDependencies().isEmpty()) {
-                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
+//                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has no dependencies.");
                         hasNoDependencies++;
-                    } else if(!mergeDependency.getConflictingChunksDependencies().isEmpty()){
+                    } else if (!mergeDependency.getConflictingChunksDependencies().isEmpty()) {
                         System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " has dependencies.");
                         hasDependencies++;
                     }
-                    
+
                     //Treating amount of conflicting chunks
-                    if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() == 1){
+                    if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() == 1) {
                         oneCC++;
-                    } else if(mergeDependency != null && mergeDependency.getConflictingChunksAmount() > 1){
+                    } else if (mergeDependency != null && mergeDependency.getConflictingChunksAmount() > 1) {
                         moreThanOneCC++;
                     }
                 } catch (IOException ex) {
@@ -97,7 +109,6 @@ public class MergeGuider {
 
             }
         }
-
         System.out.println("hasNoDependencies = " + hasNoDependencies);
         System.out.println("hasDependencies = " + hasDependencies);
         System.out.println("moreThanOneCC = " + moreThanOneCC);
@@ -136,7 +147,6 @@ public class MergeGuider {
 
             //Creating depedency matrix
             MergeDependency mergeDependency = extractDepedencies(ccis, projectPath, ASTLeft, ASTRight);
-
 
             return mergeDependency;
         }
@@ -193,8 +203,13 @@ public class MergeGuider {
             List<MyVariableDeclaration> leftVariableDeclarations = leftVariableDeclarations(projectPath, cci, ASTLeft);
             List<MyVariableDeclaration> rightVariableDeclarations = rightVariableDeclarations(projectPath, cci, ASTRight);
 
+            //Finding Type declarations
             List<MyTypeDeclaration> leftTypeDeclarations = leftTypeDeclarations(projectPath, cci, ASTLeft);
             List<MyTypeDeclaration> rightTypeDeclarations = rightTypeDeclarations(projectPath, cci, ASTRight);
+
+            //Find Annotation declarations
+            List<MyAnnotationDeclaration> leftAnnotationDeclarations = leftAnnotationDeclarations(projectPath, cci, ASTLeft);
+            List<MyAnnotationDeclaration> rightAnnotationDeclarations = rightAnnotationDeclarations(projectPath, cci, ASTRight);
 
             int rowNumber = ccis.indexOf(cci);
 
@@ -212,6 +227,9 @@ public class MergeGuider {
 
                 List<MyTypeDeclaration> leftTypeDeclarationsAux = leftTypeDeclarations(projectPath, cci, ASTLeft);
                 List<MyTypeDeclaration> rightTypeDeclarationsAux = rightTypeDeclarations(projectPath, cci, ASTRight);
+
+                List<MyAnnotationUsage> leftAnnotationUsages = leftAnnotationUsages(projectPath, cci, ASTLeft);
+                List<MyAnnotationUsage> rightAnnotationUsages = rightAnnotationUsages(projectPath, cci, ASTRight);
 
                 boolean hasMethodDependecy
                         = hasMethodDependency(leftMethodDeclarations, leftMethodInvocations)
@@ -275,11 +293,25 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DELCARATION_INTERFACE);
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DECLARATION_INTERFACE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
-                        System.out.println("Has!!!!!");
                     }
                 }
+
+                boolean hasAnnotationDependency
+                        = hasDependencyAnnotationDeclarationUsage(leftAnnotationDeclarations, leftAnnotationUsages)
+                        || hasDependencyAnnotationDeclarationUsage(rightAnnotationDeclarations, rightAnnotationUsages);
+
+                if (hasAnnotationDependency) {
+                    //CC(rowNumber) depends on CC(ColumnNumber)
+                    if (columnNumber != rowNumber) {
+                        ConflictingChunksDependency conflictingChunksDependency
+                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.ANNOTATION_DECLARATION_USAGE);
+                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
+                        System.out.println("has annotation");
+                    }
+                }
+
             }
 
         }
@@ -1003,4 +1035,150 @@ public class MergeGuider {
         return result;
     }
 
+    public static List<MyAnnotationDeclaration> leftAnnotationDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyAnnotationDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
+
+                for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
+                    if (leftHasIntersection(annotationDeclaration.getLocation(), cci)) {
+                        result.add(annotationDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAnnotationDeclaration> rightAnnotationDeclarations(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyAnnotationDeclaration> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
+
+                for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
+                    if (rightHasIntersection(annotationDeclaration.getLocation(), cci)) {
+                        result.add(annotationDeclaration);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAnnotationUsage> leftAnnotationUsages(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+
+        List<MyAnnotationUsage> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTLeft) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAnnotationUsage> annotationDeclarations = AST.getAnnotationUsages();
+
+                for (MyAnnotationUsage annotationUsage : annotationDeclarations) {
+                    if (leftHasIntersection(annotationUsage.getLocation(), cci)) {
+                        result.add(annotationUsage);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAnnotationUsage> rightAnnotationUsages(String projectPath,
+            ConflictingChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyAnnotationUsage> result = new ArrayList<>();
+
+        String relativePath;
+
+        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
+            relativePath = cci.getRelativePathLeft();
+        } else {
+            relativePath = cci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (AST.getPath().contains(relativePath)) {
+
+                List<MyAnnotationUsage> annotationUsages = AST.getAnnotationUsages();
+
+                for (MyAnnotationUsage annotationUsage : annotationUsages) {
+                    if (rightHasIntersection(annotationUsage.getLocation(), cci)) {
+                        result.add(annotationUsage);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //Treating dependency between a annotation declaration its usages
+    public static boolean hasDependencyAnnotationDeclarationUsage(List<MyAnnotationDeclaration> annotationDeclarations, List<MyAnnotationUsage> annotationUsages) {
+
+        for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
+            for (MyAnnotationUsage annotationUsage : annotationUsages) {
+                if (sameAnnotation(annotationDeclaration, annotationUsage)) {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    public static boolean sameAnnotation(MyAnnotationDeclaration annotationDeclaration, MyAnnotationUsage annotationUsage) {
+
+        ITypeBinding annotationDeclarationBinding = annotationDeclaration.resolveTypeBinding();
+        ITypeBinding annotationUsageBinding = annotationUsage.resolveTypeBinding();
+
+        if (annotationDeclarationBinding != null && annotationUsageBinding != null && annotationDeclarationBinding.equals(annotationUsageBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

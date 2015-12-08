@@ -89,7 +89,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        }
 
         //I am not interested on language constructs inside Annotations 
         return false;
@@ -106,7 +108,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        }
 
         //I am not interested on language constructs inside Annotations 
         return false;
@@ -123,7 +127,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyAnnotationUsage annotationUsage = new MyAnnotationUsage(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationUsages().add(annotationUsage);
+        }
 
         //I am not interested on language constructs inside Annotations 
         return false;
@@ -142,7 +148,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyMethodInvocation myMethodInvocation = new MyMethodInvocation(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getMethodInvocations().add(myMethodInvocation);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getMethodInvocations().add(myMethodInvocation);
+        }
 
         return true;
     }
@@ -174,7 +182,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyMethodDeclaration myMethodDeclaration = new MyMethodDeclaration(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getMethodDeclarations().add(myMethodDeclaration);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getMethodDeclarations().add(myMethodDeclaration);
+        }
 
         return true;
     }
@@ -204,7 +214,9 @@ public class DepVisitor extends ASTVisitor {
 
             MyAttributeDeclaration myAttribute = new MyAttributeDeclaration(fragment, location);
 
-            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAttributes().add(myAttribute);
+            if (!classLanguageConstructsList.isEmpty()) {
+                classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAttributes().add(myAttribute);
+            }
 
         }
 
@@ -273,7 +285,9 @@ public class DepVisitor extends ASTVisitor {
 
                         MyAttributeCall myAttributeCall = new MyAttributeCall(node, location);
 
-                        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAttributeCalls().add(myAttributeCall);
+                        if (!classLanguageConstructsList.isEmpty()) {
+                            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAttributeCalls().add(myAttributeCall);
+                        }
                     }
                 }
 
@@ -329,7 +343,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+        }
 
         return true;
     }
@@ -352,7 +368,9 @@ public class DepVisitor extends ASTVisitor {
 
             MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(fragment, location);
 
-            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+            if (!classLanguageConstructsList.isEmpty()) {
+                classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+            }
 
         }
 
@@ -378,7 +396,9 @@ public class DepVisitor extends ASTVisitor {
 
             MyVariableDeclaration myVariableDeclaration = new MyVariableDeclaration(fragment, location);
 
-            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+            if (!classLanguageConstructsList.isEmpty()) {
+                classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getVariableDeclarations().add(myVariableDeclaration);
+            }
 
         }
 
@@ -423,7 +443,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyTypeDeclaration typeDeclaration = new MyTypeDeclaration(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getTypeDeclarations().add(typeDeclaration);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getTypeDeclarations().add(typeDeclaration);
+        }
 
         return true;
     }
@@ -503,7 +525,9 @@ public class DepVisitor extends ASTVisitor {
 
         MyAnnotationDeclaration annotationDeclaration = new MyAnnotationDeclaration(node, location);
 
-        classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationDeclarations().add(annotationDeclaration);
+        if (!classLanguageConstructsList.isEmpty()) {
+            classLanguageConstructsList.get(classLanguageConstructsList.size() - 1).getAnnotationDeclarations().add(annotationDeclaration);
+        }
 
         return true;
     }
