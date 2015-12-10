@@ -25,6 +25,17 @@ public class GithubAPI {
     private static final String END_PARENTS = "]";
     private static User user;
 
+    private static final String CREATED_AT = "created_at";
+    private static final String PRIVATE = "private";
+    private static final String NAME = "name";
+    private static final String ID = "id";
+    private static final String URL = "url";
+    private static final String HTML_URL = "html_url";
+    private static final String CONTRIBUTORS_URL = "contributors_url";
+    private static final String LANGUAGES_URL = "languages_url";
+    private static final String  MESSAGE = "message";
+    private static final String UPDATED_AT = "updated_at";
+    
     static {
         User.init();
     }
@@ -292,8 +303,8 @@ public class GithubAPI {
                         Object parse = parser.parse(content);
                         JSONObject jsono = (JSONObject) parse;
 
-                        String id = jsono.get("id").toString();
-                        String searchUrl = jsono.get("url").toString();
+                        String id = jsono.get(ID).toString();
+                        String searchUrl = jsono.get(URL).toString();
 
                         Project project = projectDAO.getById(Long.parseLong(id));
 
@@ -303,9 +314,9 @@ public class GithubAPI {
                             project = project(searchUrl);
 
                             if (project.getName() == null) {
-                                String priva = jsono.get("private").toString();
-                                String name = jsono.get("name").toString();
-                                String htmlUrl = jsono.get("html_url").toString();
+                                String priva = jsono.get(PRIVATE).toString();
+                                String name = jsono.get(NAME).toString();
+                                String htmlUrl = jsono.get(HTML_URL).toString();
 
                                 project.setCreatedAt(null);
                                 project.setHtmlUrl(htmlUrl);
@@ -317,12 +328,12 @@ public class GithubAPI {
                                 project.setUpdatedAt(null);
 
                                 //Contributors
-                                String developersUrl = jsono.get("contributors_url").toString();
+                                String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
                                 int developers = GithubAPI.contributors(developersUrl);
                                 project.setDevelopers(developers);
 
                                 //Languages
-                                String languagesUrl = jsono.get("languages_url").toString();
+                                String languagesUrl = jsono.get(LANGUAGES_URL).toString();
                                 List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
                                 project.setLanguages(languagesList);
 
@@ -402,29 +413,29 @@ public class GithubAPI {
             parse = parser.parse(content);
             JSONObject jsono = (JSONObject) parse;
 
-            if (!jsono.containsKey("message")) {
+            if (!jsono.containsKey(MESSAGE)) {
 
-                project.setCreatedAt(jsono.get("created_at").toString());
-                project.setHtmlUrl(jsono.get("html_url").toString());
-                project.setId(Long.parseLong(jsono.get("id").toString()));
-                project.setName(jsono.get("name").toString());
-                project.setPriva(Boolean.parseBoolean(jsono.get("private").toString()));
-                project.setSearchUrl(jsono.get("url").toString());
-                project.setUpdatedAt(jsono.get("updated_at").toString());
+                project.setCreatedAt(jsono.get(CREATED_AT).toString());
+                project.setHtmlUrl(jsono.get(HTML_URL).toString());
+                project.setId(Long.parseLong(jsono.get(ID).toString()));
+                project.setName(jsono.get(NAME).toString());
+                project.setPriva(Boolean.parseBoolean(jsono.get(PRIVATE).toString()));
+                project.setSearchUrl(jsono.get(URL).toString());
+                project.setUpdatedAt(jsono.get(UPDATED_AT).toString());
 
                 //Contributors
-                String developersUrl = jsono.get("contributors_url").toString();
+                String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
                 int developers = GithubAPI.contributors(developersUrl);
                 project.setDevelopers(developers);
 
                 //Languages
-                String languagesUrl = jsono.get("languages_url").toString();
+                String languagesUrl = jsono.get(LANGUAGES_URL).toString();
                 List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
                 project.setLanguages(languagesList);
 
             } else {
 
-                project.setMessage(jsono.get("message").toString());
+                project.setMessage(jsono.get(MESSAGE).toString());
 
             }
             System.out.println(project.getName());
