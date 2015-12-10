@@ -74,7 +74,7 @@ public class ProjectJDBCDAO {
                 + "\', \'" + project.getHtmlUrl() + "\', \'" + project.getMessage() + "\', \'" + project.getName()
                 + "\', \'" + project.getNumberConflictingMerges() + "\', \'" + project.getNumberMergeRevisions() + "\', \'"
                 + project.getNumberRevisions() + "\', \'" + project.isPriva() + "\', \'" + project.getRepositoryPath()
-                + "\', \'" + project.getSearchUrl() + "\', \'" + project.getUpdatedAt() + "\', \'" + project.isHasForks() + "\')";
+                + "\', \'" + project.getSearchUrl() + "\', \'" + project.getUpdatedAt() + "\', \'" + project.isFork() + "\')";
 
         DefaultOperations.insert(insertSQL, connection);
 

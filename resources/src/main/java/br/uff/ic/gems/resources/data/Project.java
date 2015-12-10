@@ -47,7 +47,7 @@ public class Project implements Serializable {
     private List<Revision> revisions;
 
     @Transient
-    private boolean hasForks;
+    private boolean fork;
 
     public Project() {
         this.id = null;
@@ -59,7 +59,7 @@ public class Project implements Serializable {
         this.searchUrl = null;
         this.developers = 0;
         this.message = null;
-        this.hasForks = false;
+        this.fork = false;
 
         revisions = new ArrayList<>();
         languages = new ArrayList<>();
@@ -291,17 +291,19 @@ public class Project implements Serializable {
     }
 
     /**
-     * @return the hasForks
+     * @return the fork
      */
-    public boolean isHasForks() {
-        return hasForks;
+    public boolean isFork() {
+        return fork;
     }
 
     /**
-     * @param hasForks the hasForks to set
+     * @param fork the fork to set
      */
-    public void setHasForks(boolean hasForks) {
-        this.hasForks = hasForks;
+    public void setFork(boolean fork) {
+        this.fork = fork;
     }
+
+    
 
 }
