@@ -34,11 +34,29 @@ public class ProjectJDBCDAO {
     public static final String REPOSITORY_PATH = "repositorypath";
     public static final String SEARCH_URL = "searchurl";
     public static final String UPDATED_AT = "updatedat";
+    public static final String FORK = "fork";
 
     private final Connection connection;
 
     public ProjectJDBCDAO(Connection connection) {
         this.connection = connection;
+    }
+
+    public boolean save(Project project) {
+        try {
+
+            Project selectByProjectId = selectByProjectId(project.getId());
+
+            if (selectByProjectId.getId() != null) {
+                update(project);
+            } else {
+                insert(project);
+            }
+        } catch (SQLException ex) {
+            return false;
+        }
+
+        return true;
     }
 
     public void insert(Project project) throws SQLException {
@@ -51,12 +69,12 @@ public class ProjectJDBCDAO {
                 + "(" + ID + ", " + CREATED_AT + ", " + DEVELOPERS + ", " + HTML_URL
                 + ", " + MESSAGE + ", " + NAME + ", " + CONFLICTING_MERGES + ", "
                 + MERGE_REVISIONS + ", " + REVISIONS + ", " + PRIVATE + ", "
-                + REPOSITORY_PATH + ", " + SEARCH_URL + ", " + UPDATED_AT + ") "
+                + REPOSITORY_PATH + ", " + SEARCH_URL + ", " + UPDATED_AT + ", " + FORK + ") "
                 + "VALUES (\'" + project.getId() + "\', \'" + project.getCreatedAt() + "\', \'" + project.getDevelopers()
                 + "\', \'" + project.getHtmlUrl() + "\', \'" + project.getMessage() + "\', \'" + project.getName()
                 + "\', \'" + project.getNumberConflictingMerges() + "\', \'" + project.getNumberMergeRevisions() + "\', \'"
                 + project.getNumberRevisions() + "\', \'" + project.isPriva() + "\', \'" + project.getRepositoryPath()
-                + "\', \'" + project.getSearchUrl() + "\', \'" + project.getUpdatedAt() + "\')";
+                + "\', \'" + project.getSearchUrl() + "\', \'" + project.getUpdatedAt() + "\', \'" + project.isHasForks() + "\')";
 
         DefaultOperations.insert(insertSQL, connection);
 
@@ -107,6 +125,7 @@ public class ProjectJDBCDAO {
                 project.setRepositoryPath(results.getString(REPOSITORY_PATH));
                 project.setSearchUrl(results.getString(SEARCH_URL));
                 project.setUpdatedAt(results.getString(UPDATED_AT));
+                project.setPriva(results.getBoolean(FORK));
 
                 projects.add(project);
 
@@ -158,6 +177,7 @@ public class ProjectJDBCDAO {
                 project.setRepositoryPath(results.getString(REPOSITORY_PATH));
                 project.setSearchUrl(results.getString(SEARCH_URL));
                 project.setUpdatedAt(results.getString(UPDATED_AT));
+                project.setPriva(results.getBoolean(FORK));
 
             }
         }
@@ -175,5 +195,29 @@ public class ProjectJDBCDAO {
         project.setRevisions(revisionDAO.selectAllByProjectId(project.getId()));
 
         return project;
+    }
+
+    public void update(Project project) throws SQLException {
+
+        String update
+                = "UPDATE "
+                + Tables.PROJECT
+                + " SET "
+                + DEVELOPERS + "=\'" + project.getCreatedAt() + "\', "
+                + HTML_URL + "=\'" + project.getCreatedAt() + "\', "
+                + MESSAGE + "=\'" + project.getCreatedAt() + "\', "
+                + NAME + "=\'" + project.getCreatedAt() + "\', "
+                + CONFLICTING_MERGES + "=\'" + project.getCreatedAt() + "\', "
+                + MERGE_REVISIONS + "=\'" + project.getCreatedAt() + "\', "
+                + REVISIONS + "=\'" + project.getCreatedAt() + "\', "
+                + PRIVATE + "=\'" + project.getCreatedAt() + "\', "
+                + REPOSITORY_PATH + "=\'" + project.getCreatedAt() + "\', "
+                + SEARCH_URL + "=\'" + project.getCreatedAt() + "\', "
+                + UPDATED_AT + "=\'" + project.getCreatedAt() + "\', "
+                + FORK + "=\'" + project.getCreatedAt()
+                + " WHERE "
+                + ID + " = \'" + project.getId() + "\'";
+
+        DefaultOperations.update(update, connection);
     }
 }

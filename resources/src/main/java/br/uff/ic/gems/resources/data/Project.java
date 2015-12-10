@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  *
@@ -38,12 +39,15 @@ public class Project implements Serializable {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
-        @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
 //    @OneToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "Project_Revision", 
+    @JoinTable(name = "Project_Revision",
             joinColumns = @JoinColumn(name = "Project_ID"),
             inverseJoinColumns = @JoinColumn(name = "Revision_ID"))
     private List<Revision> revisions;
+
+    @Transient
+    private boolean hasForks;
 
     public Project() {
         this.id = null;
@@ -55,6 +59,7 @@ public class Project implements Serializable {
         this.searchUrl = null;
         this.developers = 0;
         this.message = null;
+        this.hasForks = false;
 
         revisions = new ArrayList<>();
         languages = new ArrayList<>();
@@ -284,4 +289,19 @@ public class Project implements Serializable {
     public void setRevisions(List<Revision> revisions) {
         this.revisions = revisions;
     }
+
+    /**
+     * @return the hasForks
+     */
+    public boolean isHasForks() {
+        return hasForks;
+    }
+
+    /**
+     * @param hasForks the hasForks to set
+     */
+    public void setHasForks(boolean hasForks) {
+        this.hasForks = hasForks;
+    }
+
 }

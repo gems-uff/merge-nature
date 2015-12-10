@@ -20,5 +20,6 @@ public class Tables {
     public static final String LANGUAGE_CONSTRUCT = "languageconstruct";
     public static final String SOLUTION_CONTENT = "solutioncontent";
     public static final String CONFLICTING_CONTENT = "solutioncontent";
+    public static final String FORK = "fork";
 
 }

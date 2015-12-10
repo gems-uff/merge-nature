@@ -62,4 +62,16 @@ public class DefaultOperations {
         return id;
 
     }
+    
+    public static void update(String insertSQL, Connection connection) throws SQLException {
+
+        if (debug) {
+            System.out.println(insertSQL);
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(insertSQL);
+        }
+
+    }
 }
