@@ -42,23 +42,6 @@ public class ProjectJDBCDAO {
         this.connection = connection;
     }
 
-    public boolean save(Project project) {
-        try {
-
-            Project selectByProjectId = selectByProjectId(project.getId());
-
-            if (selectByProjectId.getId() != null) {
-                update(project);
-            } else {
-                insert(project);
-            }
-        } catch (SQLException ex) {
-            return false;
-        }
-
-        return true;
-    }
-
     public void insert(Project project) throws SQLException {
 
         if (project.getId() == null) {
@@ -219,5 +202,24 @@ public class ProjectJDBCDAO {
                 + ID + " = \'" + project.getId() + "\'";
 
         DefaultOperations.update(update, connection);
+    }
+
+    public Long lastID() throws SQLException {
+
+        String query = "SELECT MAX(p.id) FROM Project p";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            if (results.next()) {
+
+                return results.getLong("MAX");
+
+            }
+        } 
+        
+        return null;
     }
 }

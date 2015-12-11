@@ -1,11 +1,17 @@
 package br.uff.ic.gems.resources.github.parser;
 
 import br.uff.ic.gems.resources.cmd.CMDOutput;
+import br.uff.ic.gems.resources.data.Fork;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.authentication.User;
 import br.uff.ic.gems.resources.github.cmd.CMDGithub;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,9 +39,11 @@ public class GithubAPI {
     private static final String HTML_URL = "html_url";
     private static final String CONTRIBUTORS_URL = "contributors_url";
     private static final String LANGUAGES_URL = "languages_url";
-    private static final String  MESSAGE = "message";
+    private static final String MESSAGE = "message";
     private static final String UPDATED_AT = "updated_at";
-    
+    private static final String FORK = "fork";
+    private static final String FORKS_URL = "forks_url";
+
     static {
         User.init();
     }
@@ -252,10 +260,10 @@ public class GithubAPI {
         return result;
     }
 
-    public static void projects() {
+    public static void projects(Connection connection) throws SQLException {
 
         //Jpa manager
-        ProjectDAO projectDAO = new ProjectDAO();
+        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
 
         String LINK = "Link:";
 
@@ -264,7 +272,7 @@ public class GithubAPI {
 
         JSONParser parser = new JSONParser();
 
-        long lastId = projectDAO.getLastId();
+        long lastId = projectDAO.lastID();
 
         if (lastId != -1) {
             link += "?since=" + lastId;
@@ -306,10 +314,10 @@ public class GithubAPI {
                         String id = jsono.get(ID).toString();
                         String searchUrl = jsono.get(URL).toString();
 
-                        Project project = projectDAO.getById(Long.parseLong(id));
+                        Project project = projectDAO.selectByProjectId(Long.parseLong(id));
 
                         //Project is not in the database
-                        if (project == null) {
+                        if (project.getId() == null) {
 
                             project = project(searchUrl);
 
@@ -317,6 +325,7 @@ public class GithubAPI {
                                 String priva = jsono.get(PRIVATE).toString();
                                 String name = jsono.get(NAME).toString();
                                 String htmlUrl = jsono.get(HTML_URL).toString();
+                                boolean fork = Boolean.parseBoolean(jsono.get(FORK).toString());
 
                                 project.setCreatedAt(null);
                                 project.setHtmlUrl(htmlUrl);
@@ -326,6 +335,7 @@ public class GithubAPI {
                                 project.setPriva(Boolean.parseBoolean(priva));
                                 project.setSearchUrl(searchUrl);
                                 project.setUpdatedAt(null);
+                                project.setFork(fork);
 
                                 //Contributors
                                 String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
@@ -337,13 +347,19 @@ public class GithubAPI {
                                 List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
                                 project.setLanguages(languagesList);
 
+                                //Forks
+                                String forksUrl = jsono.get(FORKS_URL).toString();
+                                List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
+                                project.setFork(!forks.isEmpty());
+                                project.setForks(forks);
+
                                 try {
-                                    projectDAO.saveGithub(project);
+                                    projectDAO.insertAll(project);
                                 } catch (Exception e) {
                                 }
                             } else {
                                 try {
-                                    projectDAO.saveGithub(project);
+                                    projectDAO.insertAll(project);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -422,6 +438,7 @@ public class GithubAPI {
                 project.setPriva(Boolean.parseBoolean(jsono.get(PRIVATE).toString()));
                 project.setSearchUrl(jsono.get(URL).toString());
                 project.setUpdatedAt(jsono.get(UPDATED_AT).toString());
+                project.setFork(Boolean.parseBoolean(jsono.get(FORK).toString()));
 
                 //Contributors
                 String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
@@ -432,6 +449,12 @@ public class GithubAPI {
                 String languagesUrl = jsono.get(LANGUAGES_URL).toString();
                 List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
                 project.setLanguages(languagesList);
+
+                //Forks
+                String forksUrl = jsono.get(FORKS_URL).toString();
+                List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
+                project.setFork(!forks.isEmpty());
+                project.setForks(forks);
 
             } else {
 
@@ -445,5 +468,112 @@ public class GithubAPI {
         }
 
         return project;
+    }
+
+    public static List<Fork> forks(String forksUrl, Long projectId) {
+
+        List<Fork> forks = new ArrayList<>();
+
+        CMDOutput output = CMDGithub.cmdGithub(base + forksUrl);
+        int lastPage = 0;
+
+        for (String line : output.getOutput()) {
+
+            if (line.startsWith("Link:")) {
+                String[] split = line.split(",");
+                String last = null;
+                for (String part : split) {
+                    if (part.contains("rel=\"last\"")) {
+                        last = part;
+                    }
+                }
+
+                if (last != null) {
+                    String max = last.split(";")[0].split("=")[1].replace(">", "");
+                    lastPage = Integer.parseInt(max);
+                }
+
+            }
+        }
+
+        for (int i = 1; i < lastPage; i++) {
+            output = CMDGithub.cmdGithub(base + forksUrl + "?page=" + i);
+            List<String> jsons = getJsonString(output.getOutput());
+
+            for (String json : jsons) {
+                Fork fork = getFork(json, projectId);
+                forks.add(fork);
+            }
+
+        }
+
+        return forks;
+    }
+
+    private static List<String> getJsonString(List<String> output) {
+
+        List<String> jsons = new ArrayList<>();
+
+        boolean jsonContent = false;
+        String jsonString = "";
+        int count = 0;
+        for (String line : output) {
+
+            if (line.startsWith("[")) {
+                jsonContent = true;
+            }
+
+            if (jsonContent && !line.startsWith("[") && !line.startsWith("]")) {
+                if (line.contains("{") && line.contains("}")) {
+                    jsonString += line + "\n";
+                } else if (line.contains("{")) {
+                    jsonString += line + "\n";
+                    count++;
+                } else if (line.contains("}")) {
+                    count--;
+
+                    if (line.contains("},") && count == 0) {
+                        jsonString += line.replace("},", "}") + "\n";
+                    } else {
+                        jsonString += line + "\n";
+                    }
+
+                    if (count == 0) {
+                        jsons.add(jsonString);
+                        jsonString = "";
+                    }
+                } else {
+                    jsonString += line + "\n";
+                }
+
+            }
+        }
+
+        return jsons;
+    }
+
+    public static Fork getFork(String jsonString, Long projectId) {
+
+        JSONParser jSONParser = new JSONParser();
+
+        JSONObject parser = null;
+        try {
+            parser = (JSONObject) jSONParser.parse(jsonString);
+        } catch (ParseException ex) {
+            return null;
+        }
+
+        Object idObject = parser.get("id");
+        Object htmlUrlObject = parser.get("html_url");
+
+        Long id = Long.parseLong(idObject.toString());
+        String htmlUrl = htmlUrlObject.toString();
+
+        Fork fork = new Fork();
+        fork.setForkId(id);
+        fork.setForkURL(htmlUrl);
+        fork.setProjectId(projectId);
+
+        return fork;
     }
 }

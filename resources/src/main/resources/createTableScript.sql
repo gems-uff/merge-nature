@@ -13,6 +13,7 @@ CREATE TABLE project
   repositorypath character varying(255),
   searchurl character varying(255),
   updatedat character varying(255),
+  fork boolean,
   CONSTRAINT project_pkey PRIMARY KEY (id)
 )
 WITH (
