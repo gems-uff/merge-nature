@@ -56,7 +56,7 @@ public class AddGithubProjectBean implements Serializable {
             Project project;
             GithubAPI.init();
 
-            project = GithubAPI.project(githubURL);
+            project = GithubAPI.project(githubURL, true, true, true);
 
             try {
                 projectDAO.insertAll(project);
