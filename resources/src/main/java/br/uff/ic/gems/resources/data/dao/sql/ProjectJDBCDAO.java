@@ -5,6 +5,7 @@
  */
 package br.uff.ic.gems.resources.data.dao.sql;
 
+import br.uff.ic.gems.resources.data.Fork;
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
@@ -78,6 +79,12 @@ public class ProjectJDBCDAO {
 
         for (Revision revision : project.getRevisions()) {
             revisionDAO.insertAll(revision, project.getId());
+        }
+        
+        //Adding forks
+        ForkJDBCDAO forkJDBCDAO = new ForkJDBCDAO(connection);
+        for (Fork fork : project.getForks()) {
+            forkJDBCDAO.insertAll(fork);
         }
 
     }

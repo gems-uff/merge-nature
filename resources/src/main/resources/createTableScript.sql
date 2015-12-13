@@ -22,7 +22,16 @@ WITH (
 ALTER TABLE project
   OWNER TO postgres;
 
-
+CREATE TABLE fork(
+   id bigint NOT NULL,
+   htmlurl character varying(255),
+   project_id bigint REFERENCES project(id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE fork
+  OWNER TO postgres;
 
 
 CREATE TABLE language

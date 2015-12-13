@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class ForkJDBCDAO {
 
-    private static final String FORK_ID = "FORK_ID";
-    private static final String FORK_URL = "FORK_URL";
+    private static final String FORK_ID = "id";
+    private static final String HTML_URL = "htmlurl";
 
     private static final String PROJECT_ID = "PROJECT_ID";
 
@@ -31,10 +31,10 @@ public class ForkJDBCDAO {
     }
 
     public Long insert(Fork fork) throws SQLException {
-        String insertSQL = "INSERT INTO " + Tables.REVISION
+        String insertSQL = "INSERT INTO " + Tables.FORK
                 + "("
                 + FORK_ID + ", "
-                + FORK_URL+ ", "
+                + HTML_URL+ ", "
                 + PROJECT_ID
                 + ")"
                 + " VALUES(\'"
@@ -66,7 +66,7 @@ public class ForkJDBCDAO {
                 Fork fork = new Fork();
 
                 fork.setForkId(results.getLong(FORK_ID));
-                fork.setForkURL(results.getString(FORK_URL));
+                fork.setForkURL(results.getString(HTML_URL));
                 fork.setProjectId(results.getLong(PROJECT_ID));
 
                 forks.add(fork);

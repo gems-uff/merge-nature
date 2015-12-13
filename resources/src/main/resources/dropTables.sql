@@ -1,4 +1,5 @@
 DROP TABLE conflictingcontent;
+DROP TABLE fork;
 DROP TABLE solutioncontent;
 DROP TABLE languageconstruct;
 DROP TABLE kindconflict;
