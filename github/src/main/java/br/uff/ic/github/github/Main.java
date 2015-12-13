@@ -9,7 +9,7 @@ import java.sql.Connection;
  * @author Gleiph
  */
 public class Main {
-
+ 
     public static void main(String[] args) {
 
         String database = "apagarLogo";
