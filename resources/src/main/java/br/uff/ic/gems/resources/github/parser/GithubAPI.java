@@ -319,7 +319,7 @@ public class GithubAPI {
                         //Project is not in the database
                         if (project.getId() == null) {
 
-                            project = project(searchUrl);
+                            project = project(searchUrl, true, true, true);
 
                             if (project.getName() == null) {
                                 String priva = jsono.get(PRIVATE).toString();
@@ -386,7 +386,7 @@ public class GithubAPI {
 
     }
 
-    public static Project project(String link) {
+    public static Project project(String link, boolean developersInformation, boolean languageInformation, boolean forkInformation) {
         Project project = new Project();
 
         CMDOutput output = null;
@@ -441,21 +441,25 @@ public class GithubAPI {
                 project.setFork(Boolean.parseBoolean(jsono.get(FORK).toString()));
 
                 //Contributors
-                String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
-                int developers = GithubAPI.contributors(developersUrl);
-                project.setDevelopers(developers);
+                if (developersInformation) {
+                    String developersUrl = jsono.get(CONTRIBUTORS_URL).toString();
+                    int developers = GithubAPI.contributors(developersUrl);
+                    project.setDevelopers(developers);
+                }
 
                 //Languages
-                String languagesUrl = jsono.get(LANGUAGES_URL).toString();
-                List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
-                project.setLanguages(languagesList);
+                if (languageInformation) {
+                    String languagesUrl = jsono.get(LANGUAGES_URL).toString();
+                    List<Language> languagesList = GithubAPI.languagesList(languagesUrl);
+                    project.setLanguages(languagesList);
+                }
 
                 //Forks
-                String forksUrl = jsono.get(FORKS_URL).toString();
-                List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
-                project.setFork(!forks.isEmpty());
-                project.setForks(forks);
-
+                if (forkInformation) {
+                    String forksUrl = jsono.get(FORKS_URL).toString();
+                    List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
+                    project.setForks(forks);
+                }
             } else {
 
                 project.setMessage(jsono.get(MESSAGE).toString());
