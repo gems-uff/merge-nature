@@ -80,7 +80,7 @@ public class ProjectJDBCDAO {
         for (Revision revision : project.getRevisions()) {
             revisionDAO.insertAll(revision, project.getId());
         }
-        
+
         //Adding forks
         ForkJDBCDAO forkJDBCDAO = new ForkJDBCDAO(connection);
         for (Fork fork : project.getForks()) {
@@ -193,24 +193,37 @@ public class ProjectJDBCDAO {
                 = "UPDATE "
                 + Tables.PROJECT
                 + " SET "
-                + DEVELOPERS + "=\'" + project.getCreatedAt() + "\', "
-                + HTML_URL + "=\'" + project.getCreatedAt() + "\', "
-                + MESSAGE + "=\'" + project.getCreatedAt() + "\', "
-                + NAME + "=\'" + project.getCreatedAt() + "\', "
-                + CONFLICTING_MERGES + "=\'" + project.getCreatedAt() + "\', "
-                + MERGE_REVISIONS + "=\'" + project.getCreatedAt() + "\', "
-                + REVISIONS + "=\'" + project.getCreatedAt() + "\', "
-                + PRIVATE + "=\'" + project.getCreatedAt() + "\', "
-                + REPOSITORY_PATH + "=\'" + project.getCreatedAt() + "\', "
-                + SEARCH_URL + "=\'" + project.getCreatedAt() + "\', "
-                + UPDATED_AT + "=\'" + project.getCreatedAt() + "\', "
-                + FORK + "=\'" + project.getCreatedAt()
+                + DEVELOPERS + "=\'" + project.getDevelopers() + "\', "
+                + HTML_URL + "=\'" + project.getHtmlUrl() + "\', "
+                + MESSAGE + "=\'" + project.getMessage() + "\', "
+                + NAME + "=\'" + project.getName() + "\', "
+                + CONFLICTING_MERGES + "=\'" + project.getNumberConflictingMerges() + "\', "
+                + MERGE_REVISIONS + "=\'" + project.getNumberMergeRevisions() + "\', "
+                + REVISIONS + "=\'" + project.getNumberRevisions() + "\', "
+                + PRIVATE + "=\'" + project.isPriva() + "\', "
+                + REPOSITORY_PATH + "=\'" + project.getRepositoryPath() + "\', "
+                + SEARCH_URL + "=\'" + project.getSearchUrl() + "\', "
+                + UPDATED_AT + "=\'" + project.getUpdatedAt() + "\', "
+                + FORK + "=\'" + project.isFork()+ "\' "
                 + " WHERE "
-                + ID + " = \'" + project.getId() + "\'";
+                + ID + " = " + project.getId();
 
         DefaultOperations.update(update, connection);
     }
 
+    public void updateForkInformation(Project project) throws SQLException {
+
+        String update
+                = "UPDATE "
+                + Tables.PROJECT
+                + " SET "
+                + FORK + "=\'" + project.isFork()+ "\' "
+                + " WHERE "
+                + ID + " = " + project.getId();
+
+        DefaultOperations.update(update, connection);
+    }
+    
     public Long lastID() throws SQLException {
 
         String query = "SELECT MAX(p.id) FROM Project p";
@@ -225,8 +238,48 @@ public class ProjectJDBCDAO {
                 return results.getLong("MAX");
 
             }
-        } 
-        
+        }
+
         return null;
     }
+
+    public List<Project> selectWithoutForkInformation() throws SQLException {
+        List<Project> projects = new ArrayList<>();
+
+        String query
+                = "SELECT * "
+                + "FROM " + Tables.PROJECT + " p "
+                + "WHERE p." + FORK + " is NULL";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                Project project = new Project();
+
+                project.setCreatedAt(results.getString(CREATED_AT));
+                project.setDevelopers(results.getInt(DEVELOPERS));
+                project.setHtmlUrl(results.getString(HTML_URL));
+                project.setId(results.getLong(ID));
+                project.setMessage(results.getString(MESSAGE));
+                project.setName(results.getString(NAME));
+                project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
+                project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
+                project.setNumberRevisions(results.getInt(REVISIONS));
+                project.setPriva(results.getBoolean(PRIVATE));
+                project.setRepositoryPath(results.getString(REPOSITORY_PATH));
+                project.setSearchUrl(results.getString(SEARCH_URL));
+                project.setUpdatedAt(results.getString(UPDATED_AT));
+                project.setPriva(results.getBoolean(FORK));
+
+                projects.add(project);
+
+            }
+        }
+
+        return projects;
+    }
+
 }
