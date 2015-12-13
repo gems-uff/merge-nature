@@ -38,7 +38,7 @@ public class AutomaticAnalysis {
         Project project;
         GithubAPI.init();
 
-        project = GithubAPI.project(githubURL);
+        project = GithubAPI.project(githubURL, true, true, true);
 
         File repositoriesDirectory = new File(repositoriesDirectoryPath);
         if (!repositoriesDirectory.isDirectory()) {
