@@ -224,6 +224,19 @@ public class ProjectJDBCDAO {
         DefaultOperations.update(update, connection);
     }
     
+    public void updateMessageInformation(Project project) throws SQLException {
+
+        String update
+                = "UPDATE "
+                + Tables.PROJECT
+                + " SET "
+                + MESSAGE + "=\'" + project.getMessage()+ "\' "
+                + " WHERE "
+                + ID + " = " + project.getId();
+
+        DefaultOperations.update(update, connection);
+    }
+    
     public Long lastID() throws SQLException {
 
         String query = "SELECT MAX(p.id) FROM Project p";
