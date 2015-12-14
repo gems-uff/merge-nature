@@ -7,7 +7,7 @@ package br.uff.ic.kraken.extractdata.bd;
 
 import br.uff.ic.gems.resources.data.Language;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.data.dao.ProjectDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -99,6 +99,7 @@ public class Migration {
                 project.setRevisions(null);
                 project.setSearchUrl(result.getString(SEARCH_URL));
                 project.setUpdatedAt(result.getString(UPDATED_AT));
+                project.setAnalyzed(false);
 
                 Statement statement1 = connection.createStatement();
                 ResultSet languagesResult = statement1.executeQuery(queryLanguage + project.getId());
@@ -158,11 +159,11 @@ public class Migration {
 
     }
 
-    public static void migrateProject(Connection connection, Long id) throws SQLException, Exception {
+    public static void migrateProject(Connection connectionSource, Connection connectionTarget, Long id) throws SQLException, Exception {
 
-        ProjectDAO projectDAO = new ProjectDAO();
+        ProjectJDBCDAO projectJDBCDAO = new ProjectJDBCDAO(connectionTarget);
 
-        Statement statement = connection.createStatement();
+        Statement statement = connectionSource.createStatement();
         String queryProject = "SELECT * "
                 + "FROM project p WHERE p.id = " + id;
 
@@ -196,8 +197,10 @@ public class Migration {
             project.setRevisions(null);
             project.setSearchUrl(result.getString(SEARCH_URL));
             project.setUpdatedAt(result.getString(UPDATED_AT));
+            project.setFork(false);//Default value
+            project.setAnalyzed(false);
 
-            Statement statement1 = connection.createStatement();
+            Statement statement1 = connectionSource.createStatement();
             ResultSet languagesResult = statement1.executeQuery(queryLanguage + project.getId());
 
             List<Language> languages = new ArrayList<>();
@@ -215,7 +218,7 @@ public class Migration {
             project.setLanguages(languages);
 
             System.out.println(project.getId() + " " + project.getName());
-            projectDAO.saveGithub(project);
+            projectJDBCDAO.insertAll(project);
         }
 
     }
@@ -239,7 +242,7 @@ public class Migration {
         return resultList;
     }
 
-    public static Connection getConnection() throws ClassNotFoundException, SQLException {
+    public static Connection getConnectionSource() throws ClassNotFoundException, SQLException {
         Class.forName("org.postgresql.Driver");
 
         Connection connection = null;
@@ -251,17 +254,30 @@ public class Migration {
         return connection;
     }
 
+    public static Connection getConnectionTarget() throws ClassNotFoundException, SQLException {
+        Class.forName("org.postgresql.Driver");
+
+        Connection connection = null;
+
+        connection = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/automaticAnalysis", "postgres",
+                "kraken");
+
+        return connection;
+    }
+
     public static void migrate() throws ClassNotFoundException, SQLException, Exception {
 
         Date begin = new Date();
 
-        Connection connection = getConnection();
+        Connection connectionSource = getConnectionSource();
+        Connection connectionTarget = getConnectionTarget();
 
-        ProjectDAO projectDAO = new ProjectDAO();
-        List<Long> projectIDsMigrated = projectDAO.getIDs();
+        ProjectJDBCDAO projectJDBCDAO = new ProjectJDBCDAO(connectionTarget);
+        List<Long> projectIDsMigrated = projectJDBCDAO.selectIDs();
 
         int sizeMigrated = projectIDsMigrated.size();
-        List<Long> projectIDsNonMigrated = projectIDs(connection, projectIDsMigrated);
+        List<Long> projectIDsNonMigrated = projectIDs(connectionSource, projectIDsMigrated);
         int sizeNonMigrated = projectIDsNonMigrated.size();
 
         System.out.println(sizeNonMigrated + " - " + sizeMigrated + " = " + (sizeNonMigrated - sizeMigrated));
@@ -304,7 +320,7 @@ public class Migration {
 
         for (Long project : projectIDsNonMigrated) {
             System.out.println(++currentLine + "/" + size);
-            migrateProject(connection, project);
+            migrateProject(connectionSource, connectionTarget, project);
         }
 
     }

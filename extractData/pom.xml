@@ -48,8 +48,8 @@
                             <!--<mainClass>br.uff.ic.kraken.extractdata.ChangeFormat</mainClass>-->
                             <!--<mainClass>br.uff.ic.kraken.extractdata.Extraction</mainClass>-->
                             <!--<mainClass>br.uff.ic.kraken.extractdata.ScriptGenerator</mainClass>-->
-                            <!--<mainClass>br.uff.ic.kraken.extractdata.bd.Migration</mainClass>-->
-                            <mainClass>br.uff.ic.kraken.extractdata.ImportData</mainClass>
+                            <mainClass>br.uff.ic.kraken.extractdata.bd.Migration</mainClass>
+                            <!--<mainClass>br.uff.ic.kraken.extractdata.ImportData</mainClass>-->
 
                         </manifest>
                     </archive>
