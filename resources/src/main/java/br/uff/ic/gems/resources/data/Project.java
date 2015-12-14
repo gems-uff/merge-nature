@@ -50,7 +50,9 @@ public class Project implements Serializable {
     private boolean fork;
     @Transient
     private List<Fork> forks;
-
+    @Transient
+    private boolean analyzed;
+    
     public Project() {
         this.id = null;
         this.name = null;
@@ -319,6 +321,20 @@ public class Project implements Serializable {
      */
     public void setForks(List<Fork> forks) {
         this.forks = forks;
+    }
+
+    /**
+     * @return the analyzed
+     */
+    public boolean isAnalyzed() {
+        return analyzed;
+    }
+
+    /**
+     * @param analyzed the analyzed to set
+     */
+    public void setAnalyzed(boolean analyzed) {
+        this.analyzed = analyzed;
     }
 
     

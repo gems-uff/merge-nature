@@ -14,6 +14,7 @@ CREATE TABLE project
   searchurl character varying(255),
   updatedat character varying(255),
   fork boolean,
+  analyzed boolean,
   CONSTRAINT project_pkey PRIMARY KEY (id)
 )
 WITH (
