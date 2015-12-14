@@ -45,6 +45,11 @@ public class UpdateForkInformation {
                     forkJDBCDAO.insertAll(fork);
                 }
                 
+                
+                if(projectUpdated.getMessage() != null && !projectUpdated.getMessage().equals("null")){
+                    project.setMessage(projectUpdated.getMessage());
+                    projectJDBCDAO.updateMessageInformation(project);
+                }
 
             }
 
