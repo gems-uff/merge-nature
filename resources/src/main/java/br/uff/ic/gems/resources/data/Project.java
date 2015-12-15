@@ -64,6 +64,7 @@ public class Project implements Serializable {
         this.developers = 0;
         this.message = null;
         this.fork = false;
+        this.analyzed = false;
 
         revisions = new ArrayList<>();
         languages = new ArrayList<>();
