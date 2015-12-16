@@ -187,7 +187,7 @@ public class ProjectJDBCDAO {
     public List<Long> selectIDs() throws SQLException {
         List<Long> ids = new ArrayList<>();
 
-        String query = "SELECT " + ID + " FROM " + Tables.PROJECT;
+        String query = "SELECT " + ID + " FROM " + Tables.PROJECT + " p ORDER BY p.id";
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
