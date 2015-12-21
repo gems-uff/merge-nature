@@ -7,9 +7,6 @@ import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.authentication.User;
 import br.uff.ic.gems.resources.github.cmd.CMDGithub;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -502,7 +499,7 @@ public class GithubAPI {
 
         for (int i = 1; i < lastPage; i++) {
             output = CMDGithub.cmdGithub(base + forksUrl + "?page=" + i);
-            List<String> jsons = getJsonString(output.getOutput());
+            List<String> jsons = getJsonsString(output.getOutput());
 
             for (String json : jsons) {
                 Fork fork = getFork(json, projectId);
@@ -514,7 +511,7 @@ public class GithubAPI {
         return forks;
     }
 
-    private static List<String> getJsonString(List<String> output) {
+    private static List<String> getJsonsString(List<String> output) {
 
         List<String> jsons = new ArrayList<>();
 
@@ -556,6 +553,25 @@ public class GithubAPI {
         return jsons;
     }
 
+    private static String getJsonString(List<String> output) {
+
+        boolean jsonContent = false;
+        String jsonString = "";
+        int count = 0;
+        for (String line : output) {
+
+            if (line.startsWith("{")) {
+                jsonContent = true;
+            }
+
+            if (jsonContent && !line.startsWith("[") && !line.startsWith("]")) {
+                jsonString += line + "\n";
+            }
+        }
+
+        return jsonString;
+    }
+
     public static Fork getFork(String jsonString, Long projectId) {
 
         JSONParser jSONParser = new JSONParser();
@@ -580,4 +596,31 @@ public class GithubAPI {
 
         return fork;
     }
+
+    public static Long originalProjectId(String projectSearchURL) throws ParseException {
+
+        CMDOutput output = CMDGithub.cmdGithub(base + projectSearchURL);
+
+        JSONParser jSONParser = new JSONParser();
+        JSONObject parser = null;
+
+        String jsonString = getJsonString(output.getOutput());
+
+        parser = (JSONObject) jSONParser.parse(jsonString);
+
+        boolean fork = Boolean.parseBoolean(parser.get(FORK).toString());
+
+        if (fork) {
+            JSONObject parent = (JSONObject) parser.get("parent");
+            String url = parent.get(URL).toString();
+
+            return originalProjectId(url);
+
+        } else {
+            Long id = Long.parseLong(parser.get(ID).toString());
+            return id;
+        }
+
+    }
+
 }
