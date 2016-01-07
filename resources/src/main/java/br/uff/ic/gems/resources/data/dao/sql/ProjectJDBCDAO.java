@@ -323,5 +323,42 @@ public class ProjectJDBCDAO {
 
         return projects;
     }
+    
+   public List<Project> selectAnalyzedMainProjects() throws SQLException {
+        List<Project> projects = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.PROJECT + " p where p.analyzed=true and p.fork=false";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                Project project = new Project();
+
+                project.setCreatedAt(results.getString(CREATED_AT));
+                project.setDevelopers(results.getInt(DEVELOPERS));
+                project.setHtmlUrl(results.getString(HTML_URL));
+                project.setId(results.getLong(ID));
+                project.setMessage(results.getString(MESSAGE));
+                project.setName(results.getString(NAME));
+                project.setNumberConflictingMerges(results.getInt(CONFLICTING_MERGES));
+                project.setNumberMergeRevisions(results.getInt(MERGE_REVISIONS));
+                project.setNumberRevisions(results.getInt(REVISIONS));
+                project.setPriva(results.getBoolean(PRIVATE));
+                project.setRepositoryPath(results.getString(REPOSITORY_PATH));
+                project.setSearchUrl(results.getString(SEARCH_URL));
+                project.setUpdatedAt(results.getString(UPDATED_AT));
+                project.setPriva(results.getBoolean(FORK));
+                project.setAnalyzed(results.getBoolean(ANALYZED));
+
+                projects.add(project);
+
+            }
+        }
+
+        return projects;
+    } 
 
 }
