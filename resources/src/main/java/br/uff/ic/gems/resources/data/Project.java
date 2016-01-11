@@ -49,9 +49,9 @@ public class Project implements Serializable {
     @Transient
     private boolean fork;
     @Transient
-    private List<Fork> forks;
-    @Transient
     private boolean analyzed;
+    @Transient
+    private Long mainProjectId;
     
     public Project() {
         this.id = null;
@@ -68,7 +68,6 @@ public class Project implements Serializable {
 
         revisions = new ArrayList<>();
         languages = new ArrayList<>();
-        forks = new ArrayList<>();
     }
 
     /**
@@ -311,20 +310,6 @@ public class Project implements Serializable {
     }
 
     /**
-     * @return the forks
-     */
-    public List<Fork> getForks() {
-        return forks;
-    }
-
-    /**
-     * @param forks the forks to set
-     */
-    public void setForks(List<Fork> forks) {
-        this.forks = forks;
-    }
-
-    /**
      * @return the analyzed
      */
     public boolean isAnalyzed() {
@@ -336,6 +321,20 @@ public class Project implements Serializable {
      */
     public void setAnalyzed(boolean analyzed) {
         this.analyzed = analyzed;
+    }
+
+    /**
+     * @return the mainProjectId
+     */
+    public Long getMainProjectId() {
+        return mainProjectId;
+    }
+
+    /**
+     * @param mainProjectId the mainProjectId to set
+     */
+    public void setMainProjectId(Long mainProjectId) {
+        this.mainProjectId = mainProjectId;
     }
 
     
