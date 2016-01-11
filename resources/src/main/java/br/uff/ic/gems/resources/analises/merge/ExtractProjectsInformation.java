@@ -64,7 +64,6 @@ public class ExtractProjectsInformation {
         mergedProject.setCreatedAt(mainProject.getCreatedAt());
         mergedProject.setDevelopers(mainProject.getDevelopers());
         mergedProject.setFork(mainProject.isFork());
-        mergedProject.setForks(mainProject.getForks());
         mergedProject.setHtmlUrl(mainProject.getHtmlUrl());
         mergedProject.setId(mainProject.getId());
         mergedProject.setLanguages(mainProject.getLanguages());
