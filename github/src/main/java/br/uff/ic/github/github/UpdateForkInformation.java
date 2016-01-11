@@ -5,9 +5,7 @@
  */
 package br.uff.ic.github.github;
 
-import br.uff.ic.gems.resources.data.Fork;
 import br.uff.ic.gems.resources.data.Project;
-import br.uff.ic.gems.resources.data.dao.sql.ForkJDBCDAO;
 import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.github.parser.GithubAPI;
@@ -28,25 +26,19 @@ public class UpdateForkInformation {
         try (Connection connection = (new JDBCConnection()).getConnection(database)) {
 
             ProjectJDBCDAO projectJDBCDAO = new ProjectJDBCDAO(connection);
-            ForkJDBCDAO forkJDBCDAO = new ForkJDBCDAO(connection);
-            
-            List<Project> projects = projectJDBCDAO.selectWithoutForkInformation();
+
+            List<Project> projects = projectJDBCDAO.selectAnalyzedWithoutForkInformation();
 
             for (Project project : projects) {
                 String searchUrl = project.getSearchUrl();
                 System.out.println("searchUrl = " + searchUrl);
                 Project projectUpdated = GithubAPI.project(searchUrl, false, false, true);
 
-
-                projectJDBCDAO.updateForkInformation(projectUpdated);
-                
-                
-                for (Fork fork : projectUpdated.getForks()) {
-                    forkJDBCDAO.insertAll(fork);
+                if (projectUpdated.getMainProjectId() != null) {
+                    projectJDBCDAO.updateForkInformation(projectUpdated);
                 }
-                
-                
-                if(projectUpdated.getMessage() != null && !projectUpdated.getMessage().equals("null")){
+
+                if (projectUpdated.getMessage() != null && !projectUpdated.getMessage().equals("null")) {
                     project.setMessage(projectUpdated.getMessage());
                     projectJDBCDAO.updateMessageInformation(project);
                 }
