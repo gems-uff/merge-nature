@@ -71,9 +71,9 @@ public class CMDGithub {
                         }
                     }
 
-                    if (s.contains("\"Not Found\"")) {
-                        return new CMDOutput();
-                    }
+//                    if (s.contains("\"Not Found\"")) {
+//                        return new CMDOutput();
+//                    }
                 }
 
                 // read any errors from the attempted command

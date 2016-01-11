@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONObject;
@@ -345,10 +346,8 @@ public class GithubAPI {
                                 project.setLanguages(languagesList);
 
                                 //Forks
-                                String forksUrl = jsono.get(FORKS_URL).toString();
-                                List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
-                                project.setFork(!forks.isEmpty());
-                                project.setForks(forks);
+                                Long originalProjectId = GithubAPI.originalProjectId(project.getSearchUrl());
+                                project.setFork(!Objects.equals(project.getId(), originalProjectId));
 
                                 try {
                                     projectDAO.insertAll(project);
@@ -453,9 +452,15 @@ public class GithubAPI {
 
                 //Forks
                 if (forkInformation) {
-                    String forksUrl = jsono.get(FORKS_URL).toString();
-                    List<Fork> forks = GithubAPI.forks(forksUrl, project.getId());
-                    project.setForks(forks);
+                    Long originalProjectId = GithubAPI.originalProjectId(project.getSearchUrl());
+                    project.setFork(!Objects.equals(project.getId(), originalProjectId));
+
+                    if (project.isFork()) {
+                        project.setMainProjectId(originalProjectId);
+                    } else {
+                        project.setMainProjectId(project.getId());
+                    }
+
                 }
             } else {
 
