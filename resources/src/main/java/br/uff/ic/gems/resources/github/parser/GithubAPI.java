@@ -604,28 +604,40 @@ public class GithubAPI {
 
     public static Long originalProjectId(String projectSearchURL) throws ParseException {
 
+        String message = null;
+
         CMDOutput output = CMDGithub.cmdGithub(base + projectSearchURL);
 
         JSONParser jSONParser = new JSONParser();
-        JSONObject parser = null;
+        JSONObject parser;
+        parser = null;
 
         String jsonString = getJsonString(output.getOutput());
 
         parser = (JSONObject) jSONParser.parse(jsonString);
 
-        boolean fork = Boolean.parseBoolean(parser.get(FORK).toString());
+        try {//Take the cases where the project is not avaliable 
+            boolean fork = Boolean.parseBoolean(parser.get(FORK).toString());
 
-        if (fork) {
-            JSONObject parent = (JSONObject) parser.get("parent");
-            String url = parent.get(URL).toString();
+            if (fork) {
+                JSONObject parent = (JSONObject) parser.get("parent");
+                String url = parent.get(URL).toString();
 
-            return originalProjectId(url);
+                Long originalProjectId = originalProjectId(url);
 
-        } else {
-            Long id = Long.parseLong(parser.get(ID).toString());
-            return id;
+                if (originalProjectId != null) {
+                    return originalProjectId;
+                } else {
+                    return Long.parseLong(parser.get(ID).toString());
+                }
+
+            } else {
+                Long id = Long.parseLong(parser.get(ID).toString());
+                return id;
+            }
+        } catch (NullPointerException ex) {
+            return null;
         }
-
     }
 
 }
