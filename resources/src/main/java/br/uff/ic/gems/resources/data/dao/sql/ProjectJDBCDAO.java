@@ -305,13 +305,15 @@ public class ProjectJDBCDAO {
         return null;
     }
 
-    public List<Project> selectWithoutForkInformation() throws SQLException {
+    public List<Project> selectWithoutForkInformationAndMessage() throws SQLException {
         List<Project> projects = new ArrayList<>();
 
         String query
                 = "SELECT * "
                 + "FROM " + Tables.PROJECT + " p "
-                + "WHERE p." + FORK + " is NULL";
+                + "WHERE p." + FORK + " is NULL "
+                + "AND "
+                + "p.message = \'null\'";
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
