@@ -274,6 +274,17 @@ public class Git {
 
     public static String getCommiter(String repository, String sha1) {
 
+        String command = "git show " + sha1 + " --pretty=%cn";
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput().get(0);
+        } else {
+            return null;
+        }
+    }
+    
+    public static String getAuthor(String repository, String sha1) {
+
         String command = "git show " + sha1 + " --pretty=%an";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
         if (cmdOutput.getErrors().isEmpty()) {
