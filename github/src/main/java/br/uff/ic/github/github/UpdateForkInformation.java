@@ -27,8 +27,9 @@ public class UpdateForkInformation {
 
             ProjectJDBCDAO projectJDBCDAO = new ProjectJDBCDAO(connection);
 
-            List<Project> projects = projectJDBCDAO.selectAnalyzedWithoutForkInformation();
-
+            List<Project> projects = projectJDBCDAO.selectWithoutForkInformationAndMessage();
+            System.out.println("projects = " + projects.size());
+            
             for (Project project : projects) {
                 String searchUrl = project.getSearchUrl();
                 System.out.println("searchUrl = " + searchUrl);
