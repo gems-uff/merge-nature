@@ -11,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -179,6 +181,31 @@ public class Git {
         }
     }
 
+    public static List<String> logByDays(String repository, Date begin, Date end) {
+        List<String> commits = new ArrayList<>();
+
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss z");
+
+        String dateBegin = formater.format(begin);
+        String dateEnd = formater.format(end);
+
+        //git.sh is in ~/bin
+        String[] command = {"git", 
+            "log", 
+            "--format=\"%H;%ci\"", 
+            "--after=\""+ dateBegin +"\"", 
+            "--before=\""+ dateEnd +"\""};
+        
+        CMDOutput cmdOutput = CMD.cmdArray(repository, command);
+
+        for (String output : cmdOutput.getOutput()) {
+            commits.add(output.split(";")[0]);
+        }
+
+        return commits;
+    }
+
+
     /*-------------------------------------------------------------------------------------------
     
      STATUS BASED
@@ -282,7 +309,7 @@ public class Git {
             return null;
         }
     }
-    
+
     public static String getAuthor(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%an";
@@ -306,6 +333,18 @@ public class Git {
 
     }
 
+    public static String getDateISO(String repository, String sha1) {
+
+        String command = "git show " + sha1 + " --pretty=%ci";
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput().get(0);
+        } else {
+            return null;
+        }
+
+    }
+    
     public static Long getDateLong(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%ct";
@@ -614,7 +653,7 @@ public class Git {
 
         return output;
     }
-    
+
     public static List<String> clean(String repositoryPath) {
 //        String command = "git rev-list --parents -n 1 " + revision;
         String command = "git clean -df";
@@ -795,7 +834,7 @@ public class Git {
                 while (line.startsWith("\t")) {
                     line = line.replaceFirst("\t", "");
                 }
-                
+
                 line = line.replaceAll("\\\\", File.separator);
                 line = line.replaceAll("/", File.separator);
 
