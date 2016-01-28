@@ -190,12 +190,14 @@ public class Git {
         String dateEnd = formater.format(end);
 
         //git.sh is in ~/bin
-        String[] command = {"git", 
-            "log", 
-            "--format=\"%H;%ci\"", 
-            "--after=\""+ dateBegin +"\"", 
-            "--before=\""+ dateEnd +"\""};
-        
+        String[] command = {"git",
+            "log",
+            "--all",
+            "--reverse",
+            "--format=%H;%ci",
+            "--after=\"" + dateBegin + "\"",
+            "--before=\"" + dateEnd + "\""};
+
         CMDOutput cmdOutput = CMD.cmdArray(repository, command);
 
         for (String output : cmdOutput.getOutput()) {
@@ -310,6 +312,25 @@ public class Git {
         }
     }
 
+    public static List<String> getChangedFiles(String repository, String sha1) {
+
+        List<String> result = new ArrayList<>();
+
+        String[] command = {"git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha1};
+
+        CMDOutput cmdOutput = CMD.cmdArray(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+
+            for (String output : cmdOutput.getOutput()) {
+                result.add(output);
+            }
+            return result;
+        } else{
+            return null;
+        }
+
+    }
+
     public static String getAuthor(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%an";
@@ -344,7 +365,7 @@ public class Git {
         }
 
     }
-    
+
     public static Long getDateLong(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%ct";
@@ -401,6 +422,42 @@ public class Git {
         return output;
     }
 
+    public static List<String> getMergeRevisions(String repositoryPath, boolean  reverse) {
+        String command = "git log --all --merges --pretty=%H";
+        
+        if(reverse)
+            command = "git log --all --merges --reverse --pretty=%H";
+//        System.out.println(command);
+        List<String> output = new ArrayList<String>();
+
+        try {
+            Process exec = Runtime.getRuntime().exec(command, null, new File(repositoryPath));
+//            exec.waitFor();
+
+            String s;
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
+
+            // read the output from the command
+            while ((s = stdInput.readLine()) != null) {
+                output.add(s);
+
+            }
+
+            // read any errors from the attempted command
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Git.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return output;
+    }
+    
     public static List<String> getAllRevisions(String repositoryPath) {
         String command = "git log --all --pretty=%H";
 //        System.out.println(command);
@@ -847,6 +904,9 @@ public class Git {
 
     public static List<String> conflictedFiles(String repositoryPath) {
 
+        if(!repositoryPath.endsWith(File.separator))
+            repositoryPath += File.separator;
+        
         List<String> statusShort = Git.statusShort(repositoryPath);
         List<String> files = new ArrayList<String>();
 
@@ -856,7 +916,7 @@ public class Git {
 
                 while (lineChanged.startsWith(" ")) {
                     lineChanged = lineChanged.replaceFirst(" ", "");
-                    lineChanged = repositoryPath + "/" + lineChanged;
+                    lineChanged = repositoryPath + lineChanged;
                 }
 
                 files.add(lineChanged);
