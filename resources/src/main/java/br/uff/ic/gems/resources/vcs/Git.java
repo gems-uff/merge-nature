@@ -30,27 +30,6 @@ public class Git {
         this.repository = repository;
     }
 
-    public String fileDiff(String initialVersion, String finalVersion, String file) {
-        StringBuilder result = new StringBuilder();
-        if (file.startsWith("/")) {
-            file = file.replaceFirst("/", "");
-        }
-
-        String command = "git diff " + initialVersion + " " + finalVersion + " " + file;
-
-        CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
-        if (cmdOutput.getErrors().isEmpty()) {
-
-            for (String line : cmdOutput.getOutput()) {
-                result.append(line).append("\n");
-            }
-
-            return result.toString();
-        } else {
-            return null;
-        }
-    }
-
     public String fileDiff(String initialFile, String finalFile) {
         StringBuilder result = new StringBuilder();
 
@@ -120,6 +99,30 @@ public class Git {
         }
     }
 
+    public static List<String> diff(String repository, String sourceFile, String targetFile) {
+        List<String> result = new ArrayList<String>();
+        String command = "git diff " + sourceFile + " " + targetFile;
+
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput();
+        } else {
+            return null;
+        }
+    }
+    
+    public static List<String> diffLog(String repository, String relativePath) {
+        List<String> result = new ArrayList<String>();
+        String command = "git log -1 -p " + relativePath;
+
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput();
+        } else {
+            return null;
+        }
+    }
+    
     /*-------------------------------------------------------------------------------------------
     
      LOG BASED
