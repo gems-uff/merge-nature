@@ -15,6 +15,7 @@ CREATE TABLE project
   updatedat character varying(255),
   fork boolean,
   analyzed boolean,
+  main_project_id bigint,
   CONSTRAINT project_pkey PRIMARY KEY (id)
 )
 WITH (
