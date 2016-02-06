@@ -5,15 +5,26 @@
  */
 package br.uff.ic.kraken.extractdata;
 
+import br.uff.ic.gems.resources.analises.merge.RevisionAnalyzer;
+import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.ConflictingFile;
+import br.uff.ic.gems.resources.data.Revision;
+import br.uff.ic.gems.resources.diff.translator.GitTranslator;
+import br.uff.ic.gems.resources.operation.Operation;
+import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -23,7 +34,7 @@ public class PostponedResolutions {
 
     public static void main(String[] args) throws ParseException {
 
-        int daysRange = 7;
+        int daysRange = 30;
 
         List<String> projects = new ArrayList<>();
 
@@ -40,6 +51,19 @@ public class PostponedResolutions {
     }
 
     public static void projectAnalysis(String repository, int daysRange) throws ParseException {
+
+        //Cloning repository to suport the analysis
+        String repoAux = "repoAux";
+        File repoAuxFile = new File(repository + repoAux);
+        if (repoAuxFile.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(repoAuxFile);
+            } catch (IOException ex) {
+                Logger.getLogger(PostponedResolutions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        Git.clone(repository, repository, repoAuxFile.getAbsolutePath());
 
         if (!repository.endsWith(File.separator)) {
             repository += File.separator;
@@ -59,7 +83,8 @@ public class PostponedResolutions {
             filesCochanged = 0;
 
             List<String> parents = Git.getParents(repository, mergeRevision);
-            if (parents.size() != 2) {
+
+            if (parents.size() > 2) {
                 continue;
             }
 
@@ -74,16 +99,24 @@ public class PostponedResolutions {
 
                 List<String> conflictedFiles = Git.conflictedFiles(repository);
 
+                //Getting conflicting chunks
+                Revision currentRevision = RevisionAnalyzer.analyze(mergeRevision, repository);
+                List<ConflictingFile> conflictingFiles = currentRevision.getConflictingFiles();
+                //Take conflicting chunks
+
+                //Converting to relative path the files
                 for (String conflictedFile : conflictedFiles) {
                     if (conflictedFile.startsWith(repository)) {
                         conflictedFiles.set(conflictedFiles.indexOf(conflictedFile), conflictedFile.replaceFirst(repository, ""));
                     }
                 }
 
+                //Converting to relative path the conflicting files
+                for (ConflictingFile conflictingFile : conflictingFiles) {
+                    conflictingFile.setPath(conflictingFile.getPath().replace(repository, ""));
+                }
+
                 System.out.println("Merge " + mergeRevision);
-//                for (String conflictedFile : conflictedFiles) {
-//                    System.out.println("\t\t" + conflictedFile);
-//                }
 
                 String date = Git.getDateISO(repository, mergeRevision);
                 Date mergeDate = formater.parse(date);
@@ -96,23 +129,29 @@ public class PostponedResolutions {
                 //Getting commits in the range of days
                 List<String> commitsRange = Git.logByDays(repository, mergeDate, endWindow);
 
-//                commitsRange = untilNextMerge(commitsRange, mergeRevisions, repository);
+                commitsRange = commitsFreeMerges(repository, commitsRange, mergeRevisions);
 
-                commitsRange  = commitsFreeMerges(repository, commitsRange, mergeRevisions);
-                
                 for (String commit : commitsRange) {
-//                    System.out.println("\tChanged files in " + commit);
                     List<String> changedFiles = Git.getChangedFiles(repository, commit);
 
-//                    for (String changedFile : changedFiles) {
-//                        System.out.println("\t\t" + changedFile);
-//                    }
                     changedFiles.retainAll(conflictedFiles);
 
-                    if (!changedFiles.isEmpty()) {
-//                        System.out.println("Same file edition!");
-                        filesCochanged += changedFiles.size();
+                    for (ConflictingFile conflictingFile : conflictingFiles) {
+                        if (changedFiles.contains(conflictingFile.getPath())) //TODO: Verify if the conflicting areas were changed 
+                        {
+                            for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+                                boolean changed = changed(conflictingChunk, commit, repository, repoAuxFile.getAbsolutePath(), conflictingFile.getPath());
+                                
+                                if(changed)
+                                    filesCochanged += changedFiles.size();
+                            }
+
+                        }
                     }
+
+//                    if (!changedFiles.isEmpty()) {
+//                        filesCochanged += changedFiles.size();
+//                    }
 
                 }
 
@@ -127,66 +166,63 @@ public class PostponedResolutions {
         System.out.println("Merge with co changes: " + mergesWithCochanges + "(" + merges + ")");
     }
 
-    public static List<String> untilNextMerge(List<String> commits, List<String> merges, String repositoryPath) {
-        List<String> result = new ArrayList<>();
-
-        int indexOf = merges.indexOf(commits.get(0));
-        String baseMerge = commits.get(0);
-
-        List<String> way = null;
-        for (int i = indexOf + 1; i < merges.size(); i++) {
-            way = new ArrayList<>();
-
-            String currentMerge = merges.get(i);
-
-            boolean hasWay = hasWay(repositoryPath, baseMerge, currentMerge, commits, way);
-
-            if (hasWay) {
-
-                for (String commit : way) {
-                    System.out.println(commit);
-
-                }
-
-                return way;
-            }
-
-        }
-
-        //Caso em que os commits não chegam a um merge
-        //Fazer a mesma coisa para os commits 
-        return result;
-    }
-
-    public static boolean hasWay(String repositoryPath, String shaSource, String shaTarget, List<String> commits, List<String> way) {
-
-        List<String> parents = Git.getParents(repositoryPath, shaTarget);
-
-        for (String parent : parents) {
-            if (parent.equals(shaSource)) {
-                return true;
-            } else if (commits.contains(parent)) {
-                boolean hasWay = hasWay(repositoryPath, shaSource, parent, commits, way);
-                if (hasWay) {
-                    way.add(0, parent);
-                    return true;
-                }
-            }
-
-        }
-
-        return false;
-    }
-
-    public static boolean hasWayWithoutMerge(String repositoryPath, String shaSource, String shaTarget, 
+//    public static List<String> untilNextMerge(List<String> commits, List<String> merges, String repositoryPath) {
+//        List<String> result = new ArrayList<>();
+//
+//        int indexOf = merges.indexOf(commits.get(0));
+//        String baseMerge = commits.get(0);
+//
+//        List<String> way = null;
+//        for (int i = indexOf + 1; i < merges.size(); i++) {
+//            way = new ArrayList<>();
+//
+//            String currentMerge = merges.get(i);
+//
+//            boolean hasWay = hasWay(repositoryPath, baseMerge, currentMerge, commits, way);
+//
+//            if (hasWay) {
+//
+//                for (String commit : way) {
+//                    System.out.println(commit);
+//
+//                }
+//
+//                return way;
+//            }
+//
+//        }
+//
+//        //Caso em que os commits não chegam a um merge
+//        //Fazer a mesma coisa para os commits 
+//        return result;
+//    }
+//    public static boolean hasWay(String repositoryPath, String shaSource, String shaTarget, List<String> commits, List<String> way) {
+//
+//        List<String> parents = Git.getParents(repositoryPath, shaTarget);
+//
+//        for (String parent : parents) {
+//            if (parent.equals(shaSource)) {
+//                return true;
+//            } else if (commits.contains(parent)) {
+//                boolean hasWay = hasWay(repositoryPath, shaSource, parent, commits, way);
+//                if (hasWay) {
+//                    way.add(0, parent);
+//                    return true;
+//                }
+//            }
+//
+//        }
+//
+//        return false;
+//    }
+    private static boolean hasWayWithoutMerge(String repositoryPath, String shaSource, String shaTarget,
             List<String> commits, List<String> merges) {
 
         List<String> parents = Git.getParents(repositoryPath, shaTarget);
 
         for (String parent : parents) {
-            if(merges.contains(parent) && !parent.equals(shaSource)){
-            }
-            else if (parent.equals(shaSource)) {
+            if (merges.contains(parent) && !parent.equals(shaSource)) {
+            } else if (parent.equals(shaSource)) {
                 return true;
             } else if (commits.contains(parent)) {
                 boolean hasWay = hasWayWithoutMerge(repositoryPath, shaSource, parent, commits, merges);
@@ -199,36 +235,126 @@ public class PostponedResolutions {
 
         return false;
     }
-    
+
     //Filter the commits that has a way to the source merge and does not have merges in the way
-    public static List<String> commitsFreeMerges(String repositoryPath, List<String> commits, List<String> merges){
+    public static List<String> commitsFreeMerges(String repositoryPath, List<String> commits, List<String> merges) {
         List<String> result = new ArrayList<>();
-        
-        if(commits == null || commits.isEmpty())
+
+        if (commits == null || commits.isEmpty()) {
             return null;
-        
+        }
+
         String sourceCommit = commits.get(0);
-        
+
 //        List<String> commitsFree = new ArrayList<>(commits.size());
-        
 //        Collections.copy(commitsFree, commits);
 //        commits.remove(sourceCommit);
-        
         for (int i = 1; i < commits.size(); i++) {
             String currentCommit = commits.get(i);
-            
+
             boolean hasWay = hasWayWithoutMerge(repositoryPath, sourceCommit, currentCommit, commits, merges);
-                    
-            
-            if(hasWay && !merges.contains(currentCommit))
+
+            if (hasWay && !merges.contains(currentCommit)) {
                 result.add(currentCommit);
-            
+            }
+
         }
-        
-        
+
         return result;
     }
-    
-    
+
+    public static boolean changed(ConflictingChunk conflictingChunk, String commit,
+            String originalRepositoryPath, String auxRepositoryPath, String fileRelativePath) {
+
+        Repositioning repositioning = new Repositioning(originalRepositoryPath);
+
+        Git.reset(auxRepositoryPath);
+        Git.clean(auxRepositoryPath);
+        Git.checkout(auxRepositoryPath, commit);
+
+        //Get the changes made in the file
+        String initialFile, finalFile;
+
+        if (!originalRepositoryPath.endsWith(File.separator)) {
+            originalRepositoryPath += File.separator;
+        }
+
+        if (!auxRepositoryPath.endsWith(File.separator)) {
+            auxRepositoryPath += File.separator;
+        }
+
+        initialFile = originalRepositoryPath + fileRelativePath;
+        finalFile = auxRepositoryPath + fileRelativePath;
+
+        List<String> diffLog = Git.diffLog(auxRepositoryPath, fileRelativePath);
+
+        String diffOutput = "";
+        for (String line : diffLog) {
+            diffOutput += line + "\n";
+        }
+
+//        System.out.println(diffOutput);
+
+        GitTranslator gitTranslator = new GitTranslator();
+        List<Operation> changes = gitTranslator.translateDelta(diffOutput);
+
+        try {
+            //Repositioning the conflicting chunk (cc) to the current file
+            List<String> initialFileList = FileUtils.readLines(new File(initialFile));
+
+            int beginLine = conflictingChunk.getBeginLine() - 1;
+            if (beginLine < 0) {
+                beginLine = 0;
+            }
+
+//            String beginContent = listFile.get(beginLine);
+
+            int endLine = conflictingChunk.getEndLine() + 1;
+            if (endLine >= initialFileList.size()) {
+                endLine = initialFileList.size() - 1;
+            }
+
+//            String endContent = listFile.get(endLine);
+
+//            System.out.println("beginLine = " + beginContent);
+//            System.out.println("endLine = " + endContent);
+
+            int begin = repositioning.repositioning(initialFile, finalFile, beginLine + 1);
+            int end = repositioning.repositioning(initialFile, finalFile, endLine + 1);
+
+            //Identify if there are changes inside the cc
+            if (begin == -1 || end == -1) {
+                return true;
+            }
+
+            for (Operation change : changes) {
+                if (change.getLine() > begin && change.getLine() < end) {
+                    
+                    
+//                    System.out.println("Conflict");
+//                    List<String> subList = initialFileList.subList(beginLine, endLine);
+//                    for (String subList1 : subList) {
+//                        System.out.println(subList1);
+//                    }
+//                    
+//                    System.out.println("Evolution");
+//                    
+//                    
+//                    List<String> finalFileList = FileUtils.readLines(new File(finalFile));
+//                    subList = finalFileList.subList(begin -1, end - 1);
+//                    for (String subList1 : subList) {
+//                        System.out.println(subList1);
+//                    }
+                    
+                    return true;
+                }
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(PostponedResolutions.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
 
 }
