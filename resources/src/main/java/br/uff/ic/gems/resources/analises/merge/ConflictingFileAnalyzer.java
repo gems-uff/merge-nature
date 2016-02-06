@@ -43,7 +43,7 @@ public class ConflictingFileAnalyzer {
             return conflictingFile;
         
         String relativePath = conflictingFilePath.replace(repositoryPath, "");
-
+        
         //Paths to repositories
         String leftRepository = repositoryPath + Information.LEFT_REPOSITORY_SUFIX;
         String rightRepository = repositoryPath + Information.RIGHT_REPOSITORY_SUFIX;
@@ -77,6 +77,8 @@ public class ConflictingFileAnalyzer {
                 conflictingFile.setRemoved(true);
             }
 
+            conflictingFile.setConflictingChunks(conflictingChunks);
+            
             return conflictingFile;
 
         }
