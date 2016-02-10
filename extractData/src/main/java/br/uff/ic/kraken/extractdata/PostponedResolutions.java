@@ -407,7 +407,7 @@ public class PostponedResolutions {
                 System.out.println("\t\t\t " + conflictingChunk.getEndLine());
                 System.out.println("==========================Evo (Begin) =========================================");
 
-                List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
                 for (String subList1 : subList) {
                     System.out.println(subList1);
                 }
@@ -425,7 +425,7 @@ public class PostponedResolutions {
                 System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
                 System.out.println("\t\t\t " + conflictingChunk.getEndLine());
                 System.out.println("==========================Evo (Begin) =========================================");
-                List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
                 for (String subList1 : subList) {
                     System.out.println(subList1);
                 }
@@ -446,7 +446,7 @@ public class PostponedResolutions {
                     System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
                     System.out.println("\t\t\t " + conflictingChunk.getEndLine());
                     System.out.println("==========================Evo (Begin) =========================================");
-                    List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                    List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
                     for (String subList1 : subList) {
                         System.out.println(subList1);
                     }
