@@ -54,7 +54,10 @@ public class PostponedResolutions {
 
         //Cloning repository to suport the analysis
         String repoAux = "repoAux";
+        String repoMergeResult = "repoMergeResult";
         File repoAuxFile = new File(repository + repoAux);
+        File repoMergeResultFile = new File(repository + repoMergeResult);
+
         if (repoAuxFile.isDirectory()) {
             try {
                 FileUtils.deleteDirectory(repoAuxFile);
@@ -63,7 +66,16 @@ public class PostponedResolutions {
             }
         }
 
+        if (repoMergeResultFile.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(repoMergeResultFile);
+            } catch (IOException ex) {
+                Logger.getLogger(PostponedResolutions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         Git.clone(repository, repository, repoAuxFile.getAbsolutePath());
+        Git.clone(repository, repository, repoMergeResultFile.getAbsolutePath());
 
         if (!repository.endsWith(File.separator)) {
             repository += File.separator;
@@ -93,6 +105,8 @@ public class PostponedResolutions {
             Git.checkout(repository, parents.get(0));
             List<String> mergeOutput = Git.merge(repository, parents.get(1), false, false);
 
+            Git.checkout(repoMergeResultFile.getAbsolutePath(), mergeRevision);
+
             if (MergeStatusAnalizer.isConflict(mergeOutput)) {
 
                 merges++;
@@ -116,7 +130,9 @@ public class PostponedResolutions {
                     conflictingFile.setPath(conflictingFile.getPath().replace(repository, ""));
                 }
 
+                System.out.println("===================================================================");
                 System.out.println("Merge " + mergeRevision);
+                System.out.println("===================================================================");
 
                 String date = Git.getDateISO(repository, mergeRevision);
                 Date mergeDate = formater.parse(date);
@@ -141,17 +157,76 @@ public class PostponedResolutions {
                         {
                             for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
                                 boolean changed = changed(conflictingChunk, commit, repository, repoAuxFile.getAbsolutePath(), conflictingFile.getPath());
-                                
-                                if(changed)
-                                    filesCochanged += changedFiles.size();
+
+                                if (changed) {
+                                    try {
+                                        Repositioning repositioning = new Repositioning(repository);
+                                        filesCochanged += changedFiles.size();
+
+                                        File initialFile = new File(repository, conflictingFile.getPath());
+                                        List<String> initialFileList = FileUtils.readLines(initialFile);
+
+                                        File finalFile = new File(repoMergeResultFile.getAbsoluteFile(), conflictingFile.getPath());
+
+                                        int beginLine = conflictingChunk.getBeginLine() - 1;
+                                        if (beginLine < 0) {
+                                            beginLine = 0;
+                                        }
+
+                                        int endLine = conflictingChunk.getEndLine() + 1;
+                                        if (endLine >= initialFileList.size()) {
+                                            endLine = initialFileList.size() - 1;
+                                        }
+
+                                        int begin = repositioning.repositioning(initialFile.getAbsolutePath(), finalFile.getAbsolutePath(), beginLine + 1);
+                                        int end = repositioning.repositioning(initialFile.getAbsolutePath(), finalFile.getAbsolutePath(), endLine + 1);
+
+                                        List<String> finalLines = FileUtils.readLines(finalFile);
+
+                                        if (begin == -1 && end == -1) {
+                                            System.out.println("Treat");
+                                        } else if (begin == -1) {
+                                            begin = end - (endLine - beginLine);
+                                            if (begin < 0) {
+                                                begin = 0;
+                                            }
+
+                                        } else if (end == -1) {
+                                            end = begin + (endLine - beginLine);
+                                            if (end >= finalLines.size()) {
+                                                end = finalLines.size() - 1;
+                                            }
+                                        }
+
+                                        if (begin < end) {
+
+                                            System.out.println("");
+                                            System.out.println("Conflict");
+                                            System.out.println("");
+                                            List<String> subList = initialFileList.subList(beginLine, endLine);
+                                            for (String subList1 : subList) {
+                                                System.out.println(subList1);
+                                            }
+
+                                            System.out.println("");
+                                            System.out.println("Merge result: ");
+                                            System.out.println("");
+
+                                            for (String line : finalLines.subList(begin, end)) {
+                                                System.out.println(line);
+                                            }
+
+                                            System.out.println("Resolution");
+                                        }
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(PostponedResolutions.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+
+                                }
                             }
 
                         }
                     }
-
-//                    if (!changedFiles.isEmpty()) {
-//                        filesCochanged += changedFiles.size();
-//                    }
 
                 }
 
@@ -246,9 +321,6 @@ public class PostponedResolutions {
 
         String sourceCommit = commits.get(0);
 
-//        List<String> commitsFree = new ArrayList<>(commits.size());
-//        Collections.copy(commitsFree, commits);
-//        commits.remove(sourceCommit);
         for (int i = 1; i < commits.size(); i++) {
             String currentCommit = commits.get(i);
 
@@ -294,7 +366,6 @@ public class PostponedResolutions {
         }
 
 //        System.out.println(diffOutput);
-
         GitTranslator gitTranslator = new GitTranslator();
         List<Operation> changes = gitTranslator.translateDelta(diffOutput);
 
@@ -308,44 +379,79 @@ public class PostponedResolutions {
             }
 
 //            String beginContent = listFile.get(beginLine);
-
             int endLine = conflictingChunk.getEndLine() + 1;
             if (endLine >= initialFileList.size()) {
                 endLine = initialFileList.size() - 1;
             }
 
 //            String endContent = listFile.get(endLine);
-
 //            System.out.println("beginLine = " + beginContent);
 //            System.out.println("endLine = " + endContent);
-
             int begin = repositioning.repositioning(initialFile, finalFile, beginLine + 1);
             int end = repositioning.repositioning(initialFile, finalFile, endLine + 1);
 
+            List<String> finalFileList = FileUtils.readLines(new File(finalFile));
             //Identify if there are changes inside the cc
-            if (begin == -1 || end == -1) {
+
+            if (begin == -1 && end == -1) {
+                System.out.println("Treat");
+                return true;
+            } else if (begin == -1) {
+                begin = end - (endLine - beginLine);
+                if (begin < 0) {
+                    begin = 0;
+                }
+                System.out.println("\t\t\t " + commit);
+                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+                System.out.println("==========================Evo (Begin) =========================================");
+
+                List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                for (String subList1 : subList) {
+                    System.out.println(subList1);
+                }
+                System.out.println("==========================Evo (End) =========================================");
+
+                return true;
+            } else if (end == -1) {
+                end = begin + (endLine - beginLine);
+                if (end >= finalFileList.size()) {
+                    end = finalFileList.size() - 1;
+                }
+
+                System.out.println("\t\t\t " + commit);
+                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+                System.out.println("==========================Evo (Begin) =========================================");
+                List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                for (String subList1 : subList) {
+                    System.out.println(subList1);
+                }
+                System.out.println("==========================Evo (End) =========================================");
+
                 return true;
             }
 
             for (Operation change : changes) {
                 if (change.getLine() > begin && change.getLine() < end) {
-                    
-                    
-//                    System.out.println("Conflict");
-//                    List<String> subList = initialFileList.subList(beginLine, endLine);
-//                    for (String subList1 : subList) {
-//                        System.out.println(subList1);
-//                    }
-//                    
-//                    System.out.println("Evolution");
-//                    
-//                    
-//                    List<String> finalFileList = FileUtils.readLines(new File(finalFile));
-//                    subList = finalFileList.subList(begin -1, end - 1);
-//                    for (String subList1 : subList) {
-//                        System.out.println(subList1);
-//                    }
-                    
+
+                    System.out.println("");
+                    System.out.println("Evolution");
+                    System.out.println("");
+
+                    System.out.println("\t\t\t " + commit);
+                    System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+                    System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+                    System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+                    System.out.println("==========================Evo (Begin) =========================================");
+                    List<String> subList = finalFileList.subList(begin - 1, end - 1);
+                    for (String subList1 : subList) {
+                        System.out.println(subList1);
+                    }
+                    System.out.println("==========================Evo (End) =========================================");
+
                     return true;
                 }
             }
