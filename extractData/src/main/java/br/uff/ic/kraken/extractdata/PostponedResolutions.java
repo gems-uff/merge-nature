@@ -39,10 +39,10 @@ public class PostponedResolutions {
         List<String> projects = new ArrayList<>();
 
         projects.add("/Users/gleiph/repositories/antlr4");
-        projects.add("/Users/gleiph/repositories/lombok");
-        projects.add("/Users/gleiph/repositories/mct");
-        projects.add("/Users/gleiph/repositories/twitter4j");
-        projects.add("/Users/gleiph/repositories/voldemort");
+//        projects.add("/Users/gleiph/repositories/lombok");
+//        projects.add("/Users/gleiph/repositories/mct");
+//        projects.add("/Users/gleiph/repositories/twitter4j");
+//        projects.add("/Users/gleiph/repositories/voldemort");
 
         for (String project : projects) {
             projectAnalysis(project, daysRange);
@@ -153,7 +153,8 @@ public class PostponedResolutions {
                     changedFiles.retainAll(conflictedFiles);
 
                     for (ConflictingFile conflictingFile : conflictingFiles) {
-                        if (changedFiles.contains(conflictingFile.getPath())) //TODO: Verify if the conflicting areas were changed 
+                        if (conflictingFile.getPath().toLowerCase().endsWith(".java") &&
+                                changedFiles.contains(conflictingFile.getPath())) //TODO: Verify if the conflicting areas were changed 
                         {
                             for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
                                 boolean changed = changed(conflictingChunk, commit, repository, repoAuxFile.getAbsolutePath(), conflictingFile.getPath());
@@ -395,6 +396,30 @@ public class PostponedResolutions {
 
             if (begin == -1 && end == -1) {
                 System.out.println("Treat");
+                //Look around the area 
+                int beginAux = beginLine + 1;
+                while(begin == -1 && beginAux > 0){
+                    begin = repositioning.repositioning(initialFile, finalFile, --beginAux);
+                }
+                
+                if(begin < 0)
+                    begin = 0;
+                
+                
+                int endAux = endLine + 1;
+                
+                while(end == -1 && endAux < initialFileList.size()){
+                    end = repositioning.repositioning(initialFile, finalFile, ++endAux);
+                }
+                
+                if(end > finalFileList.size())
+                    end = finalFileList.size() - 1;
+                
+                List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
+                for (String subList1 : subList) {
+                    System.out.println(subList1);
+                }
+                
                 return true;
             } else if (begin == -1) {
                 begin = end - (endLine - beginLine);
