@@ -38,11 +38,11 @@ public class PostponedResolutions {
 
         List<String> projects = new ArrayList<>();
 
-        projects.add("/Users/gleiph/repositories/antlr4");
+//        projects.add("/Users/gleiph/repositories/antlr4");
 //        projects.add("/Users/gleiph/repositories/lombok");
 //        projects.add("/Users/gleiph/repositories/mct");
 //        projects.add("/Users/gleiph/repositories/twitter4j");
-//        projects.add("/Users/gleiph/repositories/voldemort");
+        projects.add("/Users/gleiph/repositories/voldemort");
 
         for (String project : projects) {
             projectAnalysis(project, daysRange);
@@ -153,11 +153,12 @@ public class PostponedResolutions {
                     changedFiles.retainAll(conflictedFiles);
 
                     for (ConflictingFile conflictingFile : conflictingFiles) {
-                        if (conflictingFile.getPath().toLowerCase().endsWith(".java") &&
-                                changedFiles.contains(conflictingFile.getPath())) //TODO: Verify if the conflicting areas were changed 
+                        if (conflictingFile.getPath().toLowerCase().endsWith(".java")
+                                && changedFiles.contains(conflictingFile.getPath())) //TODO: Verify if the conflicting areas were changed 
                         {
                             for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                                boolean changed = changed(conflictingChunk, commit, repository, repoAuxFile.getAbsolutePath(), conflictingFile.getPath());
+                                List<String> chunkEvolution = new ArrayList<>();
+                                boolean changed = changed(conflictingChunk, commit, repository, repoAuxFile.getAbsolutePath(), conflictingFile.getPath(), chunkEvolution);
 
                                 if (changed) {
                                     try {
@@ -217,7 +218,11 @@ public class PostponedResolutions {
                                                 System.out.println(line);
                                             }
 
-                                            System.out.println("Resolution");
+                                            System.out.println("Resolution " + commit);
+                                            for (String line : chunkEvolution) {
+                                                System.out.println(line);
+                                            }
+
                                         }
                                     } catch (IOException ex) {
                                         Logger.getLogger(PostponedResolutions.class.getName()).log(Level.SEVERE, null, ex);
@@ -337,7 +342,7 @@ public class PostponedResolutions {
     }
 
     public static boolean changed(ConflictingChunk conflictingChunk, String commit,
-            String originalRepositoryPath, String auxRepositoryPath, String fileRelativePath) {
+            String originalRepositoryPath, String auxRepositoryPath, String fileRelativePath, List<String> chunkEvolution) {
 
         Repositioning repositioning = new Repositioning(originalRepositoryPath);
 
@@ -366,7 +371,6 @@ public class PostponedResolutions {
             diffOutput += line + "\n";
         }
 
-//        System.out.println(diffOutput);
         GitTranslator gitTranslator = new GitTranslator();
         List<Operation> changes = gitTranslator.translateDelta(diffOutput);
 
@@ -379,15 +383,11 @@ public class PostponedResolutions {
                 beginLine = 0;
             }
 
-//            String beginContent = listFile.get(beginLine);
             int endLine = conflictingChunk.getEndLine() + 1;
             if (endLine >= initialFileList.size()) {
                 endLine = initialFileList.size() - 1;
             }
 
-//            String endContent = listFile.get(endLine);
-//            System.out.println("beginLine = " + beginContent);
-//            System.out.println("endLine = " + endContent);
             int begin = repositioning.repositioning(initialFile, finalFile, beginLine + 1);
             int end = repositioning.repositioning(initialFile, finalFile, endLine + 1);
 
@@ -398,45 +398,48 @@ public class PostponedResolutions {
                 System.out.println("Treat");
                 //Look around the area 
                 int beginAux = beginLine + 1;
-                while(begin == -1 && beginAux > 0){
+                while (begin == -1 && beginAux > 0) {
                     begin = repositioning.repositioning(initialFile, finalFile, --beginAux);
                 }
-                
-                if(begin < 0)
+
+                if (begin < 0) {
                     begin = 0;
-                
-                
+                }
+
                 int endAux = endLine + 1;
-                
-                while(end == -1 && endAux < initialFileList.size()){
+
+                while (end == -1 && endAux < initialFileList.size()) {
                     end = repositioning.repositioning(initialFile, finalFile, ++endAux);
                 }
-                
-                if(end > finalFileList.size())
+
+                if (end > finalFileList.size()) {
                     end = finalFileList.size() - 1;
-                
-                List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
-                for (String subList1 : subList) {
-                    System.out.println(subList1);
                 }
-                
+
+                List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
+                for (String line : subList) {
+//                    System.out.println(subList1);
+                    chunkEvolution.add(line);
+                }
+
                 return true;
             } else if (begin == -1) {
                 begin = end - (endLine - beginLine);
                 if (begin < 0) {
                     begin = 0;
                 }
-                System.out.println("\t\t\t " + commit);
-                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
-                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
-                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
-                System.out.println("==========================Evo (Begin) =========================================");
-
+//                System.out.println("\t\t\t " + commit);
+//                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+//                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+//                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+//                System.out.println("==========================Evo (Begin) =========================================");
+//
                 List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
-                for (String subList1 : subList) {
-                    System.out.println(subList1);
+                for (String line : subList) {
+//                    System.out.println(subList1);
+                    chunkEvolution.add(line);
                 }
-                System.out.println("==========================Evo (End) =========================================");
+//                System.out.println("==========================Evo (End) =========================================");
 
                 return true;
             } else if (end == -1) {
@@ -445,16 +448,17 @@ public class PostponedResolutions {
                     end = finalFileList.size() - 1;
                 }
 
-                System.out.println("\t\t\t " + commit);
-                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
-                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
-                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
-                System.out.println("==========================Evo (Begin) =========================================");
+//                System.out.println("\t\t\t " + commit);
+//                System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+//                System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+//                System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+//                System.out.println("==========================Evo (Begin) =========================================");
                 List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
-                for (String subList1 : subList) {
-                    System.out.println(subList1);
+                for (String line : subList) {
+//                    System.out.println(subList1);
+                    chunkEvolution.add(line);
                 }
-                System.out.println("==========================Evo (End) =========================================");
+//                System.out.println("==========================Evo (End) =========================================");
 
                 return true;
             }
@@ -462,20 +466,21 @@ public class PostponedResolutions {
             for (Operation change : changes) {
                 if (change.getLine() > begin && change.getLine() < end) {
 
-                    System.out.println("");
-                    System.out.println("Evolution");
-                    System.out.println("");
-
-                    System.out.println("\t\t\t " + commit);
-                    System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
-                    System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
-                    System.out.println("\t\t\t " + conflictingChunk.getEndLine());
-                    System.out.println("==========================Evo (Begin) =========================================");
+//                    System.out.println("");
+//                    System.out.println("Evolution");
+//                    System.out.println("");
+//
+//                    System.out.println("\t\t\t " + commit);
+//                    System.out.println("\t\t\t " + conflictingChunk.getIdentifier());
+//                    System.out.println("\t\t\t " + conflictingChunk.getBeginLine());
+//                    System.out.println("\t\t\t " + conflictingChunk.getEndLine());
+//                    System.out.println("==========================Evo (Begin) =========================================");
                     List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
-                    for (String subList1 : subList) {
-                        System.out.println(subList1);
+                    for (String line : subList) {
+//                    System.out.println(subList1);
+                        chunkEvolution.add(line);
                     }
-                    System.out.println("==========================Evo (End) =========================================");
+//                    System.out.println("==========================Evo (End) =========================================");
 
                     return true;
                 }
