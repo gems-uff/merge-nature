@@ -39,10 +39,10 @@ public class PostponedResolutions {
         List<String> projects = new ArrayList<>();
 
         projects.add("/Users/gleiph/repositories/antlr4");
-//        projects.add("/Users/gleiph/repositories/lombok");
-//        projects.add("/Users/gleiph/repositories/mct");
-//        projects.add("/Users/gleiph/repositories/twitter4j");
-//        projects.add("/Users/gleiph/repositories/voldemort");
+        projects.add("/Users/gleiph/repositories/lombok");
+        projects.add("/Users/gleiph/repositories/mct");
+        projects.add("/Users/gleiph/repositories/twitter4j");
+        projects.add("/Users/gleiph/repositories/voldemort");
 
         for (String project : projects) {
             projectAnalysis(project, daysRange);
@@ -88,12 +88,16 @@ public class PostponedResolutions {
 
         System.out.println("Merges: " + mergeRevisions.size());
 
+        int postponedConflictingchunks = 0;
+        int postponedConflictingchunksTotal = 0;
+        
         int filesCochanged = 0, mergesWithCochanges = 0, merges = 0;
 
         for (String mergeRevision : mergeRevisions) {
 
             filesCochanged = 0;
-
+            postponedConflictingchunks = 0;
+            
             List<String> parents = Git.getParents(repository, mergeRevision);
 
             if (parents.size() > 2) {
@@ -116,7 +120,6 @@ public class PostponedResolutions {
                 //Getting conflicting chunks
                 Revision currentRevision = RevisionAnalyzer.analyze(mergeRevision, repository);
                 List<ConflictingFile> conflictingFiles = currentRevision.getConflictingFiles();
-                //Take conflicting chunks
 
                 //Converting to relative path the files
                 for (String conflictedFile : conflictedFiles) {
@@ -227,6 +230,7 @@ public class PostponedResolutions {
                                                     System.out.println(line);
                                                 }
 
+                                                postponedConflictingchunks++;
                                                 printed = true;
                                             }
 
@@ -256,10 +260,13 @@ public class PostponedResolutions {
                 }
 
                 System.out.println("Files co-changed: " + filesCochanged);
+                postponedConflictingchunksTotal += postponedConflictingchunks;
+                System.out.println("Postponed cc = " + postponedConflictingchunks);
 
             }
         }
         System.out.println("Merge with co changes: " + mergesWithCochanges + "(" + merges + ")");
+        System.out.println("postponedConflictingchunksTotal: "  + postponedConflictingchunksTotal);
     }
 
     private static boolean hasWayWithoutMerge(String repositoryPath, String shaSource, String shaTarget,
@@ -384,7 +391,6 @@ public class PostponedResolutions {
 
                 List<String> subList = finalFileList.subList((begin - 1 <= 0) ? 0 : begin - 1, end - 1);
                 for (String line : subList) {
-//                    System.out.println(subList1);
                     chunkEvolution.add(line);
                 }
 
