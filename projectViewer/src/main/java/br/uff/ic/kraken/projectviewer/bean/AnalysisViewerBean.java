@@ -205,8 +205,14 @@ public class AnalysisViewerBean implements Serializable {
                                 kindConflict += get;
                             }
                         }
+                        
+                        
+                        //Extracting LOC
+                        int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
+                        int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
+                        
 
-                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId()));
+                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId(), locLeft, locRight));
                     }
                 }
 

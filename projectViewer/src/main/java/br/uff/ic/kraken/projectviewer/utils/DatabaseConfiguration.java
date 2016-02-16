@@ -11,6 +11,6 @@ package br.uff.ic.kraken.projectviewer.utils;
  */
 public class DatabaseConfiguration {
 
-    public static String database = "teste";
+    public static String database = "manualTemp";
     
 }

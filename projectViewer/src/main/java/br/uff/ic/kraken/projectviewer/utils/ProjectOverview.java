@@ -17,14 +17,19 @@ public class ProjectOverview {
     private String kindConflict;
     private String developerDecision;
     private Long conflictingChunkId;
+    private int locLeft;
+    private int locRight;
+    
 
-    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId) {
+    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId, int locLeft, int locRight) {
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
         this.kindConflict = kindConflict;
         this.developerDecision = developerDecision;
         this.conflictingChunkId = conflictingChunkId;
+        this.locLeft = locLeft;
+        this.locRight = locRight;
     }
 
         public ProjectOverview() {
@@ -119,5 +124,33 @@ public class ProjectOverview {
      */
     public void setConflictingChunkId(Long conflictingChunkId) {
         this.conflictingChunkId = conflictingChunkId;
+    }
+    
+    /**
+     * @return the locLeft
+     */
+    public int getLocLeft() {
+        return locLeft;
+    }
+
+    /**
+     * @param locLeft the locLeft to set
+     */
+    public void setLocLeft(int locLeft) {
+        this.locLeft = locLeft;
+    }
+
+    /**
+     * @return the locRight
+     */
+    public int getLocRight() {
+        return locRight;
+    }
+
+    /**
+     * @param locRight the locRight to set
+     */
+    public void setLocRight(int locRight) {
+        this.locRight = locRight;
     }
 }
