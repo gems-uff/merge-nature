@@ -78,7 +78,7 @@ public class ImportData {
                             Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionPath.getAbsolutePath());
 
                             revisionDAO.insertAll(currentRevision, project.getId());
-
+                            
                         }
 
                     }

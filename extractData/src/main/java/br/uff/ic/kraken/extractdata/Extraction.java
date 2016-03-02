@@ -34,6 +34,14 @@ public class Extraction {
                 String projectURL = args[1];
                 String outputDirectoryPath = args[2];
 
+//                String repositoriesDirectoryPath = "/Users/gleiph/Desktop/repository";
+//                String projectURL = "https://github.com/voldemort/voldemort";
+//                                String projectURL = "https://github.com/antlr/antlr4";
+//                                String projectURL = "https://github.com/rzwitserloot/lombok";
+//                                String projectURL = "https://github.com/nasa/mct";
+//                                String projectURL = "https://github.com/yusuke/twitter4j/";
+//
+//                String outputDirectoryPath = "/Users/gleiph/Desktop/output";
                 AutomaticAnalysis.analyze(repositoriesDirectoryPath, projectURL, outputDirectoryPath, persist);
 
                 Writer createWriter = FileManager.createWriter(outputDirectoryPath + File.separator + "controler.txt", true);
@@ -61,6 +69,7 @@ public class Extraction {
 //        preProcessingProject(args[0]);
 //    }
 //
+
     private static void preProcessingProject(String pathProjectOutput) {
 
         List<String> SHAs = null;
@@ -69,7 +78,7 @@ public class Extraction {
             pathProjectOutput += File.separator;
         }
 
-        String pathSHA = pathProjectOutput+"sha";
+        String pathSHA = pathProjectOutput + "sha";
         try {
 
             boolean error = false;
