@@ -61,8 +61,12 @@ public class ConflictingChunkJDBCDAO {
 
     public Long insertAll(ConflictingChunk conflictingChunk, Long conflictingFileId) throws SQLException {
 
-        Long conflictingChunkId = this.insert(conflictingChunk, conflictingFileId);
-
+        Long conflictingChunkId = null;
+        try {
+            conflictingChunkId = this.insert(conflictingChunk, conflictingFileId);
+        } catch (NullPointerException e) {
+            return null;
+        }
         KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
         SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(connection);
         ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(connection);
