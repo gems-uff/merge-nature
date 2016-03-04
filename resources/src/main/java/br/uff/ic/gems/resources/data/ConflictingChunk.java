@@ -39,6 +39,7 @@ public class ConflictingChunk implements Serializable {
     private int separatorLine;
     private String identifier;
     private DeveloperDecision developerDecision;
+    private String generalKindConflictOutmost;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinTable(name = "ConflictingChunk_LeftKindConflict",
@@ -340,5 +341,19 @@ public class ConflictingChunk implements Serializable {
         }
 
         return result;
+    }
+
+    /**
+     * @return the generalKindConflictOutmost
+     */
+    public String getGeneralKindConflictOutmost() {
+        return generalKindConflictOutmost;
+    }
+
+    /**
+     * @param generalKindConflictOutmost the generalKindConflictOutmost to set
+     */
+    public void setGeneralKindConflictOutmost(String generalKindConflictOutmost) {
+        this.generalKindConflictOutmost = generalKindConflictOutmost;
     }
 }

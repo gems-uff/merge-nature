@@ -27,6 +27,7 @@ public class ConflictingChunkJDBCDAO {
     public static final String END_LINE = "endline";
     public static final String IDENTIFIER = "identifier";
     public static final String SEPARATOR_LINE = "separatorline";
+    public static final String GENERAL_KIND_CONFLICT_OUTMOST = "general_kind_conflict_outmost";
 
     public static final String CONFLICTING_FILE_ID = "conflictingfile_id";
 
@@ -212,4 +213,107 @@ public class ConflictingChunkJDBCDAO {
         return conflictingChunk;
     }
 
+    public List<ConflictingChunk> select() throws SQLException {
+        List<ConflictingChunk> conflictingChunks = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK;
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                ConflictingChunk conflictingChunk = new ConflictingChunk();
+
+                conflictingChunk.setBeginLine(results.getInt(BEGIN_LINE));
+                conflictingChunk.setDeveloperDecision(DeveloperDecision.toDeveloperDecision(results.getString(DEVELOPER_DECISION)));
+                conflictingChunk.setEndLine(results.getInt(END_LINE));
+                conflictingChunk.setId(results.getLong(ID));
+                conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
+                conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+                conflictingChunk.setGeneralKindConflictOutmost(results.getString(GENERAL_KIND_CONFLICT_OUTMOST));
+
+                conflictingChunks.add(conflictingChunk);
+            }
+        }
+
+        return conflictingChunks;
+    }
+
+    public List<ConflictingChunk> selectAll() throws SQLException {
+        List<ConflictingChunk> conflictingChunks = this.select();
+
+        ConflictingContentJDBCDAO conflictingContentDAO = new ConflictingContentJDBCDAO(connection);
+        SolutionContentJDBCDAO solutionContentDAO = new SolutionContentJDBCDAO(connection);
+        KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
+
+        for (ConflictingChunk conflictingChunk : conflictingChunks) {
+
+            //Adding conflicting content
+            conflictingChunk.setConflictingContent(conflictingContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+            //Adding solution content
+            conflictingChunk.setSolutionContent(solutionContentDAO.selectAllByConflictingChunkId(conflictingChunk.getId()));
+
+            List<KindConflict> kindConflict = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
+
+            if (kindConflict.size() != 2) {
+                throw new SQLException("Wrong number of kind of conflicts.");
+            } else {
+                for (KindConflict kc : kindConflict) {
+                    if (kc.getSide() == Side.LEFT) {
+                        conflictingChunk.setLeftKindConflict(kc);
+                    } else {
+                        conflictingChunk.setRightKindConflict(kc);
+                    }
+                }
+            }
+
+        }
+
+        return conflictingChunks;
+    }
+
+    public void updateGeneralKindConflict(Long conflictingChunkId, String generalKindConflictOutmost) throws SQLException {
+
+        String update
+                = "UPDATE "
+                + Tables.CONFLICTING_CHUNK
+                + " SET "
+                + GENERAL_KIND_CONFLICT_OUTMOST + "=\'" + generalKindConflictOutmost + "\' "
+                + " WHERE "
+                + ID + " = " + conflictingChunkId;
+
+        DefaultOperations.update(update, connection);
+    }
+    
+    public List<ConflictingChunk> selectNullGeneralKindConflictOutmost() throws SQLException {
+        List<ConflictingChunk> conflictingChunks = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_CHUNK +
+                " WHERE " + GENERAL_KIND_CONFLICT_OUTMOST + " is NULL";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                ConflictingChunk conflictingChunk = new ConflictingChunk();
+
+                conflictingChunk.setBeginLine(results.getInt(BEGIN_LINE));
+                conflictingChunk.setDeveloperDecision(DeveloperDecision.toDeveloperDecision(results.getString(DEVELOPER_DECISION)));
+                conflictingChunk.setEndLine(results.getInt(END_LINE));
+                conflictingChunk.setId(results.getLong(ID));
+                conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
+                conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+                conflictingChunk.setGeneralKindConflictOutmost(results.getString(GENERAL_KIND_CONFLICT_OUTMOST));
+
+                conflictingChunks.add(conflictingChunk);
+            }
+        }
+
+        return conflictingChunks;
+    }
 }
