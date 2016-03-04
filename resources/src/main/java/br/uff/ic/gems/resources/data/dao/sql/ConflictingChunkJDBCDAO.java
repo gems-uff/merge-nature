@@ -45,7 +45,8 @@ public class ConflictingChunkJDBCDAO {
                 + END_LINE + ", "
                 + IDENTIFIER + ", "
                 + SEPARATOR_LINE + ", "
-                + CONFLICTING_FILE_ID
+                + CONFLICTING_FILE_ID + ", "
+                + GENERAL_KIND_CONFLICT_OUTMOST
                 + ") "
                 + "VALUES(\'"
                 + conflictingChunk.getBeginLine() + "\', \'"
@@ -53,7 +54,8 @@ public class ConflictingChunkJDBCDAO {
                 + conflictingChunk.getEndLine() + "\', \'"
                 + conflictingChunk.getIdentifier() + "\', \'"
                 + conflictingChunk.getSeparatorLine() + "\', \'"
-                + conflictingFileId
+                + conflictingFileId + "\', \'"
+                +conflictingChunk.getGeneralKindConflictOutmost()
                 + "\')";
 
         return DefaultOperations.insert(insertSQL, connection);
@@ -113,6 +115,7 @@ public class ConflictingChunkJDBCDAO {
                 conflictingChunk.setId(results.getLong(ID));
                 conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
                 conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+                conflictingChunk.setGeneralKindConflictOutmost(results.getString(GENERAL_KIND_CONFLICT_OUTMOST));
 
                 conflictingChunks.add(conflictingChunk);
             }
@@ -175,6 +178,7 @@ public class ConflictingChunkJDBCDAO {
                 conflictingChunk.setId(results.getLong(ID));
                 conflictingChunk.setIdentifier(results.getString(IDENTIFIER));
                 conflictingChunk.setSeparatorLine(results.getInt(SEPARATOR_LINE));
+                conflictingChunk.setGeneralKindConflictOutmost(results.getString(GENERAL_KIND_CONFLICT_OUTMOST));
 
             }
         }
