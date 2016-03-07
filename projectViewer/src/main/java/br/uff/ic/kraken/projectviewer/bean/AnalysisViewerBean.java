@@ -244,7 +244,7 @@ public class AnalysisViewerBean implements Serializable {
                         int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
                         int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
 
-                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, null, developerDecision, conflictingChunk.getId(),
+                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, developerDecision, conflictingChunk.getId(),
                                 locLeft, locRight, conflictingChunk.getGeneralKindConflictOutmost()));
                     }
                 }
@@ -323,7 +323,7 @@ public class AnalysisViewerBean implements Serializable {
                             int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
                             int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
 
-                            projectsSummarization.add(new ProjectsOverview(projectName, sha1, fileName, ccIdentifier, null, developerDecision, 
+                            projectsSummarization.add(new ProjectsOverview(projectName, sha1, fileName, ccIdentifier, developerDecision, 
                                     conflictingChunk.getId(), conflictingChunk.getGeneralKindConflictOutmost(), locLeft, locRight));
                         }
                     }

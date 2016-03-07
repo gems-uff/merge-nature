@@ -15,19 +15,17 @@ public class ProjectsOverview {
     private String sha1;
     private String fileName;
     private String conflictingChunkIdentifier;
-    private String kindConflict;
     private String developerDecision;
     private Long conflictingChunkId;
     private String generalKindConflictOutmost;
     private int locLeft;
     private int locRight;
 
-    public ProjectsOverview(String projectName, String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId, String generalKindConflictOutmost, int locLeft, int locRight) {
+    public ProjectsOverview(String projectName, String sha1, String fileName, String conflictingChunkIdentifier, String developerDecision, Long conflictingChunkId, String generalKindConflictOutmost, int locLeft, int locRight) {
         this.projectName = projectName;
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
-        this.kindConflict = kindConflict;
         this.developerDecision = developerDecision;
         this.conflictingChunkId = conflictingChunkId;
         this.generalKindConflictOutmost = generalKindConflictOutmost;
@@ -40,7 +38,6 @@ public class ProjectsOverview {
         this.sha1 = "";
         this.fileName = "";
         this.conflictingChunkIdentifier = "";
-        this.kindConflict = "";
         this.developerDecision = "";
         this.conflictingChunkId = null;
         this.generalKindConflictOutmost = "";
@@ -88,20 +85,6 @@ public class ProjectsOverview {
      */
     public void setConflictingChunkIdentifier(String conflictingChunkIdentifier) {
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
-    }
-
-    /**
-     * @return the kindConflict
-     */
-    public String getKindConflict() {
-        return kindConflict;
-    }
-
-    /**
-     * @param kindConflict the kindConflict to set
-     */
-    public void setKindConflict(String kindConflict) {
-        this.kindConflict = kindConflict;
     }
 
     /**

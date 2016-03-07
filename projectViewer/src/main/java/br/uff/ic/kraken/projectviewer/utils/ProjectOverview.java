@@ -14,7 +14,6 @@ public class ProjectOverview {
     private String sha1;
     private String fileName;
     private String conflictingChunkIdentifier;
-    private String kindConflict;
     private String developerDecision;
     private Long conflictingChunkId;
     private String generalKindConflictOutmost;
@@ -22,11 +21,10 @@ public class ProjectOverview {
     private int locRight;
     
 
-    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId, int locLeft, int locRight, String generalKindConflictOutmost) {
+    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String developerDecision, Long conflictingChunkId, int locLeft, int locRight, String generalKindConflictOutmost) {
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
-        this.kindConflict = kindConflict;
         this.developerDecision = developerDecision;
         this.conflictingChunkId = conflictingChunkId;
         this.locLeft = locLeft;
@@ -38,7 +36,6 @@ public class ProjectOverview {
         this.sha1 = "";
         this.fileName = "";
         this.conflictingChunkIdentifier = "";
-        this.kindConflict = "";
         this.developerDecision = "";
         this.generalKindConflictOutmost = "";
         this.conflictingChunkId = null;
@@ -85,20 +82,6 @@ public class ProjectOverview {
      */
     public void setConflictingChunkIdentifier(String conflictingChunkIdentifier) {
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
-    }
-
-    /**
-     * @return the kindConflict
-     */
-    public String getKindConflict() {
-        return kindConflict;
-    }
-
-    /**
-     * @param kindConflict the kindConflict to set
-     */
-    public void setKindConflict(String kindConflict) {
-        this.kindConflict = kindConflict;
     }
 
     /**
