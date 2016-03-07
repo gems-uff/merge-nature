@@ -43,33 +43,33 @@ public class KindConflictExtractor {
 
                 generalKindConflictOutmost = "";
 
-                List<KindConflict> kindConflicts = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
+        List<KindConflict> kindConflicts = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
 
-                for (KindConflict kindConflict : kindConflicts) {
-                    if (kindConflict.getSide().equals(Side.LEFT)) {
-                        conflictingChunk.setLeftKindConflict(kindConflict);
-                    } else if (kindConflict.getSide().equals(Side.RIGHT)) {
-                        conflictingChunk.setRightKindConflict(kindConflict);
-                    } else {
-                        System.out.println("------------------------------------------------------");
-                        System.out.println("                      Problem!!!!!!!!");
-                        System.out.println("------------------------------------------------------");
+        for (KindConflict kindConflict : kindConflicts) {
+            if (kindConflict.getSide().equals(Side.LEFT)) {
+                conflictingChunk.setLeftKindConflict(kindConflict);
+            } else if (kindConflict.getSide().equals(Side.RIGHT)) {
+                conflictingChunk.setRightKindConflict(kindConflict);
+            } else {
+                System.out.println("------------------------------------------------------");
+                System.out.println("                      Problem!!!!!!!!");
+                System.out.println("------------------------------------------------------");
 
-                    }
-                }
+            }
+        }
 
-                List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+        List<String> generalKindConflict = conflictingChunk.generalKindConflict();
 
-                for (int i = 0; i < generalKindConflict.size() - 1; i++) {
+        for (int i = 0; i < generalKindConflict.size() - 1; i++) {
 //                    System.out.print(generalKindConflict.get(i) + ", ");
-                    generalKindConflictOutmost += generalKindConflict.get(i) + ", ";
-                }
+            generalKindConflictOutmost += generalKindConflict.get(i) + ", ";
+        }
 
 //                System.out.println(generalKindConflict.get(generalKindConflict.size() - 1));
-                generalKindConflictOutmost += generalKindConflict.get(generalKindConflict.size() - 1);
-                
-                conflictingChunkDAO.updateGeneralKindConflict(conflictingChunk.getId(), generalKindConflictOutmost);
-            }
+        generalKindConflictOutmost += generalKindConflict.get(generalKindConflict.size() - 1);
+
+        conflictingChunkDAO.updateGeneralKindConflict(conflictingChunk.getId(), generalKindConflictOutmost);
+    }
 
         } catch (SQLException ex) {
             Logger.getLogger(KindConflictExtractor.class.getName()).log(Level.SEVERE, null, ex);
