@@ -17,11 +17,12 @@ public class ProjectOverview {
     private String kindConflict;
     private String developerDecision;
     private Long conflictingChunkId;
+    private String generalKindConflictOutmost;
     private int locLeft;
     private int locRight;
     
 
-    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId, int locLeft, int locRight) {
+    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String kindConflict, String developerDecision, Long conflictingChunkId, int locLeft, int locRight, String generalKindConflictOutmost) {
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
@@ -30,6 +31,7 @@ public class ProjectOverview {
         this.conflictingChunkId = conflictingChunkId;
         this.locLeft = locLeft;
         this.locRight = locRight;
+        this.generalKindConflictOutmost = generalKindConflictOutmost;
     }
 
         public ProjectOverview() {
@@ -38,6 +40,7 @@ public class ProjectOverview {
         this.conflictingChunkIdentifier = "";
         this.kindConflict = "";
         this.developerDecision = "";
+        this.generalKindConflictOutmost = "";
         this.conflictingChunkId = null;
     }
 
@@ -152,5 +155,19 @@ public class ProjectOverview {
      */
     public void setLocRight(int locRight) {
         this.locRight = locRight;
+    }
+
+    /**
+     * @return the generalKindConflictOutmost
+     */
+    public String getGeneralKindConflictOutmost() {
+        return generalKindConflictOutmost;
+    }
+
+    /**
+     * @param generalKindConflictOutmost the generalKindConflictOutmost to set
+     */
+    public void setGeneralKindConflictOutmost(String generalKindConflictOutmost) {
+        this.generalKindConflictOutmost = generalKindConflictOutmost;
     }
 }

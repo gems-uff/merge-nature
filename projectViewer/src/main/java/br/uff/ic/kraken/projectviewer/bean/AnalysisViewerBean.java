@@ -7,11 +7,15 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
+import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.ConflictingFileJDBCDAO;
 import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
+import br.uff.ic.gems.resources.data.dao.sql.KindConflictJDBCDAO;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
+import br.uff.ic.gems.resources.data.dao.sql.RevisionJDBCDAO;
 import br.uff.ic.gems.resources.states.MergeStatus;
 import br.uff.ic.kraken.projectviewer.pages.PagesName;
 import br.uff.ic.kraken.projectviewer.utils.DataTypes;
@@ -165,11 +169,40 @@ public class AnalysisViewerBean implements Serializable {
     public String overview() {
 
         try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
+            System.out.println(new Date());
             ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
+            RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
+            ConflictingFileJDBCDAO conflictingFileDAO = new ConflictingFileJDBCDAO(connection);
+            ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(connection);
+            KindConflictJDBCDAO kindConflictDAO = new KindConflictJDBCDAO(connection);
 
             Project project = null;
             try {
-                project = projectDAO.selectAllByProjectId(projectId);
+//                project = projectDAO.selectAllByProjectId(projectId);
+
+                project = projectDAO.selectByProjectId(projectId);
+
+                List<Revision> revisions = revisionDAO.selectByProjectId(projectId);
+
+                for (Revision revision : revisions) {
+                    List<ConflictingFile> conflictingFiles = conflictingFileDAO.selectByRevisionId(revision.getId());
+
+                    for (ConflictingFile conflictingFile : conflictingFiles) {
+                        List<ConflictingChunk> conflictingChunks = conflictingChunkDAO.selectByConflictingFileId(conflictingFile.getId());
+
+//                        for (ConflictingChunk conflictingChunk : conflictingChunks) {
+//                            List<KindConflict> kindConflicts = kindConflictDAO.selectAllByConflictingChunkId(conflictingChunk.getId());
+//                            conflictingChunk.setLeftKindConflict(kindConflicts.get(0));
+//                            conflictingChunk.setRightKindConflict(kindConflicts.get(1));
+//                        }
+
+                        conflictingFile.setConflictingChunks(conflictingChunks);
+                    }
+
+                    revision.setConflictingFiles(conflictingFiles);
+                }
+                project.setRevisions(revisions);
+
             } catch (SQLException ex) {
                 Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -181,7 +214,7 @@ public class AnalysisViewerBean implements Serializable {
             String fileName = "";
             String ccIdentifier = "";
             String developerDecision = "";
-            String kindConflict = "";
+//            String kindConflict = "";
 
             for (Revision revision : project.getRevisions()) {
                 sha1 = revision.getSha();
@@ -192,31 +225,32 @@ public class AnalysisViewerBean implements Serializable {
                     for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
                         ccIdentifier = conflictingChunk.getIdentifier();
                         developerDecision = conflictingChunk.getDeveloperDecision().toString();
-                        List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+//                        List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+//
+//                        kindConflict = "";
+//
+//                        for (int i = 0; i < generalKindConflict.size(); i++) {
+//                            String get = generalKindConflict.get(i);
+//
+//                            if (i < generalKindConflict.size() - 1) {
+//                                kindConflict += get + ", ";
+//                            } else {
+//                                kindConflict += get;
+//                            }
+//                        }
 
-                        kindConflict = "";
-
-                        for (int i = 0; i < generalKindConflict.size(); i++) {
-                            String get = generalKindConflict.get(i);
-
-                            if (i < generalKindConflict.size() - 1) {
-                                kindConflict += get + ", ";
-                            } else {
-                                kindConflict += get;
-                            }
-                        }
-                        
-                        
                         //Extracting LOC
                         int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
                         int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
-                        
 
-                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, kindConflict, developerDecision, conflictingChunk.getId(), locLeft, locRight));
+                        projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, null, developerDecision, conflictingChunk.getId(),
+                                locLeft, locRight, conflictingChunk.getGeneralKindConflictOutmost()));
                     }
                 }
 
             }
+            System.out.println(new Date());
+
         } catch (SQLException ex) {
             Logger.getLogger(AnalysisViewerBean.class.getName()).log(Level.SEVERE, null, ex);
             return null;
