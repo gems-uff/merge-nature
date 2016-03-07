@@ -244,8 +244,11 @@ public class AnalysisViewerBean implements Serializable {
                         int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
                         int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
 
+                        String generalkindConflictOutmost = conflictingChunk.getGeneralKindConflictOutmost();
+                        int amountLanguageConstructs = generalkindConflictOutmost.split(",").length;
+
                         projectSummarization.add(new ProjectOverview(sha1, fileName, ccIdentifier, developerDecision, conflictingChunk.getId(),
-                                locLeft, locRight, conflictingChunk.getGeneralKindConflictOutmost()));
+                                locLeft, locRight, generalkindConflictOutmost, amountLanguageConstructs));
                     }
                 }
 
@@ -313,9 +316,10 @@ public class AnalysisViewerBean implements Serializable {
                     for (ConflictingFile conflictingFile : revision.getConflictingFiles()) {
                         fileName = conflictingFile.getName();
 
-                        if(!fileName.toLowerCase().endsWith(".java"))
+                        if (!fileName.toLowerCase().endsWith(".java")) {
                             continue;
-                        
+                        }
+
                         for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
                             ccIdentifier = conflictingChunk.getIdentifier();
                             developerDecision = conflictingChunk.getDeveloperDecision().toString();
@@ -323,8 +327,11 @@ public class AnalysisViewerBean implements Serializable {
                             int locLeft = conflictingChunk.getSeparatorLine() - conflictingChunk.getBeginLine() - 1;
                             int locRight = conflictingChunk.getEndLine() - conflictingChunk.getSeparatorLine() - 1;
 
-                            projectsSummarization.add(new ProjectsOverview(projectName, sha1, fileName, ccIdentifier, developerDecision, 
-                                    conflictingChunk.getId(), conflictingChunk.getGeneralKindConflictOutmost(), locLeft, locRight));
+                            String generalkindConflictOutmost = conflictingChunk.getGeneralKindConflictOutmost();
+                            int amountLanguageConstructs = generalkindConflictOutmost.split(",").length;
+
+                            projectsSummarization.add(new ProjectsOverview(projectName, sha1, fileName, ccIdentifier, developerDecision,
+                                    conflictingChunk.getId(), generalkindConflictOutmost, locLeft, locRight, amountLanguageConstructs));
                         }
                     }
 

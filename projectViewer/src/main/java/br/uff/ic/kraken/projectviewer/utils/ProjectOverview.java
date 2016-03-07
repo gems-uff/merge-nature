@@ -19,9 +19,11 @@ public class ProjectOverview {
     private String generalKindConflictOutmost;
     private int locLeft;
     private int locRight;
-    
+    private int amountLanguageConstructs;
 
-    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier, String developerDecision, Long conflictingChunkId, int locLeft, int locRight, String generalKindConflictOutmost) {
+    public ProjectOverview(String sha1, String fileName, String conflictingChunkIdentifier,
+            String developerDecision, Long conflictingChunkId, int locLeft, int locRight,
+            String generalKindConflictOutmost, int amountLanguageConstructs) {
         this.sha1 = sha1;
         this.fileName = fileName;
         this.conflictingChunkIdentifier = conflictingChunkIdentifier;
@@ -30,18 +32,19 @@ public class ProjectOverview {
         this.locLeft = locLeft;
         this.locRight = locRight;
         this.generalKindConflictOutmost = generalKindConflictOutmost;
+        this.amountLanguageConstructs = amountLanguageConstructs;
     }
 
-        public ProjectOverview() {
+    public ProjectOverview() {
         this.sha1 = "";
         this.fileName = "";
         this.conflictingChunkIdentifier = "";
         this.developerDecision = "";
         this.generalKindConflictOutmost = "";
         this.conflictingChunkId = null;
+        this.amountLanguageConstructs = -1;
     }
 
-    
     /**
      * @return the sha1
      */
@@ -111,7 +114,7 @@ public class ProjectOverview {
     public void setConflictingChunkId(Long conflictingChunkId) {
         this.conflictingChunkId = conflictingChunkId;
     }
-    
+
     /**
      * @return the locLeft
      */
@@ -152,5 +155,19 @@ public class ProjectOverview {
      */
     public void setGeneralKindConflictOutmost(String generalKindConflictOutmost) {
         this.generalKindConflictOutmost = generalKindConflictOutmost;
+    }
+
+    /**
+     * @return the amountLanguageConstructs
+     */
+    public int getAmountLanguageConstructs() {
+        return amountLanguageConstructs;
+    }
+
+    /**
+     * @param amountLanguageConstructs the amountLanguageConstructs to set
+     */
+    public void setAmountLanguageConstructs(int amountLanguageConstructs) {
+        this.amountLanguageConstructs = amountLanguageConstructs;
     }
 }
