@@ -146,7 +146,8 @@ public class KindConflict implements Serializable {
                         && (//greater number of lines
                         (lineSize < languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1)
                         || (lineSize == languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1
-                        && languageConstruct.getEndColumn() > currentLanguageConstruct.getEndColumn()))) {
+                        && languageConstruct.getEndColumn() > currentLanguageConstruct.getEndColumn()))
+                        && !result.contains(languageConstruct)) {
                     currentLanguageConstruct = languageConstruct;
                     lineSize = languageConstruct.getEndLine() - languageConstruct.getBeginLine() + 1;
                     columnDistance = languageConstruct.getBeginColumn() - currentColumn;
