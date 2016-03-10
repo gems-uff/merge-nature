@@ -342,6 +342,11 @@ public class KindConflict implements Serializable {
         if (currentLanguageConstruct.isHasBlock()) {
             el = currentLanguageConstruct.getBeginLineBlock();
             ec = currentLanguageConstruct.getBeginColumnBlock();
+
+            if (bl == el && bc == ec) {
+                ec++;
+            }
+
         } else {
             el = bl + 1;
             ec = 0;
