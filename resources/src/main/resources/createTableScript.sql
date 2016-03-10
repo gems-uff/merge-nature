@@ -100,6 +100,7 @@ CREATE TABLE conflictingchunk
   endline integer NOT NULL,
   identifier character varying(255),
   separatorline integer NOT NULL,
+  general_kind_conflict_outmost character varying(511), 
   conflictingFile_id bigint REFERENCES conflictingfile(id),
   CONSTRAINT conflictingchunk_pkey PRIMARY KEY (id)
 )
