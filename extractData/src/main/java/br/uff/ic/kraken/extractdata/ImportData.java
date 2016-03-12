@@ -6,11 +6,14 @@
 package br.uff.ic.kraken.extractdata;
 
 import br.uff.ic.gems.resources.analises.merge.AutomaticAnalysis;
+import br.uff.ic.gems.resources.data.ConflictingChunk;
+import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.sql.JDBCConnection;
 import br.uff.ic.gems.resources.data.dao.sql.ProjectJDBCDAO;
 import br.uff.ic.gems.resources.data.dao.sql.RevisionJDBCDAO;
+import br.uff.ic.gems.resources.github.parser.GithubAPI;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -31,9 +34,8 @@ public class ImportData {
 
         String dir = args[0];
         String database = args[1];
-//        String dir = "/Users/gleiph/Desktop/teste/out1";
-//String dir = "/Users/gleiph/Dropbox/doutorado/scripts/v3_output/out7";
-//        String database = "testeV1";
+//        String dir = "/Users/gleiph/Desktop/outputs/out50/";
+//        String database = "testImportingData";
         try (Connection connection = (new JDBCConnection()).getConnection(database)) {
             ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
             RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
@@ -64,6 +66,15 @@ public class ImportData {
                             continue;
                         }
 
+                        //Setting analyzed to true, because it was analyzed
+                        project.setAnalyzed(true);
+                        
+                        //Getting fork information
+                        GithubAPI.init();
+                        Project projectAux = GithubAPI.project(project.getSearchUrl(), false, false, true);
+                        project.setFork(projectAux.isFork());
+                        project.setMainProjectId(projectAux.getMainProjectId());
+                        
                         projectDAO.insertAll(project);
 
                         System.out.println("Importing " + project.getName() + "...");
@@ -77,6 +88,31 @@ public class ImportData {
                             File currentRevisionPath = new File(projectDirectory, (index / 1000) + File.separator + line);
                             Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionPath.getAbsolutePath());
 
+                            //Getting outmost kind of conflict
+                            for (ConflictingFile conflictingFile : currentRevision.getConflictingFiles()) {
+                                for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+                                    
+//                                    System.out.println("Conflict content");
+//                                    for (String conflictingContent : conflictingChunk.getConflictingContent()) {
+//                                        System.out.println(conflictingContent);
+//                                    }
+//                                    System.out.println("");
+//                                    System.out.println("Solution content");
+//                                    for (String solutionContent : conflictingChunk.getSolutionContent()) {
+//                                        System.out.println(solutionContent);
+//                                    }
+                                    
+                                    List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+                                    String kindConflictOutmost = "";
+                                    for (int i = 0; i < generalKindConflict.size() - 1; i++) {
+                                        kindConflictOutmost += generalKindConflict.get(i) + ", ";
+                                    }
+                                    kindConflictOutmost += generalKindConflict.get(generalKindConflict.size() - 1);
+                                    
+                                    conflictingChunk.setGeneralKindConflictOutmost(kindConflictOutmost);
+                                }
+                            }
+                            
                             revisionDAO.insertAll(currentRevision, project.getId());
                             
                         }
