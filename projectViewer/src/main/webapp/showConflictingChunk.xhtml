@@ -27,12 +27,12 @@
                     </div>
                     <br/>
                     <div>
-                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.solutionContent}" var="cc">
+                        <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.solutionContent}" var="sc">
                             <f:facet name="header">  
                                 <h:outputText value="Solution content" styleClass="title"/>  
                             </f:facet>
                             <p:column>
-                                <h:outputText value="#{cc}" styleClass="tableContent"/>
+                                <h:outputText value="#{sc}" styleClass="tableContent"/>
                             </p:column>
                         </p:dataTable> 
                     </div>
@@ -41,12 +41,12 @@
                 <!--Right--> 
                 <div style="overflow:auto; width: 17.5%; height: 100vh; position: fixed; top: 0%; 
                      left: 82%;">
-                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.developerDecision}" var="cc">
+                    <p:dataTable value="#{analysisViewerBean.selectedConflictingChunk.developerDecision}" var="dd">
                         <f:facet name="header">  
                             <h:outputText value="Developer's decision" styleClass="title"/>  
                         </f:facet>
                         <p:column>
-                            <h:outputText value="#{cc}" styleClass="tableContent"/>
+                            <h:outputText value="#{dd}" styleClass="tableContent"/>
                         </p:column>
                     </p:dataTable> 
                     <br/>

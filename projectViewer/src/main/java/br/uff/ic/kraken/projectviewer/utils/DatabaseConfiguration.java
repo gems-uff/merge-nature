@@ -11,6 +11,7 @@ package br.uff.ic.kraken.projectviewer.utils;
  */
 public class DatabaseConfiguration {
 
-    public static String database = "manualTemp";
-    
+//    public static String database = "manualTemp";
+//    public static String database = "testImportingData";
+    public static String database = "automaticAnalysis";
 }

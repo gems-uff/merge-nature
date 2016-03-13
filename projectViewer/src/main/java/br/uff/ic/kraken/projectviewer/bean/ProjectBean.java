@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,18 +40,21 @@ public class ProjectBean implements Serializable {
     public ProjectBean() {
 
         try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
-        ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
+            ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
 
-        projects = new ArrayList<>();
+            projects = new ArrayList<>();
 
-        List<Project> all = null;
-        try {
-            all = projectDAO.select();
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            System.out.println(new Date());
+            List<Project> all = null;
+            try {
+                all = projectDAO.selectAnalyzedMainProjects();
+            } catch (SQLException ex) {
+                Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-        projects.addAll(all);
+            System.out.println(new Date());
+            
+            projects.addAll(all);
         } catch (SQLException ex) {
             Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -61,10 +65,10 @@ public class ProjectBean implements Serializable {
      * @return the projects
      */
     public List<Project> getProjects() {
-        
+
         try (Connection connection = (new JDBCConnection()).getConnection(DatabaseConfiguration.database)) {
             ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
-            projects = projectDAO.select();
+            projects = projectDAO.selectAnalyzedMainProjects();
             return projects;
         } catch (SQLException ex) {
             Logger.getLogger(ProjectBean.class.getName()).log(Level.SEVERE, null, ex);

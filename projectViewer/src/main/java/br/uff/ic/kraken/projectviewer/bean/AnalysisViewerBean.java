@@ -7,7 +7,6 @@ package br.uff.ic.kraken.projectviewer.bean;
 
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
-import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.Project;
 import br.uff.ic.gems.resources.data.Revision;
 import br.uff.ic.gems.resources.data.dao.sql.ConflictingChunkJDBCDAO;
@@ -303,6 +302,8 @@ public class AnalysisViewerBean implements Serializable {
 
             for (Project project : projects) {
 
+                System.out.println(projects.indexOf(project)+ "/"+projects.size() + " - "+project.getName() + " ("+ (new Date()) + ")");
+                
                 projectName = project.getName();
                 String sha1 = "";
                 String fileName = "";
