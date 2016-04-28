@@ -30,12 +30,15 @@ import org.apache.commons.io.FileUtils;
  */
 public class ImportData {
 
+    public static final String NOT_FOUND = "Not Found";
+
     public static void main(String[] args) throws IOException {
 
         String dir = args[0];
         String database = args[1];
-//        String dir = "/Users/gleiph/Desktop/outputs/out50/";
-//        String database = "testImportingData";
+//        String dir = "/Users/gleiph/Downloads/analisis/analysis/out126";
+//        String database = "importingTestDelete";
+
         try (Connection connection = (new JDBCConnection()).getConnection(database)) {
             ProjectJDBCDAO projectDAO = new ProjectJDBCDAO(connection);
             RevisionJDBCDAO revisionDAO = new RevisionJDBCDAO(connection);
@@ -52,71 +55,98 @@ public class ImportData {
 
                         File shaFile = new File(projectDirectory, "sha");
 
-                        List<String> lines = new ArrayList<>();
+                        List<String> shas = new ArrayList<>();
                         if (shaFile.isFile()) {
-                            lines = FileUtils.readLines(shaFile);
+                            shas = FileUtils.readLines(shaFile);
                         }
 
-                        Project project = AutomaticAnalysis.readProject(new File(projectDirectory, projectDirectory.getName()));
+                        File projectDescriptorFile = new File(projectDirectory, projectDirectory.getName());
 
-                        Project selectByProjectId = projectDAO.selectByProjectId(project.getId());
-
-                        if (selectByProjectId.getId() != null) {
-                            System.out.println("Skiping " + selectByProjectId.getName());
+                        if (!projectDescriptorFile.isFile()) {
+                            System.out.println("****************** Error **********************************************");
+                            System.out.println("Project " + projectDescriptorFile.getName() + " was not imported...");
+                            System.out.println("****************** Error **********************************************");
                             continue;
                         }
 
+                        /*
+                         Reading project from file
+                         */
+                        Project projectFromFile = AutomaticAnalysis.readProject(projectDescriptorFile);
+
+                        System.out.println("Importing " + projectFromFile.getName());
+
                         //Setting analyzed to true, because it was analyzed
-                        project.setAnalyzed(true);
-                        
+                        projectFromFile.setAnalyzed(false);
+
                         //Getting fork information
                         GithubAPI.init();
-                        Project projectAux = GithubAPI.project(project.getSearchUrl(), false, false, true);
-                        project.setFork(projectAux.isFork());
-                        project.setMainProjectId(projectAux.getMainProjectId());
-                        
-                        projectDAO.insertAll(project);
+                        Project projectAux = GithubAPI.project(projectFromFile.getSearchUrl(), false, false, true);
+                        projectFromFile.setFork(projectAux.isFork());
 
-                        System.out.println("Importing " + project.getName() + "...");
-                        for (String line : lines) {
-                            int index = lines.indexOf(line) + 1;
+                        projectFromFile.setMessage(projectAux.getMessage());
 
-                            if (index % 10 == 0) {
-                                System.out.println(lines.indexOf(line) + "/" + lines.size() + "(" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000 + ")");
-                            }
-
-                            File currentRevisionPath = new File(projectDirectory, (index / 1000) + File.separator + line);
-                            Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionPath.getAbsolutePath());
-
-                            //Getting outmost kind of conflict
-                            for (ConflictingFile conflictingFile : currentRevision.getConflictingFiles()) {
-                                for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
-                                    
-//                                    System.out.println("Conflict content");
-//                                    for (String conflictingContent : conflictingChunk.getConflictingContent()) {
-//                                        System.out.println(conflictingContent);
-//                                    }
-//                                    System.out.println("");
-//                                    System.out.println("Solution content");
-//                                    for (String solutionContent : conflictingChunk.getSolutionContent()) {
-//                                        System.out.println(solutionContent);
-//                                    }
-                                    
-                                    List<String> generalKindConflict = conflictingChunk.generalKindConflict();
-                                    String kindConflictOutmost = "";
-                                    for (int i = 0; i < generalKindConflict.size() - 1; i++) {
-                                        kindConflictOutmost += generalKindConflict.get(i) + ", ";
-                                    }
-                                    kindConflictOutmost += generalKindConflict.get(generalKindConflict.size() - 1);
-                                    
-                                    conflictingChunk.setGeneralKindConflictOutmost(kindConflictOutmost);
-                                }
-                            }
-                            
-                            revisionDAO.insertAll(currentRevision, project.getId());
-                            
+                        //Treating when the project is not on Github anymore
+                        if (projectFromFile.getMessage() != null && projectFromFile.getMessage().equals(NOT_FOUND)) {
+                            projectFromFile.setMainProjectId(projectFromFile.getId());
+                        } else {
+                            projectFromFile.setMainProjectId(projectAux.getMainProjectId());
                         }
 
+                        Project ProjectFromDatabase = projectDAO.selectByProjectId(projectFromFile.getId());
+
+                        if(ProjectFromDatabase.isAnalyzed()){
+                            System.out.println("The project " + ProjectFromDatabase.getName() + " was already analyzed");
+                            continue;
+                            
+                        }
+                        
+                        if (ProjectFromDatabase.getId() != null) {
+                            projectDAO.update(projectFromFile);
+                        } else {
+                            projectDAO.insertAll(projectFromFile);
+                        }
+
+                        System.out.println("Importing " + projectFromFile.getName() + "...");
+                        for (String sha : shas) {
+                            int index = shas.indexOf(sha) + 1;
+
+                            if (index % 10 == 0) {
+                                System.out.println(shas.indexOf(sha) + "/" + shas.size() + "(" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000 + ")");
+                            }
+
+                            File currentRevisionFilePath = new File(projectDirectory, (index / 1000) + File.separator + sha);
+                            Revision currentRevision = AutomaticAnalysis.readRevision(currentRevisionFilePath.getAbsolutePath());
+
+                            List<Revision> selectByProjectIdSHA = revisionDAO.selectByProjectIdSHA(projectFromFile.getId(), currentRevision.getSha());
+
+                            if (selectByProjectIdSHA.isEmpty()) {
+
+                                //Getting outmost kind of conflict
+                                for (ConflictingFile conflictingFile : currentRevision.getConflictingFiles()) {
+                                    for (ConflictingChunk conflictingChunk : conflictingFile.getConflictingChunks()) {
+
+                                        List<String> generalKindConflict = conflictingChunk.generalKindConflict();
+                                        String kindConflictOutmost = "";
+                                        for (int i = 0; i < generalKindConflict.size() - 1; i++) {
+                                            kindConflictOutmost += generalKindConflict.get(i) + ", ";
+                                        }
+                                        kindConflictOutmost += generalKindConflict.get(generalKindConflict.size() - 1);
+
+                                        conflictingChunk.setGeneralKindConflictOutmost(kindConflictOutmost);
+                                    }
+                                }
+
+                                revisionDAO.insertAll(currentRevision, projectFromFile.getId());
+//                                System.out.println("Revision " + currentRevision.getSha() + " stored.");
+                            } 
+//                            else {
+//                                System.out.println("Revision " + currentRevision.getSha() + " not stored.");
+//                            }
+                        }
+
+                        projectFromFile.setAnalyzed(true);
+                        projectDAO.update(projectFromFile);
                     }
                 } catch (IOException | SQLException e) {
 
