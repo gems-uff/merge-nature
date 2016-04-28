@@ -119,6 +119,49 @@ public class RevisionJDBCDAO {
 
         return revisions;
     }
+    
+    public List<Revision> selectByProjectIdSHA(Long projectId, String sha) throws SQLException {
+        List<Revision> revisions = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.REVISION
+                + " WHERE " + PROJECT_ID + " = " + projectId
+                + " AND "+ SHA + " = \'" + sha + "\'";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+
+                Revision revision = new Revision();
+
+                revision.setBaseSha(results.getString(BASE_SHA));
+                revision.setId(results.getLong(ID));
+                revision.setLeftSha(results.getString(LEFT_SHA));
+                revision.setNumberConflictingFiles(results.getInt(NUMBER_CONFLICTING_FILES));
+                revision.setNumberJavaConflictingFiles(results.getInt(NUMBER_JAVA_CONFLICTING_FILES));
+                revision.setRightSha(results.getString(RIGHT_SHA));
+                revision.setSha(results.getString(SHA));
+
+                String mergeStatus = results.getString(STATUS);
+
+                if (mergeStatus.equals(MergeStatus.CONFLICTING.toString())) {
+                    revision.setStatus(MergeStatus.CONFLICTING);
+                } else if (mergeStatus.equals(MergeStatus.FAST_FORWARD.toString())) {
+                    revision.setStatus(MergeStatus.FAST_FORWARD);
+                } else if (mergeStatus.equals(MergeStatus.NON_CONFLICTING.toString())) {
+                    revision.setStatus(MergeStatus.NON_CONFLICTING);
+                } else if (mergeStatus.equals(MergeStatus.OCTOPUS.toString())) {
+                    revision.setStatus(MergeStatus.OCTOPUS);
+                }
+
+                revisions.add(revision);
+            }
+        }
+
+        return revisions;
+    }
 
     public List<Revision> selectAllByProjectId(Long projectId) throws SQLException {
         List<Revision> revisions = this.selectByProjectId(projectId);

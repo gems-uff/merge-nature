@@ -250,8 +250,8 @@ public class ProjectJDBCDAO {
                 + REPOSITORY_PATH + "=\'" + project.getRepositoryPath() + "\', "
                 + SEARCH_URL + "=\'" + project.getSearchUrl() + "\', "
                 + UPDATED_AT + "=\'" + project.getUpdatedAt() + "\', "
-                + FORK + "=\'" + project.isFork() + "\' "
-                + ANALYZED + "=\'" + project.isAnalyzed() + "\' "
+                + FORK + "=\'" + project.isFork() + "\', "
+                + ANALYZED + "=\'" + project.isAnalyzed() + "\', "
                 + MAIN_PROJECT_ID + "=\'" + project.getMainProjectId() + "\' "
                 + " WHERE "
                 + ID + " = " + project.getId();
