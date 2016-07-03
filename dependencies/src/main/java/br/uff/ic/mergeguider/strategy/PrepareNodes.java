@@ -5,16 +5,12 @@
  */
 package br.uff.ic.mergeguider.strategy;
 
-import br.uff.ic.mergeguider.MergeGuider;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunksDependency;
 import br.uff.ic.mergeguider.datastructure.MergeDependency;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -22,27 +18,27 @@ import java.util.logging.Logger;
  */
 public class PrepareNodes {
 
-    public static void main(String[] args) {
-
-        String projectPath = "/Users/gleiph/repositories/voldemort";
-        String shaLeft = "aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0";
-        String shaRight = "fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6";
-        String sanbox = "/Users/gleiph/repositories/icse/";
-
-        try {
-            MergeDependency dependencies = MergeGuider.performMerge(projectPath, shaLeft, shaRight, sanbox);
-
-            List<NodeDependency> prepare = prepare(dependencies);
-
-            for (NodeDependency p : prepare) {
-                System.out.println(p.toString());
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(PrepareNodes.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
+//    public static void main(String[] args) {
+//
+//        String projectPath = "/Users/gleiph/repositories/voldemort";
+//        String shaLeft = "aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0";
+//        String shaRight = "fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6";
+//        String sanbox = "/Users/gleiph/repositories/icse/";
+//
+//        try {
+//            MergeDependency dependencies = MergeGuider.performMerge(projectPath, shaLeft, shaRight, sanbox);
+//
+//            List<NodeDependency> prepare = prepare(dependencies);
+//
+//            for (NodeDependency p : prepare) {
+//                System.out.println(p.toString());
+//            }
+//
+//        } catch (IOException ex) {
+//            Logger.getLogger(PrepareNodes.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    }
 
     public static List<NodeDependency> prepare(MergeDependency dependency) {
 
