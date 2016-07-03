@@ -60,4 +60,9 @@ public class Strategies {
         return result;
     }
 
+    public static List<ConflictingChunkInformation> sequencial(MergeDependency mergeDependency, List<NodeDependency> nodesDependency){
+        List<ConflictingChunkInformation> result = new ArrayList<>();
+        
+        return mergeDependency.getCcis();
+    }
 }
