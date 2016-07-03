@@ -13,11 +13,11 @@ import br.uff.ic.mergeguider.dependency.DependencyType;
  */
 public class ConflictingChunksDependency {
     
-    private int reference;
-    private int dependsOn;
+    private ConflictingChunkInformation reference;
+    private ConflictingChunkInformation dependsOn;
     private DependencyType type;
 
-    public ConflictingChunksDependency(int reference, int dependsOn, DependencyType type) {
+    public ConflictingChunksDependency(ConflictingChunkInformation reference, ConflictingChunkInformation dependsOn, DependencyType type) {
         this.reference = reference;
         this.dependsOn = dependsOn;
         this.type = type;
@@ -26,28 +26,28 @@ public class ConflictingChunksDependency {
     /**
      * @return the reference
      */
-    public int getReference() {
+    public ConflictingChunkInformation getReference() {
         return reference;
     }
 
     /**
      * @param reference the reference to set
      */
-    public void setReference(int reference) {
+    public void setReference(ConflictingChunkInformation reference) {
         this.reference = reference;
     }
 
     /**
      * @return the dependsOn
      */
-    public int getDependsOn() {
+    public ConflictingChunkInformation getDependsOn() {
         return dependsOn;
     }
 
     /**
      * @param dependsOn the dependsOn to set
      */
-    public void setDependsOn(int dependsOn) {
+    public void setDependsOn(ConflictingChunkInformation dependsOn) {
         this.dependsOn = dependsOn;
     }
 

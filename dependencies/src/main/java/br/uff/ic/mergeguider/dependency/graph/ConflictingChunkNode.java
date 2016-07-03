@@ -11,29 +11,29 @@ package br.uff.ic.mergeguider.dependency.graph;
  */
 public class ConflictingChunkNode {
  
-    private int id;
+    private String id;
 
-    public ConflictingChunkNode(int id) {
+    public ConflictingChunkNode(String id) {
         this.id = id;
     }
 
     /**
      * @return the id
      */
-    public int getId() {
+    public String getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     @Override
     public String toString() {
-        return "CC" + id;
+        return "CC " + id;
     }
     
     

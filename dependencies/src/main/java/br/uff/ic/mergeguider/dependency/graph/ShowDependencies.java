@@ -6,6 +6,7 @@
 package br.uff.ic.mergeguider.dependency.graph;
 
 import br.uff.ic.mergeguider.MergeGuider;
+import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunksDependency;
 import br.uff.ic.mergeguider.datastructure.MergeDependency;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
@@ -43,21 +44,29 @@ public class ShowDependencies {
 
             List<ConflictingChunkNode> nodes = new ArrayList<>();
 
-            for (int i = 1; i <= mergeDependency.getConflictingChunksAmount(); i++) {
-                ConflictingChunkNode conflictingChunkNode = new ConflictingChunkNode(i);
+//            for (int i = 1; i <= mergeDependency.getConflictingChunksAmount(); i++) {
+//                ConflictingChunkNode conflictingChunkNode = new ConflictingChunkNode(i);
+//                graph.addVertex(conflictingChunkNode);
+//                nodes.add(conflictingChunkNode);
+//            }
+
+            List<ConflictingChunkInformation> ccis = mergeDependency.getCcis();
+            for (ConflictingChunkInformation cci : ccis) {
+                ConflictingChunkNode conflictingChunkNode = new ConflictingChunkNode(ccis.indexOf(cci)+"");
                 graph.addVertex(conflictingChunkNode);
                 nodes.add(conflictingChunkNode);
             }
-
+            
             for (ConflictingChunksDependency conflictingChunksDependency : mergeDependency.getConflictingChunksDependencies()) {
-                int reference = conflictingChunksDependency.getReference();
-                int dependsOn = conflictingChunksDependency.getDependsOn();
+                int reference = ccis.indexOf(conflictingChunksDependency.getReference());
+                int dependsOn = ccis.indexOf(conflictingChunksDependency.getDependsOn());
                 String depedencyType = conflictingChunksDependency.getType().toString();
 
                 System.out.println("Dependencies");
                 System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
 
                 graph.addEdge(new DependencyLink(depedencyType), nodes.get(reference), nodes.get(dependsOn), EdgeType.DIRECTED);
+                
             }
         }
 

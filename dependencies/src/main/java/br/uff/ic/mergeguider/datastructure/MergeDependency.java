@@ -16,10 +16,12 @@ public class MergeDependency {
     
     private int conflictingChunksAmount;
     private List<ConflictingChunksDependency> conflictingChunksDependencies;
+    private List<ConflictingChunkInformation> ccis;
 
     public MergeDependency() {
         conflictingChunksAmount = 0;
         conflictingChunksDependencies = new ArrayList<>();
+        ccis = new ArrayList<>();
     }
 
     
@@ -50,6 +52,20 @@ public class MergeDependency {
      */
     public void setConflictingChunksDependencies(List<ConflictingChunksDependency> conflictingChunksDependencies) {
         this.conflictingChunksDependencies = conflictingChunksDependencies;
+    }
+
+    /**
+     * @return the ccis
+     */
+    public List<ConflictingChunkInformation> getCcis() {
+        return ccis;
+    }
+
+    /**
+     * @param ccis the ccis to set
+     */
+    public void setCcis(List<ConflictingChunkInformation> ccis) {
+        this.ccis = ccis;
     }
 
 }

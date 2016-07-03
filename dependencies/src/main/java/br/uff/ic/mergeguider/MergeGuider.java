@@ -144,6 +144,7 @@ public class MergeGuider {
 
             //Creating depedency matrix
             MergeDependency mergeDependency = extractDepedencies(ccis, projectPath, ASTLeft, ASTRight);
+            mergeDependency.setCcis(ccis);
 
             return mergeDependency;
         }
@@ -236,7 +237,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.METHOD_DECLARATION_CALL);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.METHOD_DECLARATION_CALL);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -249,7 +250,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.ATTRIBUTE_DECLARATION_USAGE);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.ATTRIBUTE_DECLARATION_USAGE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -262,7 +263,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.VARIABLE_DECLARATION_USAGE);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.VARIABLE_DECLARATION_USAGE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -277,7 +278,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DECLARATION_USAGE);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.TYPE_DECLARATION_USAGE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -290,7 +291,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.TYPE_DECLARATION_INTERFACE);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.TYPE_DECLARATION_INTERFACE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -303,7 +304,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(columnNumber, rowNumber, DependencyType.ANNOTATION_DECLARATION_USAGE);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.ANNOTATION_DECLARATION_USAGE);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
