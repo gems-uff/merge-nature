@@ -19,6 +19,7 @@ public class NodeDependency {
     private int separator;
     private int dependencies;
     private int dependent;
+    private boolean visited;
     
     public NodeDependency() {
     }
@@ -112,6 +113,20 @@ public class NodeDependency {
      */
     public void setDependent(int dependent) {
         this.dependent = dependent;
+    }
+
+    /**
+     * @return the visited
+     */
+    public boolean isVisited() {
+        return visited;
+    }
+
+    /**
+     * @param visited the visited to set
+     */
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
     
 }

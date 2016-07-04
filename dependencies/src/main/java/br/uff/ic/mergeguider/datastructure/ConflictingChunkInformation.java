@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -313,4 +314,69 @@ public class ConflictingChunkInformation {
     public void setRelativePathRight(String relativePathRight) {
         this.relativePathRight = relativePathRight;
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConflictingChunkInformation other = (ConflictingChunkInformation) obj;
+        if (!Objects.equals(this.filePath, other.filePath)) {
+            return false;
+        }
+        if (this.begin != other.begin) {
+            return false;
+        }
+        if (this.separator != other.separator) {
+            return false;
+        }
+        if (this.end != other.end) {
+            return false;
+        }
+        if (this.leftBegin != other.leftBegin) {
+            return false;
+        }
+        if (this.leftEnd != other.leftEnd) {
+            return false;
+        }
+        if (this.rightBegin != other.rightBegin) {
+            return false;
+        }
+        if (this.rightEnd != other.rightEnd) {
+            return false;
+        }
+        if (this.renamed != other.renamed) {
+            return false;
+        }
+        if (!Objects.equals(this.relativePathLeft, other.relativePathLeft)) {
+            return false;
+        }
+        if (!Objects.equals(this.relativePathRight, other.relativePathRight)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.filePath);
+        hash = 47 * hash + this.begin;
+        hash = 47 * hash + this.separator;
+        hash = 47 * hash + this.end;
+        hash = 47 * hash + this.leftBegin;
+        hash = 47 * hash + this.leftEnd;
+        hash = 47 * hash + this.rightBegin;
+        hash = 47 * hash + this.rightEnd;
+        hash = 47 * hash + (this.renamed ? 1 : 0);
+        hash = 47 * hash + Objects.hashCode(this.relativePathLeft);
+        hash = 47 * hash + Objects.hashCode(this.relativePathRight);
+        return hash;
+    }
+    
+    
 }
