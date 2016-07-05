@@ -23,9 +23,14 @@ import java.util.logging.Logger;
 public class Strategies {
 
     public static void main(String[] args) {
-        String projectPath = "/Users/gleiph/repositories/voldemort";
-        String shaLeft = "aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0";
-        String shaRight = "fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6";
+//        String projectPath = "/Users/gleiph/repositories/voldemort";
+//        String shaLeft = "aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0";
+//        String shaRight = "fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6";
+//        String sanbox = "/Users/gleiph/repositories/icse/";
+        
+        String projectPath = "/Users/gleiph/repositories/wro4j";
+        String shaLeft = "6de49bc";
+        String shaRight = "e8b80e4";
         String sanbox = "/Users/gleiph/repositories/icse/";
 
         try {
@@ -33,6 +38,11 @@ public class Strategies {
 
             List<NodeDependency> prepare = PrepareNodes.prepare(dependencies);
 
+            for (ConflictingChunkInformation cci : dependencies.getCcis()) {
+                System.out.println("CC" +  dependencies.getCcis().indexOf(cci));
+                System.out.println(cci);
+            }
+            
             //Random strategy 
             System.out.println("Random");
             List<ConflictingChunkInformation> resolutionOrder = Strategies.random(dependencies, prepare);
@@ -49,10 +59,17 @@ public class Strategies {
                 System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
             }
 
-            System.out.println("Greed");
+            System.out.println("Greedy");
             List<ConflictingChunkInformation> greed = Strategies.greedy(dependencies, prepare);
 
             for (ConflictingChunkInformation chunk : greed) {
+                System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
+            }
+
+            System.out.println("Context aware");
+            List<ConflictingChunkInformation> contextAware = Strategies.contextAware(dependencies, prepare);
+
+            for (ConflictingChunkInformation chunk : contextAware) {
                 System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
             }
         } catch (IOException ex) {
@@ -120,23 +137,35 @@ public class Strategies {
 
     public static List<ConflictingChunkInformation> greedy(MergeDependency mergeDependency, List<NodeDependency> nodesDependency) {
 
-        Random rand = new Random();
-        List<ConflictingChunkInformation> ccis = mergeDependency.getCcis();
-        List<ConflictingChunkInformation> result = new ArrayList<>();
-
+        List<ConflictingChunkInformation> ccis = new ArrayList<>();
+        
+        for (ConflictingChunkInformation cci : mergeDependency.getCcis()) {
+            ccis.add(new ConflictingChunkInformation(cci));
+        }
+        
+        ArrayList<NodeDependency> nodes = new ArrayList<>();
         for (NodeDependency node : nodesDependency) {
+            nodes.add(new NodeDependency(node));
+        }
+        
+        List<ConflictingChunkInformation> result = new ArrayList<>();
+        
+
+        
+
+        for (NodeDependency node : nodes) {
             node.setVisited(false);
         }
 
-        NodeDependency lowestDependencies = lowestDependencies(nodesDependency);
-        int indexOf = nodesDependency.indexOf(lowestDependencies);
+        NodeDependency lowestDependencies = lowestDependencies(nodes);
+        int indexOf = nodes.indexOf(lowestDependencies);
 
         while (lowestDependencies != null) {
 
             ConflictingChunkInformation cci = ccis.get(indexOf);
             result.add(cci);
 
-            nodesDependency.get(indexOf).setVisited(true);
+            nodes.get(indexOf).setVisited(true);
 
             //Updating dependencies number 
             for (ConflictingChunksDependency dependency : mergeDependency.getConflictingChunksDependencies()) {
@@ -149,23 +178,125 @@ public class Strategies {
                     int dependentIndex = ccis.indexOf(dependsOn);
 
                     //updating dependencies
-                    int dependencies = nodesDependency.get(dependencyIndex).getDependencies();
-                    nodesDependency.get(dependencyIndex).setDependencies(dependencies - 1);
+                    int dependencies = nodes.get(dependencyIndex).getDependencies();
+                    nodes.get(dependencyIndex).setDependencies(dependencies - 1);
 
                     //updating dependent
-                    int dependent = nodesDependency.get(dependentIndex).getDependent();
-                    nodesDependency.get(dependentIndex).setDependent(dependent - 1);
+                    int dependent = nodes.get(dependentIndex).getDependent();
+                    nodes.get(dependentIndex).setDependent(dependent - 1);
 
                 }
 
             }
 
-            lowestDependencies = lowestDependencies(nodesDependency);
-            indexOf = nodesDependency.indexOf(lowestDependencies);
+            lowestDependencies = lowestDependencies(nodes);
+            indexOf = nodes.indexOf(lowestDependencies);
         }
 
         return result;
     }
 
-    
+    public static NodeDependency lowestDependenciesWithContext(List<NodeDependency> nodes) {
+
+        if (nodes.isEmpty()) {
+            return null;
+        }
+
+        int i = 0;
+
+        NodeDependency result = null;
+        NodeDependency currentNode = null;
+
+        //Take the first unvisited node
+        for (; i < nodes.size(); i++) {
+            currentNode = nodes.get(i);
+
+            if (!currentNode.isVisited()) {
+                result = currentNode;
+                break;
+            }
+        }
+
+        //Get the node with lowest number of dependencies 
+        for (; i < nodes.size(); i++) {
+
+            currentNode = nodes.get(i);
+
+            if (!currentNode.isVisited()
+                    && currentNode.getDependencies() < result.getDependencies()) {
+                result = currentNode;
+            } else if (!currentNode.isVisited()
+                    && currentNode.getDependencies() == result.getDependencies()
+                    && currentNode.getContextAware() > result.getContextAware()) {
+                result = currentNode;
+            }
+
+        }
+
+        return result;
+    }
+
+    public static List<ConflictingChunkInformation> contextAware(MergeDependency mergeDependency, List<NodeDependency> nodesDependency) {
+
+        List<ConflictingChunkInformation> ccis = new ArrayList<>();
+        
+        for (ConflictingChunkInformation cci : mergeDependency.getCcis()) {
+            ccis.add(new ConflictingChunkInformation(cci));
+        }
+        
+        ArrayList<NodeDependency> nodes = new ArrayList<>();
+        for (NodeDependency node : nodesDependency) {
+            nodes.add(new NodeDependency(node));
+        }
+        
+        List<ConflictingChunkInformation> result = new ArrayList<>();
+
+        for (NodeDependency node : nodes) {
+            node.setVisited(false);
+        }
+
+        NodeDependency lowestDependencies = lowestDependenciesWithContext(nodes);
+        int indexOf = nodes.indexOf(lowestDependencies);
+
+        while (lowestDependencies != null) {
+
+            ConflictingChunkInformation cci = ccis.get(indexOf);
+            result.add(cci);
+
+            nodes.get(indexOf).setVisited(true);
+
+            //Updating dependencies number 
+            for (ConflictingChunksDependency dependency : mergeDependency.getConflictingChunksDependencies()) {
+
+                if (dependency.getDependsOn().equals(cci)) {
+
+                    ConflictingChunkInformation reference = dependency.getReference();
+                    ConflictingChunkInformation dependsOn = dependency.getDependsOn();
+                    int dependencyIndex = ccis.indexOf(reference);
+                    int dependentIndex = ccis.indexOf(dependsOn);
+
+                    //updating dependencies
+                    int dependencies = nodes.get(dependencyIndex).getDependencies();
+                    nodes.get(dependencyIndex).setDependencies(dependencies - 1);
+
+                    int contextAware = nodes.get(dependencyIndex).getContextAware();
+                    nodes.get(dependencyIndex).setContextAware(contextAware + 1);
+                    
+                    //updating dependent
+                    int dependent = nodes.get(dependentIndex).getDependent();
+                    nodes.get(dependentIndex).setDependent(dependent - 1);
+
+                    
+
+                }
+
+            }
+
+            lowestDependencies = lowestDependenciesWithContext(nodes);
+            indexOf = nodes.indexOf(lowestDependencies);
+        }
+
+        return result;
+    }
+
 }

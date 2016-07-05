@@ -20,8 +20,21 @@ public class NodeDependency {
     private int dependencies;
     private int dependent;
     private boolean visited;
+    private int contextAware;
     
     public NodeDependency() {
+        this.contextAware = 0;
+    }
+
+    public NodeDependency(NodeDependency node) {
+        this.file = node.getFile();
+        this.begin = node.getBegin();
+        this.end = node.getEnd();
+        this.separator = node.getSeparator();
+        this.dependencies = node.getDependencies();
+        this.dependent = node.getDependent();
+        this.visited = node.isVisited();
+        this.contextAware = node.getContextAware();
     }
 
     /**
@@ -127,6 +140,20 @@ public class NodeDependency {
      */
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    /**
+     * @return the contextAware
+     */
+    public int getContextAware() {
+        return contextAware;
+    }
+
+    /**
+     * @param contextAware the contextAware to set
+     */
+    public void setContextAware(int contextAware) {
+        this.contextAware = contextAware;
     }
     
 }

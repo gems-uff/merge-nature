@@ -53,6 +53,22 @@ public class ConflictingChunkInformation {
 
     }
 
+    public ConflictingChunkInformation(ConflictingChunkInformation conflictingChunkInformation) {
+        this.filePath = conflictingChunkInformation.getFilePath();
+        this.begin = conflictingChunkInformation.getBegin();
+        this.separator = conflictingChunkInformation.getSeparator();
+        this.end = conflictingChunkInformation.getEnd();
+        this.leftBegin = conflictingChunkInformation.getLeftBegin();
+        this.leftEnd = conflictingChunkInformation.getLeftEnd();
+        this.rightBegin = conflictingChunkInformation.getRightBegin();
+        this.rightEnd = conflictingChunkInformation.getRightEnd();
+        this.renamed = conflictingChunkInformation.isRenamed();
+        this.relativePathLeft = conflictingChunkInformation.getRelativePathLeft();
+        this.relativePathRight = conflictingChunkInformation.getRelativePathRight();
+    }
+
+    
+    
     public static List<ConflictingChunkInformation> extractConflictingChunksInformation(String filePath) throws IOException {
         List<ConflictingChunkInformation> result = new ArrayList<>();
 

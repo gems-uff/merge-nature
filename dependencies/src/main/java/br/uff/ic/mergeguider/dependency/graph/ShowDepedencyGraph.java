@@ -14,10 +14,16 @@ import java.io.IOException;
 public class ShowDepedencyGraph {
     
     public static void main(String[] args) throws IOException {
+//        ShowDependencies show = new ShowDependencies();
+//        show.setProjectPath("/Users/gleiph/repositories/voldemort");
+//        show.setSHALeft("aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0");
+//        show.setSHARight("fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6");
+//        show.setSandbox("/Users/gleiph/repositories/icse/");
+        
         ShowDependencies show = new ShowDependencies();
-        show.setProjectPath("/Users/gleiph/repositories/voldemort");
-        show.setSHALeft("aee112d9ef0ed960c7bc9955d7e85e6ed6ac91a0");
-        show.setSHARight("fd5dbeb5113ffed51cf1836ac78b129a4bea4cb6");
+        show.setProjectPath("/Users/gleiph/repositories/wro4j");
+        show.setSHALeft("6de49bc");
+        show.setSHARight("e8b80e4");
         show.setSandbox("/Users/gleiph/repositories/icse/");
         
         show.show();
