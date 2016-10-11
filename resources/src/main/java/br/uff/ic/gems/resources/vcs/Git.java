@@ -210,6 +210,17 @@ public class Git {
         return commits;
     }
 
+    public static List<String> logShortStat(String repository) {
+
+        String command = "git log --oneline --shortstat --all";
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput();
+        } else {
+            return null;
+        }
+    }
 
     /*-------------------------------------------------------------------------------------------
     
