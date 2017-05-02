@@ -1,3 +1,7 @@
+# About
+
+This is the companion website for the paper "On the Nature of Software Merge Conflicts: a longitudinal study over 2,731 open-source Java projects hosted by Github".
+
 # Team
 
 Gleiph Ghiotto Lima de Menezes (UFF, Brazil)  
