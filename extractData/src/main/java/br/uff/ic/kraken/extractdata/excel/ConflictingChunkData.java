@@ -43,11 +43,12 @@ public class ConflictingChunkData {
     public static final int DEVELOPER_DECISION = 7;
     public static final int LOC_VERSION_1 = 8;
     public static final int LOC_VERSION_2 = 9;
+    public static final int DEVELOPERS = 10;
 
     public static void main(String[] args) {
 
-        String bdName = "automaticAnalysis";
-        String outputPath = "/Users/gleiph/Desktop/automaticAnalyses/reportV1.0.xlsx";
+        String bdName = "automaticAnalysisUpdated";
+        String outputPath = "/Users/gleiph/Desktop/automaticAnalyses/reportV4.0.xlsx";
 
         //Excel stuff
         XSSFWorkbook wb = new XSSFWorkbook();
@@ -85,6 +86,9 @@ public class ConflictingChunkData {
 
         cell = row.createCell(LOC_VERSION_2);
         cell.setCellValue("#LOC Version 2");
+        
+        cell = row.createCell(DEVELOPERS);
+        cell.setCellValue("Developers");
 
         try (Connection connection = (new JDBCConnection()).getConnection(bdName)) {
 
@@ -158,6 +162,10 @@ public class ConflictingChunkData {
                             cell.setCellValue(locVersion2);
 //                            System.out.println(locVersion1 + ", " + locVersion2);
 
+                            
+                            cell = row.createCell(DEVELOPERS);
+                            cell.setCellValue(project.getDevelopers());
+                            
                             if (rowNumber % 10 == 0) {
                                 FileOutputStream out;
                                 out = new FileOutputStream(outputPath);
