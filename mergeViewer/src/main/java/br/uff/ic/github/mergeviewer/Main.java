@@ -279,7 +279,7 @@ public class Main extends javax.swing.JFrame {
         initProject = new InitProject(jProgressBar, jTableCont, jMenu1);
 
         Thread run = new Thread(initProject);
-        run.start();
+            run.start();
 
         jScrollPane2.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
