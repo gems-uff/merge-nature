@@ -78,6 +78,8 @@ public class ConflictingChunkInformation {
 
         List<ConflictingChunk> conflictingChunks = ConflictingFileAnalyzer.getConflictingChunks(conflictedFileContent);
 
+        if(conflictingChunks == null)
+            return result;
         for (ConflictingChunk conflictingChunk : conflictingChunks) {
 
             int beginLine = conflictingChunk.getBeginLine();

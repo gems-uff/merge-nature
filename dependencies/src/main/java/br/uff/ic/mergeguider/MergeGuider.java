@@ -237,7 +237,7 @@ public class MergeGuider {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     if (columnNumber != rowNumber) {
                         ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.METHOD_DECLARATION_CALL);
+                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.METHOD_DECLARATION_INVOCATION);
                         mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
                     }
                 }
@@ -268,20 +268,20 @@ public class MergeGuider {
                     }
                 }
 
-                boolean hasTypeDeclarationDependency
-                        = hasTypeDeclarationDependencyAttribute(leftTypeDeclarations, leftAttributeDeclarations)
-                        || hasTypeDeclarationDependencyAttribute(rightTypeDeclarations, rightAttributeDeclarations)
-                        || hasTypeDeclarationDependencyVariable(leftTypeDeclarations, leftVariableDeclarations)
-                        || hasTypeDeclarationDependencyVariable(rightTypeDeclarations, rightVariableDeclarations);
-
-                if (hasTypeDeclarationDependency) {
-                    //CC(rowNumber) depends on CC(ColumnNumber)
-                    if (columnNumber != rowNumber) {
-                        ConflictingChunksDependency conflictingChunksDependency
-                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.TYPE_DECLARATION_USAGE);
-                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
-                    }
-                }
+//                boolean hasTypeDeclarationDependency
+//                        = hasTypeDeclarationDependencyAttribute(leftTypeDeclarations, leftAttributeDeclarations)
+//                        || hasTypeDeclarationDependencyAttribute(rightTypeDeclarations, rightAttributeDeclarations)
+//                        || hasTypeDeclarationDependencyVariable(leftTypeDeclarations, leftVariableDeclarations)
+//                        || hasTypeDeclarationDependencyVariable(rightTypeDeclarations, rightVariableDeclarations);
+//
+//                if (hasTypeDeclarationDependency) {
+//                    //CC(rowNumber) depends on CC(ColumnNumber)
+//                    if (columnNumber != rowNumber) {
+//                        ConflictingChunksDependency conflictingChunksDependency
+//                                = new ConflictingChunksDependency(cciAux, cci, DependencyType.TYPE_DECLARATION_USAGE);
+//                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
+//                    }
+//                }
 
                 boolean hasDependencyTypeDeclarationInterface
                         = hasDependencyTypeDeclarationInterface(leftTypeDeclarations, leftTypeDeclarationsAux)

@@ -10,7 +10,7 @@ package br.uff.ic.mergeguider.dependency;
  * @author gleiph
  */
 public enum DependencyType {
-    METHOD_DECLARATION_CALL, 
+    METHOD_DECLARATION_INVOCATION, 
     ATTRIBUTE_DECLARATION_USAGE, 
     VARIABLE_DECLARATION_USAGE, 
     TYPE_DECLARATION_USAGE, 
