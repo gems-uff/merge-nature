@@ -13,5 +13,6 @@ public class DatabaseConfiguration {
 
 //    public static String database = "manualTemp";
 //    public static String database = "testImportingData";
-    public static String database = "automaticAnalysis";
+//    public static String database = "automaticAnalysis";
+    public static String database = "automaticAnalysisUpdated";
 }

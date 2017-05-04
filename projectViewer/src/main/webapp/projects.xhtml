@@ -61,12 +61,12 @@
                                 <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
                             </h:commandLink>
                         </h:column>
-<!--                        <h:column>
-                            <f:facet name="header"> Analyze </f:facet>
-                            <h:commandLink value="Start" action="#{analysisViewerBean.analyze}">
-                                <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
-                            </h:commandLink>
-                        </h:column>-->
+                        <!--                        <h:column>
+                                                    <f:facet name="header"> Analyze </f:facet>
+                                                    <h:commandLink value="Start" action="#{analysisViewerBean.analyze}">
+                                                        <f:setPropertyActionListener target="#{analysisViewerBean.projectId}" value="#{item.id}"/>
+                                                    </h:commandLink>
+                                                </h:column>-->
                         <h:column>
                             <f:facet name="header"> Overview </f:facet>
                             <h:commandLink value="show" action="#{analysisViewerBean.overview()}">
@@ -74,7 +74,7 @@
                             </h:commandLink>
                         </h:column>
                     </h:dataTable>
-                    
+
                     <h:commandButton value="Show report of all projects" action="#{analysisViewerBean.allProjectsOverview()}"/>
                 </h:form>
             </f:view>

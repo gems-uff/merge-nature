@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <title>Github Projects</title>
+        <h:outputStylesheet library="css" name="layout.css"  />
+    </h:head>
+
+    <h:body>
+        <h2> Welcome to the central of projects!</h2>
+        <h:form>
+            <h:commandButton value="List projects" action="#{navegation.projects}"/>
+            
+            <br/>
+            
+            <h:outputText> Chunk id </h:outputText>
+            <h:inputText value="#{analysisViewerBean.conflictingChunkId}" id="conflictingChunkId" />
+            <h:commandButton value="Show" action="#{analysisViewerBean.showConflictingChunk}"/>
+        </h:form>
+    </h:body>
+
+
+    
+
+</html>

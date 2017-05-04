@@ -29,11 +29,14 @@
         <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.AddGithubProjectBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    <navigation-rule>
-        <from-view-id>/loginTemplate.xhtml</from-view-id>
-        <navigation-case>
-            <from-outcome>projects</from-outcome>
-            <to-view-id>/projects.xhtml</to-view-id>
-        </navigation-case>
-    </navigation-rule>
+    <managed-bean>
+        <managed-bean-name>navegation</managed-bean-name>
+        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.Navegation</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>showConflictingChunk</managed-bean-name>
+        <managed-bean-class>br.uff.ic.kraken.projectviewer.bean.showConflictingChunk</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
 </faces-config>
