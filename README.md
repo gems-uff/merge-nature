@@ -10,9 +10,11 @@ Márcio de Oliveira Barros (UNIRIO, Brazil)
 André van der Hoek (UC Irvine, USA)
 
 # Raw Data for the Manual Analysis
-[Overview](https://github.com/gems-uff/merge-nature/blob/master/paper/manualAnalysisV2.xlsx)
+[Overview](https://github.com/gems-uff/merge-nature/blob/master/paper/manualAnalysisV3.xlsx)
 
 [Antlr4](https://github.com/gems-uff/merge-nature/blob/master/paper/Antlr4.pdf)
+
+[MCT](https://github.com/gems-uff/merge-nature/blob/master/paper/MCT.pdf)
 
 # Raw Data for the Automatic Analysis
 
