@@ -10,13 +10,18 @@ Márcio de Oliveira Barros (UNIRIO, Brazil)
 André van der Hoek (UC Irvine, USA)
 
 # Raw Data for the Manual Analysis
-[Overview](https://github.com/gems-uff/merge-nature/blob/master/paper/manualAnalysisV4.xlsx)
 
-[Antlr4](https://github.com/gems-uff/merge-nature/blob/master/paper/Antlr4.pdf)
+[Overview](https://github.com/gems-uff/merge-nature/raw/master/paper/manualAnalysisV5.xlsx)
 
-[Lombok](https://github.com/gems-uff/merge-nature/blob/master/paper/Lombok.pdf)
+[Antlr4](https://github.com/gems-uff/merge-nature/raw/master/paper/Antlr4.pdf)
 
-[MCT](https://github.com/gems-uff/merge-nature/blob/master/paper/MCT.pdf)
+[Lombok](https://github.com/gems-uff/merge-nature/raw/master/paper/Lombok.pdf)
+
+[MCT](https://github.com/gems-uff/merge-nature/raw/master/paper/MCT.pdf)
+
+[Twitter4J](https://github.com/gems-uff/merge-nature/raw/master/paper/Twitter4J.pdf)
+
+
 
 # Raw Data for the Automatic Analysis
 
