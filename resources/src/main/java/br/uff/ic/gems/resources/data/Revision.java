@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  *
@@ -37,6 +38,11 @@ public class Revision implements Serializable {
     private int numberConflictingFiles;
     private int numberJavaConflictingFiles;
 
+    @Transient
+    private int numberChunks;
+    @Transient
+    private int numberJavaChunks;
+    
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "Revision_ConflictingFile", 
             joinColumns = @JoinColumn(name = "Revision_ID"),
@@ -175,6 +181,34 @@ public class Revision implements Serializable {
      */
     public void setConflictingFiles(List<ConflictingFile> conflictingFiles) {
         this.conflictingFiles = conflictingFiles;
+    }
+
+    /**
+     * @return the numberChunks
+     */
+    public int getNumberChunks() {
+        return numberChunks;
+    }
+
+    /**
+     * @param numberChunks the numberChunks to set
+     */
+    public void setNumberChunks(int numberChunks) {
+        this.numberChunks = numberChunks;
+    }
+
+    /**
+     * @return the numberJavaChunks
+     */
+    public int getNumberJavaChunks() {
+        return numberJavaChunks;
+    }
+
+    /**
+     * @param numberJavaChunks the numberJavaChunks to set
+     */
+    public void setNumberJavaChunks(int numberJavaChunks) {
+        this.numberJavaChunks = numberJavaChunks;
     }
 
 }
