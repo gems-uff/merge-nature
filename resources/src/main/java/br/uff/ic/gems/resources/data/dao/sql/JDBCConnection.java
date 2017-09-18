@@ -30,6 +30,8 @@ public class JDBCConnection {
             connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + databaseName, "postgres",
                     "kraken");
 
+//            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + databaseName, "gleiph",
+//                    "ghiotto");
         }
         
         return connection;

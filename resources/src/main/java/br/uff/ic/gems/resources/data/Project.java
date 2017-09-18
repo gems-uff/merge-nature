@@ -35,7 +35,10 @@ public class Project implements Serializable {
     private int numberRevisions;
     private int numberMergeRevisions;
     private int numberConflictingMerges;
-
+    
+    @Transient
+    private int numberConflictingMergesJava;
+    
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Language> languages;
 
@@ -52,7 +55,7 @@ public class Project implements Serializable {
     private boolean analyzed;
     @Transient
     private Long mainProjectId;
-    
+
     public Project() {
         this.id = null;
         this.name = null;
@@ -337,6 +340,18 @@ public class Project implements Serializable {
         this.mainProjectId = mainProjectId;
     }
 
-    
+    /**
+     * @return the numberConflictingMergesJava
+     */
+    public int getNumberConflictingMergesJava() {
+        return numberConflictingMergesJava;
+    }
+
+    /**
+     * @param numberConflictingMergesJava the numberConflictingMergesJava to set
+     */
+    public void setNumberConflictingMergesJava(int numberConflictingMergesJava) {
+        this.numberConflictingMergesJava = numberConflictingMergesJava;
+    }
 
 }
