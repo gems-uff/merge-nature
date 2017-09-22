@@ -17,7 +17,7 @@ public class Navegation {
         
         System.out.println("teste");
         
-        return PagesName.projects;
+        return PagesName.projects + "?faces-redirect=true";
     }
     
 }

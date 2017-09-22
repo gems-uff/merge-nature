@@ -120,9 +120,9 @@ public class LoginBean implements Serializable{
         validationComplete = true;
 
         if (isUsernameValid && isPasswordValid) {
-            return PagesName.projects;
+            return PagesName.projects + "?faces-redirect=true";
         }else
-            return PagesName.index;
+            return PagesName.index  + "?faces-redirect=true";
     }
 
 }

@@ -66,6 +66,6 @@ public class AddGithubProjectBean implements Serializable {
         } catch (SQLException ex) {
             return null;
         }
-        return PagesName.projects;
+        return PagesName.projects + "?faces-redirect=true";
     }
 }

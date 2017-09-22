@@ -115,7 +115,7 @@ public class AnalysisViewerBean implements Serializable {
                     }
                 }
 
-                return PagesName.showConflicts;
+                return PagesName.showConflicts + "?faces-redirect=true";
             } else {
                 return null;
             }
@@ -259,7 +259,7 @@ public class AnalysisViewerBean implements Serializable {
             return null;
         }
 
-        return PagesName.projectOverview;
+        return PagesName.projectOverview + "?faces-redirect=true";
     }
 
     public String allProjectsOverview() {
@@ -345,7 +345,7 @@ public class AnalysisViewerBean implements Serializable {
             return null;
         }
 
-        return PagesName.projectsOverview;
+        return PagesName.projectsOverview + "?faces-redirect=true";
     }
 
     public String getStyle(MergeStatus mergeStatus) {

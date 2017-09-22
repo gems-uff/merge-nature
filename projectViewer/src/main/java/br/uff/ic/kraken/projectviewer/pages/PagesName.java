@@ -11,12 +11,13 @@ package br.uff.ic.kraken.projectviewer.pages;
  */
 public class PagesName {
 
-    public static final String addGithubProject = "addGithubProject";
-    public static final String index = "index";
-    public static final String projectOverview = "projectOverview";
-    public static final String projectsOverview = "projectsOverview";
-    public static final String projects = "projects";
-    public static final String showConflictingChunk = "showConflictingChunk";
-    public static final String showConflicts = "showConflicts";
+    public static final String redirect = "";
+    public static final String addGithubProject = "addGithubProject" + redirect;
+    public static final String index = "index" + redirect;
+    public static final String projectOverview = "projectOverview" + redirect;
+    public static final String projectsOverview = "projectsOverview" + redirect;
+    public static final String projects = "projects" + redirect;
+    public static final String showConflictingChunk = "showConflictingChunk" + redirect;
+    public static final String showConflicts = "showConflicts" + redirect;
 
 }
