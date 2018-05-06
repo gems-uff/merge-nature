@@ -23,7 +23,7 @@ André van der Hoek (UC Irvine, USA)
 
 # Raw Data for the Automatic Analysis
 
-[Overview](http://sel.ic.uff.br/merge-nature/) (click in the projects to see the details)
+[Overview](http://merge-nature.netlify.com) (click in the projects to see the details)
 
 # Acknowledgements
 
