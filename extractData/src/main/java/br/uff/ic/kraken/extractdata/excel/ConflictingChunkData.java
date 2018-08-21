@@ -5,6 +5,7 @@
  */
 package br.uff.ic.kraken.extractdata.excel;
 
+import br.uff.ic.gems.resources.ast.ASTTypes;
 import br.uff.ic.gems.resources.data.ConflictingChunk;
 import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.Project;
@@ -19,6 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,10 +48,49 @@ public class ConflictingChunkData {
     public static final int LOC_VERSION_2 = 9;
     public static final int DEVELOPERS = 10;
 
+    private static String replaceAttributeByVariable(String kindConflict) {
+
+        String result = "";
+
+        String[] split = kindConflict.split(",");
+
+        List<String> languageConstructs = new ArrayList<>();
+                
+        
+        for (String lc : split) {
+
+            while (lc.startsWith(" ")) {
+                lc = lc.replaceFirst(" ", "");
+            }
+
+            while (lc.endsWith(" ")) {
+                lc = lc.substring(0, lc.length() - 1);
+            }
+
+            if (lc.contains(ASTTypes.ATTRIBUTE)) {
+                languageConstructs.add(ASTTypes.VARIABLE);
+            }
+            else{
+                languageConstructs.add(lc);
+            }
+        }
+
+        Collections.sort(languageConstructs);
+
+        for (int i = 0; i < languageConstructs.size() - 1; i++) {
+            result += languageConstructs.get(i) + ", ";
+        }
+
+        result += languageConstructs.get(languageConstructs.size() - 1);
+
+        return result;
+
+    }
+
     public static void main(String[] args) {
 
         String bdName = "automaticAnalysisUpdated";
-        String outputPath = "/Users/gleiph/Desktop/automaticAnalyses/reportV4.0.xlsx";
+        String outputPath = "/Users/gleiph/Dropbox/doutorado/publication/TSE Manual + Automatic/TSE 2/report1.0.xlsx";
 
         //Excel stuff
         XSSFWorkbook wb = new XSSFWorkbook();
@@ -86,7 +128,7 @@ public class ConflictingChunkData {
 
         cell = row.createCell(LOC_VERSION_2);
         cell.setCellValue("#LOC Version 2");
-        
+
         cell = row.createCell(DEVELOPERS);
         cell.setCellValue("Developers");
 
@@ -139,7 +181,9 @@ public class ConflictingChunkData {
 
                             String generalKindConflictOutmost = conflictingChunk.getGeneralKindConflictOutmost();
                             cell = row.createCell(OUTMOST_KIND_CONFLICT);
-                            cell.setCellValue(generalKindConflictOutmost);
+                            String newKindConflict = replaceAttributeByVariable(generalKindConflictOutmost);
+
+                            cell.setCellValue(newKindConflict);
 //                            System.out.print(generalKindConflictOutmost + ", ");
 
                             String[] languageConstructs = generalKindConflictOutmost.split(", ");
@@ -162,10 +206,9 @@ public class ConflictingChunkData {
                             cell.setCellValue(locVersion2);
 //                            System.out.println(locVersion1 + ", " + locVersion2);
 
-                            
                             cell = row.createCell(DEVELOPERS);
                             cell.setCellValue(project.getDevelopers());
-                            
+
                             if (rowNumber % 10 == 0) {
                                 FileOutputStream out;
                                 out = new FileOutputStream(outputPath);
