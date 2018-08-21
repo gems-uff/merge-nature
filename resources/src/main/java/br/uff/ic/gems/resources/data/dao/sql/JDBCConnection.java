@@ -36,4 +36,23 @@ public class JDBCConnection {
         
         return connection;
     }
+    
+    
+    public Connection getConnection(String databaseName, String port, String login, String password) throws SQLException {
+        if (connection == null) {
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:"+ port+"/" + databaseName, login,
+                    password);
+
+//            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + databaseName, "gleiph",
+//                    "ghiotto");
+        }
+        
+        return connection;
+    }
 }

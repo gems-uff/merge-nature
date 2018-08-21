@@ -143,4 +143,45 @@ public class ConflictingFileJDBCDAO {
 
         return conflictingFile;
     }
+    
+    public List<ConflictingFile> selectByFiletype(String filetype) throws SQLException {
+        List<ConflictingFile> conflictingFiles = new ArrayList<>();
+
+        String query = "SELECT * FROM " + Tables.CONFLICTING_FILE
+                + " WHERE " + FILETYPE + " = '" + filetype + "'";
+
+        System.out.println(query);
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+
+            ResultSet results = statement.getResultSet();
+
+            while (results.next()) {
+                ConflictingFile conflictingFile = new ConflictingFile();
+
+                conflictingFile.setFileType(results.getString(FILETYPE));
+                conflictingFile.setId(results.getLong(ID));
+                conflictingFile.setName(results.getString(NAME));
+                conflictingFile.setPath(results.getString(PATH));
+                conflictingFile.setRemoved(results.getBoolean(REMOVED));
+
+                conflictingFiles.add(conflictingFile);
+            }
+        }
+
+        return conflictingFiles;
+    }
+
+    public List<ConflictingFile> selectAllByFiletype(String filetype) throws SQLException {
+        List<ConflictingFile> conflictingFiles = this.selectByFiletype(filetype);
+
+        ConflictingChunkJDBCDAO conflictingChunkDAO = new ConflictingChunkJDBCDAO(connection);
+
+        for (ConflictingFile conflictingFile : conflictingFiles) {
+            conflictingFile.setConflictingChunks(conflictingChunkDAO.selectAllByConflictingFileId(conflictingFile.getId()));
+        }
+
+        return conflictingFiles;
+    }
+    
 }

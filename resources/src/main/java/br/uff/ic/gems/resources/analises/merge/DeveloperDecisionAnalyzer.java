@@ -18,6 +18,15 @@ public class DeveloperDecisionAnalyzer {
 
     public static int countBegin;
 
+    /**
+     * 
+     * @param cpe
+     * @param solution
+     * @param context
+     * @return 
+     * @deprecated 
+     * use public static DeveloperDecision developerDevision(List<String> conflictingChunkContent, List<String> solutionContent, int beginLine, int separatorLine, int endLine) throws Exception 
+     */
     public static DeveloperDecision getDeveloperDecision(ConflictPartsExtractor cpe, List<String> solution, int context) {
 
         if (solution == null) {
@@ -188,6 +197,17 @@ public class DeveloperDecisionAnalyzer {
         }
     }
 
+    /**
+     * Used to analyze the developer decision 
+     * @param conflictingChunkContent
+     * @param solutionContent
+     * @param beginLine
+     * @param separatorLine
+     * @param endLine
+     * @return
+     * @throws Exception 
+     */
+    
     public static DeveloperDecision developerDevision(List<String> conflictingChunkContent, List<String> solutionContent, int beginLine, int separatorLine, int endLine) throws Exception {
 
         List<String> context1, version1, version2, context2, solutionClean;
