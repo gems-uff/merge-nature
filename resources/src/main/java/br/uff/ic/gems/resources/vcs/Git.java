@@ -110,7 +110,7 @@ public class Git {
             return null;
         }
     }
-    
+
     public static List<String> diffLog(String repository, String relativePath) {
         List<String> result = new ArrayList<String>();
         String command = "git log -1 -p " + relativePath;
@@ -122,7 +122,7 @@ public class Git {
             return null;
         }
     }
-    
+
     /*-------------------------------------------------------------------------------------------
     
      LOG BASED
@@ -214,7 +214,7 @@ public class Git {
 
         String command = "git log --oneline --shortstat --all";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
-        
+
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput();
         } else {
@@ -339,7 +339,7 @@ public class Git {
                 result.add(output);
             }
             return result;
-        } else{
+        } else {
             return null;
         }
 
@@ -436,11 +436,12 @@ public class Git {
         return output;
     }
 
-    public static List<String> getMergeRevisions(String repositoryPath, boolean  reverse) {
+    public static List<String> getMergeRevisions(String repositoryPath, boolean reverse) {
         String command = "git log --all --merges --pretty=%H";
-        
-        if(reverse)
+
+        if (reverse) {
             command = "git log --all --merges --reverse --pretty=%H";
+        }
 //        System.out.println(command);
         List<String> output = new ArrayList<String>();
 
@@ -471,7 +472,7 @@ public class Git {
 
         return output;
     }
-    
+
     public static List<String> getAllRevisions(String repositoryPath) {
         String command = "git log --all --pretty=%H";
 //        System.out.println(command);
@@ -832,7 +833,9 @@ public class Git {
     public static List<String> clone(String repositoryPath, String repositoryURL, String localRepository) {
 //        String command = "git rev-list --parents -n 1 " + revision;
 
-        String command = "git clone " + repositoryURL + " " + localRepository;
+        String command = "git clone file://" + repositoryURL + " " + localRepository;
+        System.out.println("command = " + command);
+
         if (localRepository == null) {
             command = "git clone " + repositoryURL;
         }
@@ -918,9 +921,10 @@ public class Git {
 
     public static List<String> conflictedFiles(String repositoryPath) {
 
-        if(!repositoryPath.endsWith(File.separator))
+        if (!repositoryPath.endsWith(File.separator)) {
             repositoryPath += File.separator;
-        
+        }
+
         List<String> statusShort = Git.statusShort(repositoryPath);
         List<String> files = new ArrayList<String>();
 
