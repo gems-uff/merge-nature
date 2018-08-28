@@ -45,7 +45,15 @@ public class GitTranslator {
         //-----------------------------------------------
         //Breaking the input string (delta) into lines
         //-----------------------------------------------
-        String[] deltaLines = delta.split("\n");
+        String OS = System.getProperty("os.name");
+
+        String[] deltaLines;
+
+        if (delta.contains("\r\n")) {
+            deltaLines = delta.split("\r\n");
+        } else {
+            deltaLines = delta.split("\n");
+        }
 
         //--------------------------------------------------------
         //Reading the delta content to transform into OO structure
@@ -56,7 +64,6 @@ public class GitTranslator {
             //Removing whitespace in the begin of the line
             //--------------------------------------------------------
 //            line = removingWhitespace(line);//work it better
-
             if (line.startsWith(LINEINTERVAL)) {
                 //read the interval line
                 initialline = initialLine(line);
