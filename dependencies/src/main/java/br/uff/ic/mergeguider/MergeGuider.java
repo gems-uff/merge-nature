@@ -121,6 +121,7 @@ public class MergeGuider {
             List<ConflictingChunkInformation> ccis = ConflictingChunkInformation.extractConflictingChunksInformation(conflictedFilePaths);
 
             //Extracting Left AST
+            System.out.println("Cloning left repository...");
             String repositoryLeft = sandbox + File.separator + "left";
 
             clone(projectPath, repositoryLeft);
@@ -128,9 +129,13 @@ public class MergeGuider {
             Git.clean(repositoryLeft);
             Git.checkout(repositoryLeft, SHALeft);
 
+            System.out.println("Extracting left repository AST...");
+
             List<ClassLanguageContructs> ASTLeft = extractAST(repositoryLeft);
 
             //Extracting Right AST
+            System.out.println("Cloning right repository...");
+
             String repositoryRight = sandbox + File.separator + "right";
 
             clone(projectPath, repositoryRight);
@@ -138,11 +143,15 @@ public class MergeGuider {
             Git.clean(repositoryRight);
             Git.checkout(repositoryRight, SHARight);
 
+            System.out.println("Extracting right repository AST...");
+
             List<ClassLanguageContructs> ASTRight = extractAST(repositoryRight);
 
+            System.out.println("Repositioning...");
             repositioningConflictingChunksInformation(ccis, repositoryLeft, projectPath, repositoryRight);
 
             //Creating depedency matrix
+            System.out.println("Extracting dependency matrix...");
             MergeDependency mergeDependency = extractDepedencies(ccis, projectPath, ASTLeft, ASTRight);
             mergeDependency.setCcis(ccis);
 
@@ -282,7 +291,6 @@ public class MergeGuider {
 //                        mergeDependency.getConflictingChunksDependencies().add(conflictingChunksDependency);
 //                    }
 //                }
-
                 boolean hasDependencyTypeDeclarationInterface
                         = hasDependencyTypeDeclarationInterface(leftTypeDeclarations, leftTypeDeclarationsAux)
                         || hasDependencyTypeDeclarationInterface(rightTypeDeclarations, rightTypeDeclarationsAux);
@@ -521,6 +529,7 @@ public class MergeGuider {
 
     public static boolean isFailedMerge(String projectPath, String SHALeft, String SHARight) {
         Git.reset(projectPath);
+        Git.clean(projectPath);
         Git.checkout(projectPath, SHALeft);
         List<String> merge = Git.merge(projectPath, SHARight, false, false);
 
@@ -561,7 +570,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyMethodDeclaration> methodDeclarations = AST.getMethodDeclarations();
 
@@ -609,7 +618,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyMethodDeclaration> methodDeclarations = AST.getMethodDeclarations();
 
@@ -657,7 +666,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
 
@@ -687,7 +696,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
 
@@ -747,7 +756,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
@@ -777,7 +786,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
@@ -807,7 +816,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
 
@@ -837,7 +846,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
 
@@ -867,7 +876,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
 
@@ -897,7 +906,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
 
@@ -927,7 +936,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyVariableCall> variableCalls = AST.getVariableCalls();
 
@@ -957,7 +966,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyVariableCall> variableCalls = AST.getVariableCalls();
 
@@ -987,7 +996,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
 
@@ -1017,7 +1026,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
 
@@ -1047,7 +1056,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
 
@@ -1077,7 +1086,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
 
@@ -1107,7 +1116,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTLeft) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAnnotationUsage> annotationDeclarations = AST.getAnnotationUsages();
 
@@ -1137,7 +1146,7 @@ public class MergeGuider {
 
         for (ClassLanguageContructs AST : ASTRight) {
 
-            if (AST.getPath().contains(relativePath)) {
+            if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyAnnotationUsage> annotationUsages = AST.getAnnotationUsages();
 
@@ -1177,5 +1186,25 @@ public class MergeGuider {
         } else {
             return false;
         }
+    }
+
+    public static boolean containsPath(String path, String relativePath) {
+        String pathClean = cleanPath(path);
+        String relativeClean = cleanPath(relativePath);
+
+        return pathClean.contains(relativeClean);
+    }
+
+    public static String cleanPath(String path) {
+
+        while (path.contains("/")) {
+            path = path.replace("/", "");
+        }
+
+        while (path.contains("\\")) {
+            path = path.replace("\\", "");
+        }
+
+        return path;
     }
 }

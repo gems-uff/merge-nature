@@ -24,7 +24,11 @@ public class ShowDepedencyGraph {
         show.setProjectPath("/Users/gleiph/repositories/wro4j");
         show.setSHALeft("6de49bc");
         show.setSHARight("e8b80e4");
-        show.setSandbox("/Users/gleiph/repositories/icse/");
+        show.setSandbox("/Users/gleiph/repositories/icse");
+//        show.setProjectPath("C:\\Users\\gleiph\\repositorios\\spring-data-neo4j");
+//        show.setSHALeft("3ba54fd4");
+//        show.setSHARight("4a8f404c");
+//        show.setSandbox("C:\\Users\\gleiph\\repositorios\\teste1");
         
         show.show();
     }
