@@ -7,6 +7,7 @@ package br.uff.ic.gems.resources.vcs;
 
 import br.uff.ic.gems.resources.cmd.CMDOutput;
 import br.uff.ic.gems.resources.cmd.CMD;
+import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class Git {
             return null;
         }
     }
-    
+
     public static List<String> diffLog(String repository, String relativePath) {
         List<String> result = new ArrayList<String>();
         String command = "git log -1 -p " + relativePath;
@@ -122,7 +123,7 @@ public class Git {
             return null;
         }
     }
-    
+
     /*-------------------------------------------------------------------------------------------
     
      LOG BASED
@@ -214,7 +215,7 @@ public class Git {
 
         String command = "git log --oneline --shortstat --all";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
-        
+
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput();
         } else {
@@ -315,9 +316,20 @@ public class Git {
         return false;
     }
 
-    public static String getCommiter(String repository, String sha1) {
+    public static String getCommiterName(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%cn";
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput().get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static String getCommiterEmail(String repository, String sha1) {
+
+        String command = "git show " + sha1 + " --pretty=%ce";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput().get(0);
@@ -339,13 +351,13 @@ public class Git {
                 result.add(output);
             }
             return result;
-        } else{
+        } else {
             return null;
         }
 
     }
 
-    public static String getAuthor(String repository, String sha1) {
+    public static String getAuthorName(String repository, String sha1) {
 
         String command = "git show " + sha1 + " --pretty=%an";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
@@ -356,9 +368,20 @@ public class Git {
         }
     }
 
+    public static String getAuthorEmail(String repository, String sha1) {
+
+        String command = "git show " + sha1 + " --pretty=%ae";
+        CMDOutput cmdOutput = CMD.cmd(repository, command);
+        if (cmdOutput.getErrors().isEmpty()) {
+            return cmdOutput.getOutput().get(0);
+        } else {
+            return null;
+        }
+    }
+
     public static String getDate(String repository, String sha1) {
 
-        String command = "git show " + sha1 + " --pretty=%ad";
+        String command = "git show " + sha1 + " --pretty=%ad --date=iso";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput().get(0);
@@ -436,11 +459,12 @@ public class Git {
         return output;
     }
 
-    public static List<String> getMergeRevisions(String repositoryPath, boolean  reverse) {
+    public static List<String> getMergeRevisions(String repositoryPath, boolean reverse) {
         String command = "git log --all --merges --pretty=%H";
-        
-        if(reverse)
+
+        if (reverse) {
             command = "git log --all --merges --reverse --pretty=%H";
+        }
 //        System.out.println(command);
         List<String> output = new ArrayList<String>();
 
@@ -471,7 +495,7 @@ public class Git {
 
         return output;
     }
-    
+
     public static List<String> getAllRevisions(String repositoryPath) {
         String command = "git log --all --pretty=%H";
 //        System.out.println(command);
@@ -689,6 +713,15 @@ public class Git {
         return output;
     }
 
+    public static boolean isFailedMerge(String projectPath, String SHALeft, String SHARight) {
+        Git.reset(projectPath);
+        Git.clean(projectPath);
+        Git.checkout(projectPath, SHALeft);
+        List<String> merge = Git.merge(projectPath, SHARight, false, false);
+
+        return MergeStatusAnalizer.isConflict(merge);
+    }
+    
     public static List<String> reset(String repositoryPath) {
 //        String command = "git rev-list --parents -n 1 " + revision;
         String command = "git reset --hard";
@@ -918,9 +951,10 @@ public class Git {
 
     public static List<String> conflictedFiles(String repositoryPath) {
 
-        if(!repositoryPath.endsWith(File.separator))
+        if (!repositoryPath.endsWith(File.separator)) {
             repositoryPath += File.separator;
-        
+        }
+
         List<String> statusShort = Git.statusShort(repositoryPath);
         List<String> files = new ArrayList<String>();
 
