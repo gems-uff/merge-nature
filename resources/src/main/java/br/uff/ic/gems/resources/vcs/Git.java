@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package br.uff.ic.gems.resources.vcs;
 
 import br.uff.ic.gems.resources.cmd.CMDOutput;
@@ -37,6 +33,7 @@ public class Git {
         String command = "git diff " + initialFile + " " + finalFile;
 
         CMDOutput cmdOutput = CMD.cmd(getRepository(), command);
+        
         if (cmdOutput.getErrors().isEmpty()) {
 
             for (String line : cmdOutput.getOutput()) {
@@ -44,9 +41,11 @@ public class Git {
             }
 
             return result.toString();
+            
         } else {
             return null;
         }
+        
     }
 
     public String clone(String url) {
@@ -88,6 +87,7 @@ public class Git {
      COMMANDS
     
      ----------------------------------------------------------------------------------------------*/
+    
     public static List<String> fileDiff(String repository, String file, String sourceSHA, String targetSHA) {
         List<String> result = new ArrayList<String>();
         String command = "git diff " + sourceSHA + " " + targetSHA + " " + file;
@@ -229,6 +229,7 @@ public class Git {
     
      ----------------------------------------------------------------------------------------------*/
     public static List<String> status(String repositoryPath) {
+
         String command = "git status ";
 
         List<String> output = new ArrayList<String>();
@@ -260,6 +261,7 @@ public class Git {
     }
 
     public static List<String> statusShort(String repositoryPath) {
+
         String command = "git status -s";
 
         List<String> output = new ArrayList<String>();
@@ -395,6 +397,7 @@ public class Git {
 
         String command = "git show " + sha1 + " --pretty=%ci";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
+
         if (cmdOutput.getErrors().isEmpty()) {
             return cmdOutput.getOutput().get(0);
         } else {
@@ -407,6 +410,7 @@ public class Git {
 
         String command = "git show " + sha1 + " --pretty=%ct";
         CMDOutput cmdOutput = CMD.cmd(repository, command);
+
         if (cmdOutput.getErrors().isEmpty()) {
             return Long.parseLong(cmdOutput.getOutput().get(0));
         } else {
@@ -470,7 +474,6 @@ public class Git {
 
         try {
             Process exec = Runtime.getRuntime().exec(command, null, new File(repositoryPath));
-//            exec.waitFor();
 
             String s;
 
@@ -497,14 +500,14 @@ public class Git {
     }
 
     public static List<String> getAllRevisions(String repositoryPath) {
+
         String command = "git log --all --pretty=%H";
-//        System.out.println(command);
+
         List<String> output = new ArrayList<String>();
 
         try {
             Process exec = Runtime.getRuntime().exec(command, null, new File(repositoryPath));
-//            exec.waitFor();
-
+            
             String s;
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
@@ -530,7 +533,7 @@ public class Git {
     }
 
     public static List<String> getParents(String repositoryPath, String revision) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git log --pretty=%P -n 1 " + revision;
 
         List<String> output = new ArrayList<String>();
@@ -566,7 +569,7 @@ public class Git {
     }
 
     public static String getMergeBase(String repositoryPath, String commit1, String commit2) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git merge-base " + commit1 + " " + commit2;
 
         String output = null;
@@ -598,9 +601,7 @@ public class Git {
     }
 
     public static List<String> logOneline(String repositoryPath, String since, String until) {
-//        String command = "git rev-list --parents -n 1 " + revision;
-//        String command = "git log --pretty=oneline " + since + ".." + until;
-//        String command = "git log --pretty=oneline --first-parent " + since + ".." + until;
+
         String command = "git rev-list --ancestry-path " + since + ".." + until;
 
         List<String> output = new ArrayList<String>();
@@ -694,16 +695,13 @@ public class Git {
 
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
-//                String[] split = s.split(" ");
-//                for (String rev : split) {
-//                    output.add(rev);
-//                }
+
                 output.add(s);
             }
 
             // read any errors from the attempted command
             while ((s = stdError.readLine()) != null) {
-//                System.out.println(s);
+                System.out.println(s);
             }
 
         } catch (IOException ex) {
@@ -721,9 +719,9 @@ public class Git {
 
         return MergeStatusAnalizer.isConflict(merge);
     }
-    
+
     public static List<String> reset(String repositoryPath) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git reset --hard";
 
         List<String> output = new ArrayList<String>();
@@ -739,10 +737,7 @@ public class Git {
 
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
-//                String[] split = s.split(" ");
-//                for (String rev : split) {
-//                    output.add(rev);
-//                }
+
                 output.add(s);
             }
 
@@ -759,7 +754,7 @@ public class Git {
     }
 
     public static List<String> clean(String repositoryPath) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git clean -df";
 
         List<String> output = new ArrayList<String>();
@@ -775,10 +770,6 @@ public class Git {
 
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
-//                String[] split = s.split(" ");
-//                for (String rev : split) {
-//                    output.add(rev);
-//                }
                 output.add(s);
             }
 
@@ -795,7 +786,7 @@ public class Git {
     }
 
     public static List<String> mergeAbort(String repositoryPath) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git merge --abort";
 
         List<String> output = new ArrayList<String>();
@@ -811,10 +802,6 @@ public class Git {
 
             // read the output from the command
             while ((s = stdInput.readLine()) != null) {
-//                String[] split = s.split(" ");
-//                for (String rev : split) {
-//                    output.add(rev);
-//                }
                 output.add(s);
             }
 
@@ -831,7 +818,7 @@ public class Git {
     }
 
     public static List<String> resetMerge(String repositoryPath) {
-//        String command = "git rev-list --parents -n 1 " + revision;
+
         String command = "git reset --merge";
 
         List<String> output = new ArrayList<String>();
@@ -863,7 +850,6 @@ public class Git {
     }
 
     public static List<String> clone(String repositoryPath, String repositoryURL, String localRepository) {
-//        String command = "git rev-list --parents -n 1 " + revision;
 
         String command = "git clone " + repositoryURL + " " + localRepository;
         if (localRepository == null) {
@@ -975,6 +961,7 @@ public class Git {
     }
 
     public static List<String> diffNameStatus(String repositoryPath, String revision1, String revision2) {
+
         String command = "git diff --name-status " + revision1 + " " + revision2;
 
         List<String> output = new ArrayList<String>();
@@ -1004,4 +991,5 @@ public class Git {
 
         return output;
     }
+
 }
