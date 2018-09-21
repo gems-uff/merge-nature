@@ -25,6 +25,9 @@ André van der Hoek (UC Irvine, USA)
 
 [Overview](http://merge-nature.netlify.com) (click in the projects to see the details)
 
+# Publications
+[On the Nature of Merge Conflicts: a Study of 2,731 Open Source Java Projects Hosted by GitHub (Early Access version)](https://ieeexplore.ieee.org/document/8468085/)
+
 # Acknowledgements
 
 We would like to thank CNPq and FAPERJ for funding this project.
