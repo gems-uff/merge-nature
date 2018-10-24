@@ -9,6 +9,7 @@ import br.uff.ic.gems.resources.ast.ASTTranslator;
 import br.uff.ic.gems.resources.ast.ASTTypes;
 import br.uff.ic.gems.resources.data.KindConflict;
 import br.uff.ic.gems.resources.data.LanguageConstruct;
+import br.uff.ic.gems.resources.operation.Operation;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import java.io.Serializable;
@@ -38,6 +39,7 @@ public class Chunk implements Serializable {
     //private int addedLine;
     private List<Integer> addedLines;
     private List<Integer> removedLines;
+    private List<Operation> operations;
     //private int removedLine;
     private String identifier;
     private DeveloperDecision developerDecision;
@@ -76,6 +78,14 @@ public class Chunk implements Serializable {
 
     public void setAddedLine(List<Integer> addedLines ) {
         this.addedLines = addedLines;
+    }
+    
+    public List<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(List<Operation> operations ) {
+        this.operations = operations;
     }
 
     public List<Integer> getRemovedLine() {
