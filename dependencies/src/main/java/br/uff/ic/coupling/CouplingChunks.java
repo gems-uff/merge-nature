@@ -118,25 +118,39 @@ public class CouplingChunks {
      public static MergeDependency performMerge(String projectPath, List<String> diffLeft, List<String> diffRight, String SHALeft, String SHARight, String sandbox) throws IOException {
         //if (isFailedMerge(projectPath, SHALeft, SHARight)) {
 
-            //List<String> chunksFilePaths = chunkFiles(projectPath); não vai ser utilizado
-    
-            //Getting modified files 
-            List<String> modifiedFilesLeft = FileAnalyzer.getModifiedFiles(diffLeft);
-            //List<String> modifiedFilesRight = FileAnalyzer.getModifiedFiles(diffRight);
+           //List<String> chunksFilePaths = chunkFiles(projectPath); não vai ser utilizado
             
             //Getting chunks tem que armazenar as linhas add e removidas para cada arquivo
             List<ChunkInformation> cisL = ChunkInformation.extractChunksInformation(diffLeft);
             List<ChunkInformation> cisR = ChunkInformation.extractChunksInformation(diffRight);
             
+            //Getting modified files 
+            List<String> changedFilesLeft = Git.getChangedFiles(projectPath, SHALeft);
+            List<String> changedFilesRight = Git.getChangedFiles(projectPath, SHARight);
+            
             //Extracting AST modified files
             List<String> files = new ArrayList<>();
             List<ClassLanguageContructs> ASTFilesLeft = new ArrayList<>();
         
-            for (String file : modifiedFilesLeft)
-            ASTFilesLeft = extractAST(file); // dá erro
+            //for (String file : modifiedFilesLeft)
+           // ASTFilesLeft = extractAST(file); // dá erro
            
+            //Extract AST Project
+           List<ClassLanguageContructs> ASTProject = extractAST(projectPath);
+           
+           List<ClassLanguageContructs> ASTchangedFiles =  new ArrayList<ClassLanguageContructs>();
+           
+           //Get the AST Files gostaria de buscar as arvores dos arquivos, conforme os nomes dos arquivos modificados
+            for (ClassLanguageContructs AST : ASTProject)
+            {
+               if (containsPath(AST.getQualifiedName(), changedFilesLeft)) 
+                    ASTchangedFiles.add (AST);
+            }
+            //Direcionar para o Diff para depois buscar a AST do arquivo antes da alteração
+            List<String> fileCheckout = Git.checkout(projectPath, SHALeft);
+
             
-           List<ClassLanguageContructs> ASTSHALeft = extractAST(SHALeft); //dá erro
+           /* EXCLUIR
             
             //Extracting Left AST
             System.out.println("Cloning left repository...");
@@ -167,10 +181,11 @@ public class CouplingChunks {
 
             //System.out.println("Repositioning...");
             //repositioningChunksInformation(cis, repositoryLeft, projectPath, repositoryRight);
-
+*/
             //Creating depedency matrix
             System.out.println("Extracting dependency matrix...");
-            //MergeDependency mergeDependency = extractDepedencies(modifiedFiles, projectPath, ASTLeft, ASTRight);
+            //deveria fazer a comparação entre cisL e cisR
+            MergeDependency mergeDependency = extractDepedencies(cisL, projectPath, ASTProject, ASTProject);
             //mergeDependency.setCis(cis);
 
             //return mergeDependency;
@@ -283,7 +298,6 @@ public static MergeDependency extractDepedencies(List<ChunkInformation> cis, Str
         MergeDependency mergeDependency = new MergeDependency();
         //mergeDependency.setChunksAmount(cis.size()); qtd de arquivos, não serveria
 
-        //for (String mf : mfs) {
         for (ChunkInformation ci : cis) {
 
             //Find method declaration that has some intersection with a method declaration
