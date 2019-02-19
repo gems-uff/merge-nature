@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author Cristiane
+ * @author Gleiph, Cristiane
  */
 public class MergeDependency {
     

@@ -10,7 +10,7 @@ import br.uff.ic.mergeguider.dependency.DependencyType;
 
 /**
  *
- * @author Cristiane
+ * @author Gleiph, Cristiane
  */
 public class ChunksDependency {
     

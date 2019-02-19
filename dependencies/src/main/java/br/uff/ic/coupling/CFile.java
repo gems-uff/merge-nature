@@ -5,7 +5,6 @@
  */
 package br.uff.ic.coupling;
 
-//import br.uff.ic.gems.resources.data.ConflictingChunk;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import javax.persistence.OneToMany;
 
 /**
  *
- * @author Cristiane
+ * @author Gleiph, Cristiane
  */
     
 @Entity
@@ -147,4 +146,3 @@ public class CFile implements Serializable {
     }
 
 }
-

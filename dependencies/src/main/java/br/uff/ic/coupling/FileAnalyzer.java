@@ -8,9 +8,9 @@ package br.uff.ic.coupling;
 import br.uff.ic.gems.resources.analises.merge.DeveloperDecisionAnalyzer;
 import br.uff.ic.gems.resources.ast.ASTAuxiliar;
 import br.uff.ic.gems.resources.ast.ASTExtractor;
-//import br.uff.ic.gems.resources.data.ConflictingChunk;
-//import br.uff.ic.gems.resources.data.ConflictingFile;
 import br.uff.ic.gems.resources.data.KindConflict;
+import br.uff.ic.gems.resources.operation.Operation;
+import br.uff.ic.gems.resources.operation.OperationType;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.Information;
@@ -25,10 +25,10 @@ import org.apache.commons.io.FileUtils;
 
 /**
  *
- * @author Cristiane
+ * @author Gleiph, Cristiane
  */
 public class FileAnalyzer {
-//criar outra classe com CFile
+
     public static CFile analyze(String FilePath, String repositoryPath, String leftSHA, String rightSHA, String developerSolutionSHA) throws IOException, StackOverflowError {
 
         int context = 3;
@@ -37,15 +37,15 @@ public class FileAnalyzer {
 
         List<String> FileList;
         FileList = FileUtils.readLines(new File(CFile.getPath()));
-        List<Chunk> Chunks = getChunks(FileList);
-       
+        List<Chunk> Chunks = getChunks(FileList, leftSHA, developerSolutionSHA );
 
         //Treating when conflict files does not have well-formed chunks
-        if(Chunks == null)
+        if (Chunks == null) {
             return CFile;
-        
+        }
+
         String relativePath = FilePath.replace(repositoryPath, "");
-        
+
         //Paths to repositories
         String leftRepository = repositoryPath + Information.LEFT_REPOSITORY_SUFIX;
         String rightRepository = repositoryPath + Information.RIGHT_REPOSITORY_SUFIX;
@@ -80,7 +80,7 @@ public class FileAnalyzer {
             }
 
             CFile.setChunks(Chunks);
-            
+
             return CFile;
 
         }
@@ -89,28 +89,25 @@ public class FileAnalyzer {
         //Marks from conflicting chunks
         int addedLine = -1;
         int removedLine = -1;
-        //int endLine = -1;
+        int endLine = -1;
 
         String leftRelativePath = relativePath;
         String rightRelativePath = relativePath;
 
         //if (Chunks != null && !Chunks.isEmpty()) {
-            //addedLine = Chunks.get(0).getAddedLine();
-            //removedLine = Chunks.get(0).getRemovedLine();
-            
-            String left = conflictingContent.get(addedLine);
-            String right = conflictingContent.get(removedLine);
+        String left = conflictingContent.get(addedLine);
+        String right = conflictingContent.get(removedLine);
 
-            leftRelativePath = getMove(left);
-            rightRelativePath = getMove(right);
+        leftRelativePath = getMove(left);
+        rightRelativePath = getMove(right);
 
-            if (leftRelativePath == null) {
-                leftRelativePath = relativePath;
-            }
+        if (leftRelativePath == null) {
+            leftRelativePath = relativePath;
+        }
 
-            if (rightRelativePath == null) {
-                rightRelativePath = relativePath;
-            }
+        if (rightRelativePath == null) {
+            rightRelativePath = relativePath;
+        }
         // }
 
         String currentFile, leftFile, rightFile;
@@ -128,9 +125,6 @@ public class FileAnalyzer {
         for (Chunk Chunk : Chunks) {
 
             //Marks from chunks
-           // addedLine = Chunk.getAddedLine();
-           // removedLine = Chunk.getRemovedLine();
-
             //Getting conflict area
             int beginConflict, endConflict;
             beginConflict = ASTAuxiliar.getConflictLowerBound(addedLine, context);
@@ -164,51 +158,40 @@ public class FileAnalyzer {
             int context1bOriginal, context1eOriginal, context2bOriginal, context2eOriginal;
 
             context1bOriginal = beginConflict + 1;
-           // context1eOriginal = Chunk.getAddedLine();
+            // context1eOriginal = Chunk.getAddedLine();
             //context2bOriginal = Chunk.getRemovedLine() + 1;
             context2eOriginal = endConflict;
 
-           // if (context2bOriginal > context2eOriginal) {
-           //     context2bOriginal = context2eOriginal;
-           // }
-
+            // if (context2bOriginal > context2eOriginal) {
+            //     context2bOriginal = context2eOriginal;
+            // }
             Repositioning repositioning = new Repositioning(developerMergedRepository);
 
             //int context1 = Chunk.checkContext1(context1bOriginal, context1eOriginal,
-                    //repositioning, FilePath, solutionPath, addedLine, removedLine);
-
+            //repositioning, FilePath, solutionPath, addedLine, removedLine);
             //int context2 = Chunk.checkContext2(solutionContent, conflictingContent, context2eOriginal,
-                    //context2bOriginal, repositioning, FilePath, solutionPath, separatorLine, beginLine, endLine);
-
+            //context2bOriginal, repositioning, FilePath, solutionPath, separatorLine, beginLine, endLine);
             //List<String> solutionArea;
             //solutionArea = solutionContent.subList(context1 - 1, context2);
-
-
             /*
              Calculating values of begin, separator and end mark in the conflicting area
              */
-           // int addedArea, removedArea;
-          //  addedArea = addedLine - beginConflict;
-           // removedArea = removedLine - beginConflict;
+            // int addedArea, removedArea;
+            //  addedArea = addedLine - beginConflict;
+            // removedArea = removedLine - beginConflict;
             //endConflictingArea = endLine - beginConflict;
-
             DeveloperDecision developerDecision = DeveloperDecision.MANUAL;
 
             try {
                 //SetSolution
                 //developerDecision = DeveloperDecisionAnalyzer.developerDevision(conflictingArea, solutionArea,
-                        //beginConflictingArea, separatorConflictingArea, endConflictingArea);
+                //beginConflictingArea, separatorConflictingArea, endConflictingArea);
             } catch (Exception ex) {
                 Logger.getLogger(FileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
-           // Chunk.setDeveloperDecision(developerDecision);
+            // Chunk.setDeveloperDecision(developerDecision);
 
             try {
-
-                Chunk.setLeftKindConflict(leftKindConflict);
-                Chunk.setRightKindConflict(rightKindConflict);
-                Chunk.setConflictingContent(conflictingArea);
-                //Chunk.setSolutionContent(solutionArea);
 
             } catch (Exception ex) {
                 Logger.getLogger(FileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
@@ -220,74 +203,32 @@ public class FileAnalyzer {
         return CFile;
     }
 
-    public static List <String> getModifiedFiles(List<String> fileList)
-    {
-        List<String> files = new ArrayList<>();
-        String lineChanged;
-        
-         for (String line : fileList) {
-            if (line.startsWith("+++ b"))
-            {
-                lineChanged = line.replaceFirst("\\+++ b", "");
-                files.add (lineChanged);
-            }
-                 
-        }
-        return files;
-    }
     
-    
-    public static List<Chunk> getChunks(List<String> fileList) {
 
+    public static List<Chunk> getChunks(List<String> fileDiff, String filePath, String branch) {
         List<Chunk> result = new ArrayList<>();
         Chunk Chunk = new Chunk();
-        int addedline = 0, removedline = 0, identifier = 1;
+        String chunkID;
+        int line;
 
-        List<Integer> addedlines, removedlines;
-        addedlines = new ArrayList<>();
-        removedlines = new ArrayList<>();
-        //ends = new ArrayList<>();
+        GitTranslator gitTranslator = new GitTranslator();
+        List<Operation> operations = new ArrayList<>();
+        List<Operation> operationsCluster = new ArrayList<>();
 
-        for (int i = 0; i < fileList.size(); i++) {
-            String get = fileList.get(i);
+        String delta = fileDiff.toString();
 
-            if (get.startsWith("+")) {
-                addedline = i;
-                addedlines.add(addedline);
-            } else if (get.startsWith("-")) {
-                removedline = i;
-                removedlines.add(removedline);
-            } 
-        }
-
-        //if(begins.size() != separators.size() || separators.size() != ends.size())
-           // return null;
+        operations = gitTranslator.translateDelta(delta);
         
-        //while (!(addedlines.isEmpty() || !removedlines.isEmpty())) {
-            //Integer a = 0, r = 0;
+        operationsCluster = gitTranslator.cluster(operations);
 
-            //for (int i = 0; i < addedlines.size(); i++) {
-                //a = addedlines.get(i);
-               
+        Chunk = new Chunk();
+        
+        chunkID = filePath.substring(filePath.lastIndexOf('/')+ 1, filePath.length()-5);//class name
+        
+        Chunk.setOperations(operations); //operationsCluster
+        Chunk.setIdentifier(branch + chunkID);
 
-                //if (isNextRemoved(a, addedlines, removedlines)) {
-                   // r = nextValue(r, addedlines, removedlines);
-                   
-
-                   // addedlines.remove(a);
-                    //removedlines.remove(r);
-
-                    //break;
-                //}
-            //}
-
-            Chunk = new Chunk();
-            Chunk.setAddedLine(addedlines);
-            Chunk.setRemovedLine(removedlines);
-            Chunk.setIdentifier("chunk " + (identifier++));
-
-            result.add(Chunk);
-       // }
+        result.add(Chunk);
 
         return result;
     }
@@ -325,17 +266,6 @@ public class FileAnalyzer {
             return whatsNext.equals(REMOVEDLINE);
         }
     }
-
-   /* private static Boolean isNextEnd(int line, List<Integer> added, List<Integer> removed) {
-        String whatsNext = whatsNext(line, added, removed);
-
-        if (whatsNext == null) {
-            return false;
-        } else {
-            return whatsNext.equals(END);
-        }
-    }*/
-
     private static String whatsNext(int line, List<Integer> added, List<Integer> removed) {
         int next = Integer.MAX_VALUE;
         String result = null;
@@ -358,15 +288,14 @@ public class FileAnalyzer {
             }
         }
 
-      //  for (Integer e : end) {
-          //  if (e > line && e < next) {
-           //     next = e;
-           //     result = END;
-           // } else if (e >= next) {
-           //     break;
-           // }
-       // }
-
+        //  for (Integer e : end) {
+        //  if (e > line && e < next) {
+        //     next = e;
+        //     result = END;
+        // } else if (e >= next) {
+        //     break;
+        // }
+        // }
         return result;
     }
 
@@ -390,13 +319,13 @@ public class FileAnalyzer {
         }
 
         //for (Integer e : end) {
-           // if (e > line && e < result) {
-            //    result = e;
-           // } else if (e >= result) {
-           //     break;
-           // }
-       // }
-
+        // if (e > line && e < result) {
+        //    result = e;
+        // } else if (e >= result) {
+        //     break;
+        // }
+        // }
         return result;
-    }   
+    }
+
 }
