@@ -33,29 +33,9 @@ import javax.persistence.OneToOne;
 public class Chunk implements Serializable {
 
     @Id
-    @GeneratedValue
     private Long id;
     private String identifier;
     private List<Operation> operations;
-
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "ConflictingChunk_LeftKindConflict",
-            joinColumns = @JoinColumn(name = "ConflictingChunk_ID"),
-            inverseJoinColumns = @JoinColumn(name = "LeftKindConflict_ID"))
-    private KindConflict leftKindConflict;
-
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "ConflictingChunk_RightKindConflict",
-            joinColumns = @JoinColumn(name = "ConflictingChunk_ID"),
-            inverseJoinColumns = @JoinColumn(name = "RightKindConflict_ID"))
-    private KindConflict rightKindConflict;
-
-    @ElementCollection
-    @Lob
-    private List<String> conflictingContent;
-    @ElementCollection
-    @Lob
-    private List<String> solutionContent;
 
     public Long getId() {
         return id;
