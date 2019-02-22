@@ -8,7 +8,6 @@ package br.uff.ic.coupling;
 import br.uff.ic.gems.resources.cmd.CMDOutput;
 import br.uff.ic.gems.resources.cmd.CMD;
 import br.uff.ic.gems.resources.operation.Operation;
-import br.uff.ic.gems.resources.utils.MergeStatusAnalizer;
 import br.uff.ic.mergeguider.MergeGuider;
 import br.uff.ic.mergeguider.dependency.DependencyType;
 import br.uff.ic.mergeguider.javaparser.ClassLanguageContructs;
@@ -24,11 +23,11 @@ import br.uff.ic.mergeguider.languageConstructs.MyTypeDeclaration;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableCall;
 import br.uff.ic.mergeguider.languageConstructs.MyVariableDeclaration;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -43,29 +42,34 @@ public class CouplingChunks {
 
     public static void main(String[] args) {
         List<String> projectsPath = new ArrayList<>();
-        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\Banco");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco");
+        // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_old");
         projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_atributo");
         String sandbox = "C:\\Cristiane\\mestrado\\sandbox";
+        String outputPathName = "C:\\Cristiane\\mestrado\\results_structural_coupling\\results.txt";
 
         for (String projectPath : projectsPath) {
             System.out.println("Project: " + projectPath);
-            analyze(projectPath, sandbox);
+            analyze(projectPath, sandbox, outputPathName);
         }
 
     }
 
-    public static void analyze(String projectPath, String sandbox) {
+    public static void analyze(String projectPath, String sandbox, String outputPathName) {
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
         int hasDependencies = 0, hasNoDependencies = 0, oneCC = 0, moreThanOneCC = 0;
 
         MergeDependency mergeDependency = new MergeDependency();
-        List<ChunkInformation> cis = null;
 
-        int Chunks, dependencies;
-        String project, SHAMerge, SHALeft, SHARight, SHAmergeBase;
+        try (FileWriter file = new FileWriter(new File(outputPathName))) {
+            file.write(projectPath + "\n");
+            int Chunks, dependencies;
+            String project, SHAMerge, SHALeft, SHARight, SHAmergeBase;
 
-        project = projectPath;
-        /* // caso1  add método getAgencia em Cliente e modificação em método getAgencia em Conta
+            int methodQtd = 0;
+            int attributeQtd = 0;
+            project = projectPath;
+            /*  // caso1  add método getAgencia em Cliente e modificação em método getAgencia em Conta
         SHAMerge = "101a2bef7390a99be5420b71172d0ef1e9061217";
         SHALeft = "97029f83d2f4b1405b841beadb38a338c7ecf0f2";
         SHARight = "1bb08002e42ba862abd038e89209145cf4165008";
@@ -76,59 +80,91 @@ public class CouplingChunks {
         SHALeft = "ac4f95807fc9d03c17dcce8718fd90086e8faaaf";
         SHARight = "8181e508c149ae800fdfc251e300fdce3d37f4a8";
         SHAmergeBase = "1bb08002e42ba862abd038e89209145cf4165008";*/
-        ///neste caso 3, foi criado no esquerdo e chamado no direito, por isso, não há a dependência porque a comparação
-        //  é feita com o merge-base e pouco provável deste tipo de caso ocorrer.
-        /* SHAMerge = "92fa5d9648e62dce9cc1af0bd37b7569bde74709";
+            ///neste caso 3, foi criado no esquerdo e chamado no direito, por isso, não há a dependência porque a comparação
+            //  é feita com o merge-base e pouco provável deste tipo de caso ocorrer.
+            /* SHAMerge = "92fa5d9648e62dce9cc1af0bd37b7569bde74709";
         SHALeft = "c401cf826b47851b8049ccfdbe726ecb396494ce";
         SHARight = "f7b24a4ef615b9b74acceee31c98f06e1254948c";
         SHAmergeBase = "56b6731c6678525668c5704b87b3719fb7dbeecc";*/
- /* //caso 3 (atributo) chamada do atributo numero da classe endereco e 
-        //alteração de int para string deste atributo, na classe endereco 
-        SHAMerge = "19466afb35158a16c1c5840b73a8939fd6561b2a";
-        SHALeft = "e7ea239e296c6c85b5fd2332c2106fba5e6420e6";
-        SHARight = "7330502c2f6f58898fbe1eeb800b93ee55037c48";
-        SHAmergeBase = "27dc505691622a5dc413acad3f17adbf7a38a58e";*/
- /*//caso 4(atributo) chamada do atributo cidade da classe Endereco e exclusão deste atributo
+ /* //caso 3 (banco_atributo) chamada do atributo numero da classe endereco e 
+            //alteração de int para string deste atributo, na classe endereco 
+            SHAMerge = "19466afb35158a16c1c5840b73a8939fd6561b2a";
+            SHALeft = "e7ea239e296c6c85b5fd2332c2106fba5e6420e6";
+            SHARight = "7330502c2f6f58898fbe1eeb800b93ee55037c48";
+            SHAmergeBase = "27dc505691622a5dc413acad3f17adbf7a38a58e";*/
+ /*//caso 4(banco_atributo) chamada do atributo cidade da classe Endereco e exclusão deste atributo
         SHAMerge = "f00ea372c17549cdcda553ceb9bbb7ccf4009f41";
         SHALeft = "bd13a5a77b70d60717a520cf4c61b737fc86969f";
         SHARight = "8188bb805e143dc71fe1bf71fe170f1b1af3e69e";
         SHAmergeBase = "7330502c2f6f58898fbe1eeb800b93ee55037c48";*/
-        for (String mergeRevision : mergeRevisions) {
+ /*//caso 5(banco_atributo) chamada do metodo setCodigo da classe funcionario e inclusão de uma linha 
+ // neste método.
+        SHAMerge = "ad24ceeb2cbd846ebe84ac687f7caf447ab872bd";
+        SHALeft = "135f19ee5b4a85d36ec53c22274adf72e663e9c1";
+        SHARight = "f161289bd20e086dc18aaa37ca5e0497d31b81b6";
+        SHAmergeBase = "8188bb805e143dc71fe1bf71fe170f1b1af3e69e";*/
+
+ /*  //caso 6(banco_atributo) alteração na chamada do metodo setCodigo da classe funcionario e exclusão de uma linha 
+ // neste método.
+        SHAMerge = "14cd2be9d366244f3a94c5e6f30c1a7c9b4896a5";
+        SHALeft = "0e9464de76dcfd1089dbd19ac5a359119d513181";
+        SHARight = "bc909495ee4a28aed1c892f5d10fd4862bbfa6dc";
+        SHAmergeBase = "f161289bd20e086dc18aaa37ca5e0497d31b81b6";*/
+ /*  //caso 7(banco_atributo) exclusão chamada do metodo setCodigo da classe funcionario e add de uma linha neste método.
+        SHAMerge = "0b76d56ccbd2792da7b65b8554347fa6394cbbbf";
+        SHALeft = "7d463257051b808b9e769b319886f13d3b3efba5";
+        SHARight = "8692bc92b2b9bb8823c71b4e0968438af781a69d";
+        SHAmergeBase = "bc909495ee4a28aed1c892f5d10fd4862bbfa6dc"; */
+ /*//caso 8 - Classe Funcionario renomeada para FuncionarioBanco
+         SHAMerge = "df715aa54747808989c7b23755bbfda55c0211ed";
+        SHALeft = "13f5c7d8407112bf3f9772458253b52bebe99da7";
+        SHARight = "b7922eb830a04a84faf6fbb43adc25679d3be8df";
+        SHAmergeBase = "8692bc92b2b9bb8823c71b4e0968438af781a69d"; */
+ for (String mergeRevision : mergeRevisions) {
             SHAMerge = mergeRevision;
             List<String> parents = Git.getParents(projectPath, mergeRevision);
             if (parents.size() == 2) {
                 SHALeft = parents.get(0);
                 SHARight = parents.get(1);
-                SHAmergeBase = Git.getMergeBase(projectPath, SHALeft, SHARight);
-                //Check if is a fast-forward merge
-                if ((!(SHAmergeBase.equals(SHALeft))) && (!(SHAmergeBase.equals(SHARight)))) {
+                SHAmergeBase = Git.getMergeBase(projectPath, SHALeft, SHARight); 
+                //Check if is a fast-forward merge*/
+            if ((!(SHAmergeBase.equals(SHALeft))) && (!(SHAmergeBase.equals(SHARight)))) {
 
-                    try {
-                        mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox);
+                try {
+                    mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox);
 
-                        //Treating dependencies 
-                        if (mergeDependency == null) {
-                            Chunks = 0;
-                            dependencies = 0;
-                        } else {
-                            Chunks = mergeDependency.getChunksAmount();
-                            dependencies = mergeDependency.getChunksDependencies().size();
-                          
-                            /*for (ChunksDependency chunksDependency : mergeDependency.getChunksDependencies()) {
-                                int reference = cis.indexOf(chunksDependency.getReference());
-                                int dependsOn = chunksDependency.indexOf(chunksDependency.getDependsOn());
-                                String depedencyType = chunksDependency.getType().toString();
-                                System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
-                            }*/
-                           
+                    //Treating dependencies 
+                    if (mergeDependency == null) {
+                        Chunks = 0;
+                        dependencies = 0;
+                    } else {
+                        Chunks = mergeDependency.getChunksAmount();
+                        dependencies = mergeDependency.getChunksDependencies().size();
+
+                        List<ChunkInformation> cis = mergeDependency.getCis();
+                        for (ChunksDependency chunksDependency : mergeDependency.getChunksDependencies()) {
+                            int reference = cis.indexOf(chunksDependency.getReference());
+                            int dependsOn = cis.indexOf(chunksDependency.getDependsOn());
+                            String depedencyType = chunksDependency.getType().toString();
+                            if (depedencyType.equals("METHOD_DECLARATION_INVOCATION")) {
+                                methodQtd++;
+                            } else if (depedencyType.equals("ATTRIBUTE_DECLARATION_USAGE")) {
+                                attributeQtd++;
+                            }
+                            //System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
                         }
-
-                        System.out.println(project + ", " + Chunks + ", " + dependencies + ", " + SHAmergeBase + ", " + SHALeft + ", " + SHARight);
-                    } catch (IOException ex) {
-                        System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
                     }
+                    file.write(SHAMerge + ", " + Chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + "\n");
+                    System.out.println(SHAMerge + " Chunks: " + Chunks + ", Dependencies: " + dependencies + ", Method: " + methodQtd + ", Attribute: " + attributeQtd);
+                } catch (IOException ex) {
+                    System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
                 }
             }
+            }
+            }
+            file.close();
+        } catch (IOException ex) {
+            System.out.println("The file could not be created");
         }
     }
 
@@ -140,7 +176,6 @@ public class CouplingChunks {
         //Getting modified files 
         List<String> changedFilesLeft = Git.getChangedFiles(projectPath, SHALeft, SHAmergeBase);
         List<String> changedFilesRight = Git.getChangedFiles(projectPath, SHARight, SHAmergeBase);
-        List<String> changedFilesBase = Git.getChangedFiles(projectPath, SHAmergeBase); //não funciona
 
         //to remove files that have extension other than java
         for (int i = 0; i < changedFilesLeft.size(); i++) {
