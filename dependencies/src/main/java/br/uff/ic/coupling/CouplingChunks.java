@@ -466,17 +466,10 @@ public class CouplingChunks {
 
     public static boolean sameMethod(MyMethodDeclaration methodDeclaration, MyMethodInvocation methodInvocation) {
 
-        /*IMethodBinding methodDeclarationBinding = methodDeclaration.getMethodDeclaration().resolveBinding();
+        IMethodBinding methodDeclarationBinding = methodDeclaration.getMethodDeclaration().resolveBinding();
         IMethodBinding methodInvocationBinding = methodInvocation.getMethodInvocation().resolveMethodBinding();
 
-        if (methodDeclarationBinding != null && methodInvocationBinding != null && methodDeclarationBinding.equals(methodInvocationBinding)) {
-            return true;
-        } else {
-            return false;
-        }*/
-        String identifierMethodDeclaration = methodDeclaration.getMethodDeclaration().getName().getIdentifier();
-        String identifierMethodInvocation = methodInvocation.getMethodInvocation().getName().getIdentifier();
-        if (identifierMethodDeclaration != null && identifierMethodInvocation != null && identifierMethodDeclaration.equals(identifierMethodInvocation)) {
+        if (methodDeclarationBinding != null && methodInvocationBinding != null && methodInvocationBinding.isEqualTo(methodDeclarationBinding)) {
             return true;
         } else {
             return false;
