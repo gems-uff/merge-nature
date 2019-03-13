@@ -44,7 +44,7 @@ public class CouplingChunks {
         List<String> projectsPath = new ArrayList<>();
         //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco");
         // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_old");
-        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_new");
+        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\rename");
         String sandbox = "C:\\Cristiane\\mestrado\\sandbox";
         String outputPathName = "C:\\Cristiane\\mestrado\\results_structural_coupling\\results.txt";
 
@@ -446,14 +446,18 @@ public class CouplingChunks {
 
     public static boolean sameAttribute(MyAttributeDeclaration attributeDeclaration, MyAttributeCall attributeCall) {
 
-        IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
-        IBinding attributeCallBinding = attributeCall.getSimpleName().resolveBinding();
+        // IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
+        String attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().getName().getIdentifier();
+        String attributeCallBindingAux = attributeCall.getSimpleName().getParent().toString();
+        String attributeCallBinding =  attributeCallBindingAux.substring(attributeCallBindingAux.lastIndexOf('.') + 1, attributeCallBindingAux.length());
+        //IBinding attributeCallBinding = attributeCall.getSimpleName().getParent().toString();
 
-        if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeCallBinding.isEqualTo(attributeDeclarationBinding)) {
+        if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeCallBinding.equals(attributeDeclarationBinding)) {
             return true;
         } else {
             return false;
         }
+
     }
 
     //Treating variable dependency between declaration and usage
