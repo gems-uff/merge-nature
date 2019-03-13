@@ -356,7 +356,7 @@ public class Git {
 
         List<String> result = new ArrayList<>();
         //"diff-tree"
-        String[] command = {"git", "diff", "--no-commit-id", "--name-only", "-r", SHAParent, SHAMergeBase};
+        String[] command = {"git", "diff", "--no-commit-id", "--name-only", "-r", SHAMergeBase, SHAParent};
 
         CMDOutput cmdOutput = CMD.cmdArray(repository, command);
         if (cmdOutput.getErrors().isEmpty()) {
