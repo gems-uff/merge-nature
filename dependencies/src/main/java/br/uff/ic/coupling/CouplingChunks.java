@@ -42,20 +42,26 @@ public class CouplingChunks {
 
     public static void main(String[] args) {
         List<String> projectsPath = new ArrayList<>();
-        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco");
-        // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_old");
-        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\rename");
+        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\metodo_atributo_rename");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\variable");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\estrutural2");// p testar atributo
+        // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\variavel");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco_atributo");
+        // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\banco2");
+        // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\interviews");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\rename2");
         String sandbox = "C:\\Cristiane\\mestrado\\sandbox";
+        String sandboxAux = "C:\\Cristiane\\mestrado\\sandboxAux";
         String outputPathName = "C:\\Cristiane\\mestrado\\results_structural_coupling\\results.txt";
 
         for (String projectPath : projectsPath) {
             System.out.println("Project: " + projectPath);
-            analyze(projectPath, sandbox, outputPathName);
+            analyze(projectPath, sandbox, outputPathName, sandboxAux);
         }
 
     }
 
-    public static void analyze(String projectPath, String sandbox, String outputPathName) {
+    public static void analyze(String projectPath, String sandbox, String outputPathName, String sandboxAux) {
         List<String> mergeRevisions = Git.getMergeRevisions(projectPath);
         int hasDependencies = 0, hasNoDependencies = 0, oneCC = 0, moreThanOneCC = 0;
 
@@ -68,8 +74,13 @@ public class CouplingChunks {
 
             int methodQtd = 0;
             int attributeQtd = 0;
+            int variableQtd = 0;
             project = projectPath;
 
+            /* SHAMerge = "c12e8da299fa998e4f87d2041b1c0d5a99c043a6";
+            SHALeft = "8373e9e4191d2ed7ceff6b3ce995b454c22374ab";
+            SHARight = "6dc56abc2ee12be034208f51bbe231ba51723b1c";
+            SHAmergeBase = "f68e8626ccd0de92ec02155b8ae479e4b564bb67";*/
             for (String mergeRevision : mergeRevisions) {
                 SHAMerge = mergeRevision;
                 List<String> parents = Git.getParents(projectPath, mergeRevision);
@@ -81,15 +92,18 @@ public class CouplingChunks {
                     if ((!(SHAmergeBase.equals(SHALeft))) && (!(SHAmergeBase.equals(SHARight)))) {
 
                         try {
-                            mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox);
+                            mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox, sandboxAux);
 
                             //Treating dependencies 
                             if (mergeDependency == null) {
                                 Chunks = 0;
                                 dependencies = 0;
+                                methodQtd = 0;
+                                attributeQtd = 0;
                             } else {
                                 methodQtd = 0;
                                 attributeQtd = 0;
+                                variableQtd = 0;
                                 Chunks = mergeDependency.getChunksAmount();
                                 dependencies = mergeDependency.getChunksDependencies().size();
 
@@ -102,12 +116,14 @@ public class CouplingChunks {
                                         methodQtd++;
                                     } else if (depedencyType.equals("ATTRIBUTE_DECLARATION_USAGE")) {
                                         attributeQtd++;
+                                    } else if (depedencyType.equals("VARIABLE_DECLARATION_USAGE")) {
+                                        variableQtd++;
                                     }
                                     //System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
                                 }
                             }
-                            file.write(SHAMerge + ", " + Chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + "\n");
-                            System.out.println(SHAMerge + " Chunks: " + Chunks + ", Dependencies: " + dependencies + ", Method: " + methodQtd + ", Attribute: " + attributeQtd);
+                            file.write(SHAMerge + ", " + Chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + ", " + variableQtd + "\n");
+                            System.out.println(SHAMerge + " Chunks: " + Chunks + ", Dependencies: " + dependencies + ", Method: " + methodQtd + ", Attribute: " + attributeQtd + ", Variable: " + variableQtd);
                         } catch (IOException ex) {
                             System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
                         }
@@ -120,30 +136,36 @@ public class CouplingChunks {
         }
     }
 
-    public static MergeDependency performMerge(String projectPath, String SHALeft, String SHARight, String SHAmergeBase, String sandbox) throws IOException {
+    public static MergeDependency performMerge(String projectPath, String SHALeft, String SHARight, String SHAmergeBase, String sandbox, String sandboxAux) throws IOException {
         //VRF se está vindo certo e depois apagar o diff desta classe
         List<String> diffLeft = Git.diff(projectPath, SHAmergeBase, SHALeft);
         List<String> diffRight = Git.diff(projectPath, SHAmergeBase, SHARight);
 
         //Getting modified files 
-        List<String> changedFilesLeft = Git.getChangedFiles(projectPath, SHALeft, SHAmergeBase);
-        List<String> changedFilesRight = Git.getChangedFiles(projectPath, SHARight, SHAmergeBase);
+        List<String> changedFilesLeftAux = Git.getChangedFiles(projectPath, SHALeft, SHAmergeBase);
+        List<String> changedFilesRightAux = Git.getChangedFiles(projectPath, SHARight, SHAmergeBase);
+        List<String> changedFilesLeft = new ArrayList<String>();
+        List<String> changedFilesRight = new ArrayList<String>();
 
         //to remove files that have extension other than java
-        for (int i = 0; i < changedFilesLeft.size(); i++) {
-            if (!changedFilesLeft.get(i).endsWith("java")) {
-                changedFilesLeft.remove(changedFilesLeft.get(i));
+        for (int i = 0; i < changedFilesLeftAux.size(); i++) {
+            if (changedFilesLeftAux.get(i).endsWith("java")) {
+                changedFilesLeft.add(changedFilesLeftAux.get(i));
             }
         }
-        for (int i = 0; i < changedFilesRight.size(); i++) {
-            if (!changedFilesRight.get(i).endsWith("java")) {
-                changedFilesRight.remove(changedFilesRight.get(i));
+        for (int i = 0; i < changedFilesRightAux.size(); i++) {
+            if (changedFilesRightAux.get(i).endsWith("java")) {
+                changedFilesRight.add(changedFilesRightAux.get(i));
             }
+        }
+        //If not exist java files, the variable changedFiles can be empty and we can't identify dependencies
+        if ((changedFilesLeft.isEmpty()) || (changedFilesRight.isEmpty())) {
+            return null;
         }
 
         //Getting chunks tem que armazenar as linhas add e removidas para cada arquivo
-        List<ChunkInformation> cisL = ChunkInformation.extractChunksInformation(projectPath, changedFilesLeft, SHAmergeBase, SHALeft, "Left");
-        List<ChunkInformation> cisR = ChunkInformation.extractChunksInformation(projectPath, changedFilesRight, SHAmergeBase, SHARight, "Right");
+        List<ChunkInformation> cisL = ChunkInformation.extractChunksInformation(projectPath, changedFilesLeft, SHAmergeBase, SHALeft, "Left", sandboxAux);
+        List<ChunkInformation> cisR = ChunkInformation.extractChunksInformation(projectPath, changedFilesRight, SHAmergeBase, SHARight, "Right", sandboxAux);
 
         //Union Left and Right modified files  
         List<String> changedFiles = new ArrayList<String>();
@@ -203,17 +225,15 @@ public class CouplingChunks {
 
         List<ClassLanguageContructs> ASTmergeBase = extractAST(repositoryBase);
 
-        System.out.println("Repositioning...");
-        repositioningChunksInformation(cisL, repositoryLeft, projectPath, repositoryBase);
-        repositioningChunksInformation(cisR, repositoryRight, projectPath, repositoryBase);
-
+        //System.out.println("Repositioning...");
+        //repositioningChunksInformation(cisL, repositoryLeft, projectPath, repositoryBase);
+        //repositioningChunksInformation(cisR, repositoryRight, projectPath, repositoryBase);
         //Getting modified files AST
         List<ClassLanguageContructs> ASTchangedFilesLeft = generateASTFiles(ASTLeft, changedFilesLeft);
         List<ClassLanguageContructs> ASTchangedFilesRight = generateASTFiles(ASTRight, changedFilesRight);
 
         //Creating depedency matrix
-        System.out.println("Extracting dependency matrix...");
-
+        //System.out.println("Extracting dependency matrix...");
         //Union Left and Right ChunkInformation 
         List<ChunkInformation> cis = new ArrayList<ChunkInformation>();
         for (ChunkInformation cisLeft : cisL) {
@@ -308,19 +328,19 @@ public class CouplingChunks {
             List<MyMethodDeclaration> leftMethodDeclarations = leftCCMethodDeclarations(projectPath, ci, ASTLeft);
             List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, ci, ASTLeft);
 
-            List<MyMethodDeclaration> leftBaseMethodDeclarations = leftCCMethodDeclarations(projectPath, ci, ASTmergeBase);
-            List<MyMethodInvocation> leftBaseMethodInvocations = leftCCMethodInvocations(projectPath, ci, ASTmergeBase);
+            List<MyMethodDeclaration> leftBaseMethodDeclarations = leftBaseCCMethodDeclarations(projectPath, ci, ASTmergeBase);
 
             //Find attribute declarations
             List<MyAttributeDeclaration> leftAttributeDeclarations = leftAttributes(projectPath, ci, ASTLeft);
             List<MyAttributeCall> leftAttributeCalls = leftAttributeCalls(projectPath, ci, ASTLeft);
 
-            List<MyAttributeDeclaration> leftBaseAttributeDeclarations = leftAttributes(projectPath, ci, ASTmergeBase);
-            List<MyAttributeCall> leftBaseAttributeCalls = leftAttributeCalls(projectPath, ci, ASTmergeBase);
+            List<MyAttributeDeclaration> leftBaseAttributeDeclarations = leftBaseAttributes(projectPath, ci, ASTmergeBase);
 
             //Find variable declarations
             List<MyVariableDeclaration> leftVariableDeclarations = leftVariableDeclarations(projectPath, ci, ASTLeft);
-            List<MyVariableDeclaration> rightVariableDeclarations = rightVariableDeclarations(projectPath, ci, ASTRight);
+            List<MyVariableCall> leftVariableCalls = leftVariableCalls(projectPath, ci, ASTLeft);
+
+            List<MyVariableDeclaration> leftBaseVariableDeclarations = leftBaseVariableDeclarations(projectPath, ci, ASTmergeBase);
 
             //int rowNumber = cisL.indexOf(ci);
             for (ChunkInformation ciAux : cisR) {
@@ -329,49 +349,63 @@ public class CouplingChunks {
                 List<MyMethodDeclaration> rightMethodDeclarations = rightCCMethodDeclaration(projectPath, ciAux, ASTRight);
                 List<MyMethodInvocation> rightMethodInvocations = rightCCMethodInvocations(projectPath, ciAux, ASTRight);
 
-                List<MyMethodDeclaration> rightBaseMethodDeclarations = rightCCMethodDeclaration(projectPath, ciAux, ASTmergeBase);
-                List<MyMethodInvocation> rightBaseMethodInvocations = rightCCMethodInvocations(projectPath, ciAux, ASTmergeBase);
+                List<MyMethodDeclaration> rightBaseMethodDeclarations = rightBaseCCMethodDeclaration(projectPath, ciAux, ASTmergeBase);
 
                 List<MyAttributeDeclaration> rightAttributeDeclarations = rightAttributes(projectPath, ciAux, ASTRight);
                 List<MyAttributeCall> rightAttributeCalls = rightAttributeCalls(projectPath, ciAux, ASTRight);
 
-                List<MyAttributeDeclaration> rightBaseAttributeDeclarations = rightAttributes(projectPath, ciAux, ASTmergeBase);
-                List<MyAttributeCall> rightBaseAttributeCalls = rightAttributeCalls(projectPath, ciAux, ASTmergeBase);
+                List<MyAttributeDeclaration> rightBaseAttributeDeclarations = rightBaseAttributes(projectPath, ciAux, ASTmergeBase);
 
-                List<MyVariableCall> leftVariableCalls = leftVariableCalls(projectPath, ciAux, ASTLeft);
+                List<MyVariableDeclaration> rightVariableDeclarations = rightVariableDeclarations(projectPath, ciAux, ASTRight);
                 List<MyVariableCall> rightVariableCalls = rightVariableCalls(projectPath, ciAux, ASTRight);
 
-                boolean hasMethodDependecy
-                        = hasMethodDependency(rightBaseMethodDeclarations, leftMethodInvocations)
-                        || hasMethodDependency(leftBaseMethodDeclarations, rightMethodInvocations);
+                List<MyVariableDeclaration> rightBaseVariableDeclarations = rightBaseVariableDeclarations(projectPath, ciAux, ASTmergeBase);
 
-                if (hasMethodDependecy) {
+                boolean hasMethodDependency1 = hasMethodDependency(rightBaseMethodDeclarations, leftMethodInvocations);
+                boolean hasMethodDependency2 = hasMethodDependency(leftBaseMethodDeclarations, rightMethodInvocations);
+
+                if (hasMethodDependency1) {
                     ChunksDependency ChunksDependency
                             = new ChunksDependency(ciAux, ci, DependencyType.METHOD_DECLARATION_INVOCATION);
                     mergeDependency.getChunksDependencies().add(ChunksDependency);
                 }
+                if (hasMethodDependency2) {
+                    ChunksDependency ChunksDependency
+                            = new ChunksDependency(ci, ciAux, DependencyType.METHOD_DECLARATION_INVOCATION);
+                    mergeDependency.getChunksDependencies().add(ChunksDependency);
+                }
 
-                boolean hasAttributeDepedency
-                        = hasAttributeDependency(leftBaseAttributeDeclarations, rightAttributeCalls)
-                        || hasAttributeDependency(rightBaseAttributeDeclarations, leftAttributeCalls);
+                boolean hasAttributeDepedency1 = hasAttributeDependency(rightBaseAttributeDeclarations, leftAttributeCalls);
+                boolean hasAttributeDepedency2 = hasAttributeDependency(leftBaseAttributeDeclarations, rightAttributeCalls);
 
-                if (hasAttributeDepedency) {
+                if (hasAttributeDepedency1) {
                     ChunksDependency ChunksDependency
                             = new ChunksDependency(ciAux, ci, DependencyType.ATTRIBUTE_DECLARATION_USAGE);
                     mergeDependency.getChunksDependencies().add(ChunksDependency);
                 }
 
-                boolean hasVariableDepedency
-                        = hasVariableDependency(leftVariableDeclarations, leftVariableCalls)
-                        || hasVariableDependency(rightVariableDeclarations, rightVariableCalls);
+                if (hasAttributeDepedency2) {
+                    ChunksDependency ChunksDependency
+                            = new ChunksDependency(ci, ciAux, DependencyType.ATTRIBUTE_DECLARATION_USAGE);
+                    mergeDependency.getChunksDependencies().add(ChunksDependency);
+                }
 
-                if (hasVariableDepedency) {
+                boolean hasVariableDepedency1 = hasVariableDependency(rightBaseVariableDeclarations, leftVariableCalls);
+                boolean hasVariableDepedency2 = hasVariableDependency(leftBaseVariableDeclarations, rightVariableCalls);
+
+                if (hasVariableDepedency1) {
                     //CC(rowNumber) depends on CC(ColumnNumber)
                     //if (columnNumber != rowNumber) {
                     ChunksDependency ChunksDependency
                             = new ChunksDependency(ciAux, ci, DependencyType.VARIABLE_DECLARATION_USAGE);
                     mergeDependency.getChunksDependencies().add(ChunksDependency);
                     //}
+                }
+
+                if (hasVariableDepedency2) {
+                    ChunksDependency ChunksDependency
+                            = new ChunksDependency(ci, ciAux, DependencyType.VARIABLE_DECLARATION_USAGE);
+                    mergeDependency.getChunksDependencies().add(ChunksDependency);
                 }
 
             }
@@ -409,7 +443,6 @@ public class CouplingChunks {
                 if (sameMethod(methodDeclaration, methodInvocation)) {
                     return true;
                 }
-
             }
         }
 
@@ -422,6 +455,30 @@ public class CouplingChunks {
         IMethodBinding methodInvocationBinding = methodInvocation.getMethodInvocation().resolveMethodBinding();
 
         if (methodDeclarationBinding != null && methodInvocationBinding != null && methodInvocationBinding.isEqualTo(methodDeclarationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean sameBaseMethodInvocation(MyMethodInvocation methodInvocationLeft, MyMethodInvocation methodInvocation) {
+
+        IMethodBinding methodInvocationLeftBinding = methodInvocationLeft.getMethodInvocation().resolveMethodBinding();
+        IMethodBinding methodInvocationBinding = methodInvocation.getMethodInvocation().resolveMethodBinding();
+
+        if (methodInvocationLeftBinding != null && methodInvocationBinding != null && methodInvocationLeftBinding.isEqualTo(methodInvocationBinding)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean sameBaseAttributeDeclaration(MyAttributeDeclaration leftAttributeDeclaration, MyAttributeDeclaration attributeDeclaration) {
+
+        IVariableBinding attributeDeclarationLeftBinding = leftAttributeDeclaration.getFieldDeclaration().resolveBinding();
+        IBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
+
+        if (attributeDeclarationLeftBinding != null && attributeDeclarationBinding != null && attributeDeclarationLeftBinding.isEqualTo(attributeDeclarationBinding)) {
             return true;
         } else {
             return false;
@@ -446,18 +503,19 @@ public class CouplingChunks {
 
     public static boolean sameAttribute(MyAttributeDeclaration attributeDeclaration, MyAttributeCall attributeCall) {
 
-        // IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
+        //IVariableBinding attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().resolveBinding();
+        //IBinding attributeCallBinding = attributeCall.getSimpleName().resolveBinding();
+        //IVariableBinding variableDeclarationBinding = variableDeclaration.resolveBinding();
+        //IBinding variableCallBinding = variableCall.getSimpleName().resolveBinding();
         String attributeDeclarationBinding = attributeDeclaration.getFieldDeclaration().getName().getIdentifier();
         String attributeCallBindingAux = attributeCall.getSimpleName().getParent().toString();
-        String attributeCallBinding =  attributeCallBindingAux.substring(attributeCallBindingAux.lastIndexOf('.') + 1, attributeCallBindingAux.length());
-        //IBinding attributeCallBinding = attributeCall.getSimpleName().getParent().toString();
+        String attributeCallBinding = attributeCallBindingAux.substring(attributeCallBindingAux.lastIndexOf('.') + 1, attributeCallBindingAux.length());
 
         if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeCallBinding.equals(attributeDeclarationBinding)) {
             return true;
         } else {
             return false;
         }
-
     }
 
     //Treating variable dependency between declaration and usage
@@ -478,10 +536,10 @@ public class CouplingChunks {
 
     public static boolean sameVariable(MyVariableDeclaration variableDeclaration, MyVariableCall variableCall) {
 
-        IVariableBinding attributeDeclarationBinding = variableDeclaration.resolveBinding();
-        IBinding attributeCallBinding = variableCall.getSimpleName().resolveBinding();
+        IVariableBinding variableDeclarationBinding = variableDeclaration.resolveBinding();
+        IBinding variableCallBinding = variableCall.getSimpleName().resolveBinding();
 
-        if (attributeDeclarationBinding != null && attributeCallBinding != null && attributeDeclarationBinding.equals(attributeCallBinding)) {
+        if (variableDeclarationBinding != null && variableCallBinding != null && variableCallBinding.isEqualTo(variableDeclarationBinding)) {
             return true;
         } else {
             return false;
@@ -614,8 +672,8 @@ public class CouplingChunks {
 
         String relativePath = null;
 
-        if (ci.isRenamed() && ci.getRelativePathLeft() != null) {
-            relativePath = ci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
             relativePath = ci.getFilePath().replace(projectPath, "");
         }
@@ -643,50 +701,32 @@ public class CouplingChunks {
         return result;
     }
 
-    public static boolean leftHasIntersection(Location location, ChunkInformation cci, int line) {
-
-        if ((line >= location.getElementLineBegin()) && (line <= location.getElementLineEnd())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static boolean leftHasIntersection(MyMethodDeclaration methodDeclaration, ChunkInformation cci, int line) {
-
-        return leftHasIntersection(methodDeclaration.getLocation(), cci, line);
-
-    }
-
-    public static List<MyMethodDeclaration> rightCCMethodDeclaration(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+    public static List<MyMethodDeclaration> leftBaseCCMethodDeclarations(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
 
         List<MyMethodDeclaration> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
         List<Operation> operations = new ArrayList<>();
 
         String relativePath = null;
 
-        if (cci.isRenamed() && cci.getRelativePathRight() != null) {
-            relativePath = cci.getRelativePathRight();
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
-        for (ClassLanguageContructs AST : ASTRight) {
+        for (ClassLanguageContructs AST : ASTmergeBase) {
 
             if (containsPath(AST.getPath(), relativePath)) {
 
                 List<MyMethodDeclaration> methodDeclarations = AST.getMethodDeclarations();
 
                 for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
-                    //repositionBase = cci.getReposition();
-                    //for (int line : repositionBase) {
-
-                    operations = cci.getOperations();
-                    for (Operation operation : operations) {
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
                         int line = operation.getLine();
-                        if (rightHasIntersection(methodDeclaration, cci, line)) {
+                        if (leftHasIntersection(methodDeclaration, ci, line)) {
                             result.add(methodDeclaration);
                         }
                     }
@@ -697,7 +737,133 @@ public class CouplingChunks {
         return result;
     }
 
-    public static boolean rightHasIntersection(Location location, ChunkInformation cci, int line) {
+    public static List<MyAttributeDeclaration> leftBaseAttributes(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
+
+        List<MyAttributeDeclaration> result = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+
+        String relativePath = null;
+
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTmergeBase) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
+
+                for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
+                        int line = operation.getLine();
+                        if (leftHasIntersection(attributeDeclaration.getLocation(), ci, line)) {
+                            result.add(attributeDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static boolean leftHasIntersection(Location location, ChunkInformation ci, int line) {
+
+        if ((line >= location.getElementLineBegin()) && (line <= location.getElementLineEnd())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean leftHasIntersection(MyMethodDeclaration methodDeclaration, ChunkInformation ci, int line) {
+
+        return leftHasIntersection(methodDeclaration.getLocation(), ci, line);
+
+    }
+
+    public static List<MyMethodDeclaration> rightCCMethodDeclaration(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
+
+        List<MyMethodDeclaration> result = new ArrayList<>();
+        List<Integer> repositionBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+
+        String relativePath = null;
+
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTRight) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyMethodDeclaration> methodDeclarations = AST.getMethodDeclarations();
+
+                for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
+                    //repositionBase = ci.getReposition();
+                    //for (int line : repositionBase) {
+                    operations = ci.getOperations();
+                    for (Operation operation : operations) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(methodDeclaration, ci, line)) {
+                            result.add(methodDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyMethodDeclaration> rightBaseCCMethodDeclaration(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
+
+        List<MyMethodDeclaration> result = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+
+        String relativePath = null;
+
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTmergeBase) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyMethodDeclaration> methodDeclarations = AST.getMethodDeclarations();
+
+                for (MyMethodDeclaration methodDeclaration : methodDeclarations) {
+
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(methodDeclaration, ci, line)) {
+                            result.add(methodDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static boolean rightHasIntersection(Location location, ChunkInformation ci, int line) {
 
         if ((line >= location.getElementLineBegin()) && (line <= location.getElementLineEnd())) {
             return true;
@@ -707,14 +873,14 @@ public class CouplingChunks {
 
     }
 
-    public static boolean rightHasIntersection(MyMethodDeclaration methodDeclaration, ChunkInformation cci, int line) {
+    public static boolean rightHasIntersection(MyMethodDeclaration methodDeclaration, ChunkInformation ci, int line) {
 
-        return rightHasIntersection(methodDeclaration.getLocation(), cci, line);
+        return rightHasIntersection(methodDeclaration.getLocation(), ci, line);
 
     }
 
     public static List<MyMethodInvocation> leftCCMethodInvocations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyMethodInvocation> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -722,10 +888,10 @@ public class CouplingChunks {
 
         String relativePath = null;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTLeft) { //PERCORRE
@@ -735,13 +901,13 @@ public class CouplingChunks {
                 List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
 
                 for (MyMethodInvocation methodInvocation : methodInvocations) {
-                    // repositionBase = cci.getReposition();
-                    //for (int line : repositionBase) 
-                    operations = cci.getOperations();
+                    //repositionBase = ci.getReposition();
+                    //for (int line : repositionBase) {
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
 
-                        if (leftHasIntersection(methodInvocation.getLocation(), cci, line)) { //SE AS INVOCACOES DE METODO ESTAO DENTRO DO CCCI(CONFLICT CHUNK INFORMATUON
+                        if (leftHasIntersection(methodInvocation.getLocation(), ci, line)) { //SE AS INVOCACOES DE METODO ESTAO DENTRO DO CCCI(CONFLICT CHUNK INFORMATUON
                             result.add(methodInvocation);
                         }
                     }
@@ -753,7 +919,7 @@ public class CouplingChunks {
     }
 
     public static List<MyMethodInvocation> rightCCMethodInvocations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyMethodInvocation> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -761,10 +927,10 @@ public class CouplingChunks {
 
         String relativePath = null;
 
-        if (cci.isRenamed() && cci.getRelativePathRight() != null) {
-            relativePath = cci.getRelativePathRight();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTRight) {
@@ -774,13 +940,12 @@ public class CouplingChunks {
                 List<MyMethodInvocation> methodInvocations = AST.getMethodInvocations();
 
                 for (MyMethodInvocation methodInvocation : methodInvocations) {
-                    //repositionBase = cci.getReposition();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (rightHasIntersection(methodInvocation.getLocation(), cci, line)) {
+                        if (rightHasIntersection(methodInvocation.getLocation(), ci, line)) {
                             result.add(methodInvocation);
                         }
                     }
@@ -806,7 +971,7 @@ public class CouplingChunks {
     }
 
     public static List<MyAttributeDeclaration> leftAttributes(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyAttributeDeclaration> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -814,10 +979,10 @@ public class CouplingChunks {
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTLeft) {
@@ -827,12 +992,12 @@ public class CouplingChunks {
                 List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
                 for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
-                    //repositionBase = cci.getReposition();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (leftHasIntersection(attributeDeclaration.getLocation(), cci, line)) {
+                        if (leftHasIntersection(attributeDeclaration.getLocation(), ci, line)) {
                             result.add(attributeDeclaration);
                         }
                     }
@@ -844,7 +1009,7 @@ public class CouplingChunks {
     }
 
     public static List<MyAttributeDeclaration> rightAttributes(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyAttributeDeclaration> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -852,10 +1017,10 @@ public class CouplingChunks {
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTRight) {
@@ -865,12 +1030,49 @@ public class CouplingChunks {
                 List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
 
                 for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
-                    //repositionBase = cci.getReposition();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (rightHasIntersection(attributeDeclaration.getLocation(), cci, line)) {
+                        if (rightHasIntersection(attributeDeclaration.getLocation(), ci, line)) {
+                            result.add(attributeDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyAttributeDeclaration> rightBaseAttributes(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
+
+        List<MyAttributeDeclaration> result = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+
+        String relativePath;
+
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTmergeBase) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyAttributeDeclaration> attributeDeclarations = AST.getAttributes();
+
+                for (MyAttributeDeclaration attributeDeclaration : attributeDeclarations) {
+
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(attributeDeclaration.getLocation(), ci, line)) {
                             result.add(attributeDeclaration);
                         }
                     }
@@ -882,7 +1084,7 @@ public class CouplingChunks {
     }
 
     public static List<MyAttributeCall> leftAttributeCalls(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyAttributeCall> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -890,10 +1092,10 @@ public class CouplingChunks {
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTLeft) {
@@ -903,12 +1105,12 @@ public class CouplingChunks {
                 List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
 
                 for (MyAttributeCall attributeCall : attributeCalls) {
-                    //repositionBase = cci.getReposition();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (leftHasIntersection(attributeCall.getLocation(), cci, line)) {
+                        if (leftHasIntersection(attributeCall.getLocation(), ci, line)) {
                             result.add(attributeCall);
                         }
                     }
@@ -920,17 +1122,18 @@ public class CouplingChunks {
     }
 
     public static List<MyAttributeCall> rightAttributeCalls(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyAttributeCall> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTRight) {
@@ -940,9 +1143,12 @@ public class CouplingChunks {
                 List<MyAttributeCall> attributeCalls = AST.getAttributeCalls();
 
                 for (MyAttributeCall attributeCall : attributeCalls) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(attributeCall.getLocation(), cci, line)) {
+                    //repositionBase = ci.getReposition();
+                    //for (int line : repositionBase) {
+                    operations = ci.getOperations();
+                    for (Operation operation : operations) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(attributeCall.getLocation(), ci, line)) {
                             result.add(attributeCall);
                         }
                     }
@@ -954,17 +1160,17 @@ public class CouplingChunks {
     }
 
     public static List<MyVariableDeclaration> leftVariableDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyVariableDeclaration> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
         List<Operation> operations = new ArrayList<>();
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTLeft) {
@@ -974,12 +1180,47 @@ public class CouplingChunks {
                 List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
 
                 for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
-                    //repositionBase = cci.getReposition();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (leftHasIntersection(variableDeclaration.getLocation(), cci, line)) {
+                        if (leftHasIntersection(variableDeclaration.getLocation(), ci, line)) {
+                            result.add(variableDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableDeclaration> leftBaseVariableDeclarations(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
+
+        List<MyVariableDeclaration> result = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+        String relativePath;
+
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTmergeBase) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
+
+                for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
+                        int line = operation.getLine();
+                        if (leftHasIntersection(variableDeclaration.getLocation(), ci, line)) {
                             result.add(variableDeclaration);
                         }
                     }
@@ -991,17 +1232,18 @@ public class CouplingChunks {
     }
 
     public static List<MyVariableDeclaration> rightVariableDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyVariableDeclaration> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTRight) {
@@ -1011,9 +1253,48 @@ public class CouplingChunks {
                 List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
 
                 for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(variableDeclaration.getLocation(), cci, line)) {
+                    operations = ci.getOperations();
+                    for (Operation operation : operations) {
+                        int line = operation.getLine();
+                        //repositionBase = ci.getReposition();
+                        //for (int line : repositionBase) {
+                        if (rightHasIntersection(variableDeclaration.getLocation(), ci, line)) {
+                            result.add(variableDeclaration);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static List<MyVariableDeclaration> rightBaseVariableDeclarations(String projectPath,
+            ChunkInformation ci, List<ClassLanguageContructs> ASTmergeBase) {
+
+        List<MyVariableDeclaration> result = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
+
+        String relativePath;
+
+        if (ci.isRenamed() && ci.getRelativePathLeftBase() != null) {
+            relativePath = ci.getRelativePathLeftBase();
+        } else {
+            relativePath = ci.getFilePath().replace(projectPath, "");
+        }
+
+        for (ClassLanguageContructs AST : ASTmergeBase) {
+
+            if (containsPath(AST.getPath(), relativePath)) {
+
+                List<MyVariableDeclaration> variableDeclarations = AST.getVariableDeclarations();
+
+                for (MyVariableDeclaration variableDeclaration : variableDeclarations) {
+                    operationsBase = ci.getOperationsBase();
+                    for (Operation operation : operationsBase) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(variableDeclaration.getLocation(), ci, line)) {
                             result.add(variableDeclaration);
                         }
                     }
@@ -1025,7 +1306,7 @@ public class CouplingChunks {
     }
 
     public static List<MyVariableCall> leftVariableCalls(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTLeft) {
 
         List<MyVariableCall> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
@@ -1033,10 +1314,10 @@ public class CouplingChunks {
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTLeft) {
@@ -1046,13 +1327,12 @@ public class CouplingChunks {
                 List<MyVariableCall> variableCalls = AST.getVariableCalls();
 
                 for (MyVariableCall variableCall : variableCalls) {
-                    //repositionBase = cci.getReposition();
-                    //cci.getOperations();
+                    //repositionBase = ci.getReposition();
                     //for (int line : repositionBase) {
-                    operations = cci.getOperations();
+                    operations = ci.getOperations();
                     for (Operation operation : operations) {
                         int line = operation.getLine();
-                        if (leftHasIntersection(variableCall.getLocation(), cci, line)) {
+                        if (leftHasIntersection(variableCall.getLocation(), ci, line)) {
                             result.add(variableCall);
                         }
                     }
@@ -1064,17 +1344,18 @@ public class CouplingChunks {
     }
 
     public static List<MyVariableCall> rightVariableCalls(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
+            ChunkInformation ci, List<ClassLanguageContructs> ASTRight) {
 
         List<MyVariableCall> result = new ArrayList<>();
         List<Integer> repositionBase = new ArrayList<>();
+        List<Operation> operations = new ArrayList<>();
 
         String relativePath;
 
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
+        if (ci.isRenamed() && ci.getRelativePathRight() != null) {
+            relativePath = ci.getRelativePathRight();
         } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
+            relativePath = ci.getFilePath().replace(projectPath, "");
         }
 
         for (ClassLanguageContructs AST : ASTRight) {
@@ -1084,9 +1365,12 @@ public class CouplingChunks {
                 List<MyVariableCall> variableCalls = AST.getVariableCalls();
 
                 for (MyVariableCall variableCall : variableCalls) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(variableCall.getLocation(), cci, line)) {
+                    //repositionBase = ci.getReposition();
+                    //for (int line : repositionBase) {
+                    operations = ci.getOperations();
+                    for (Operation operation : operations) {
+                        int line = operation.getLine();
+                        if (rightHasIntersection(variableCall.getLocation(), ci, line)) {
                             result.add(variableCall);
                         }
                     }
@@ -1095,245 +1379,6 @@ public class CouplingChunks {
         }
 
         return result;
-    }
-
-    public static List<MyTypeDeclaration> leftTypeDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
-
-        List<MyTypeDeclaration> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-        List<Operation> operations = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTLeft) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
-
-                for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
-                    //repositionBase = cci.getReposition();
-                    //for (int line : repositionBase) {
-                    operations = cci.getOperations();
-                    for (Operation operation : operations) {
-                        int line = operation.getLine();
-                        if (leftHasIntersection(typeDeclaration.getLocation(), cci, line)) {
-                            result.add(typeDeclaration);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static List<MyTypeDeclaration> rightTypeDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
-
-        List<MyTypeDeclaration> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTRight) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyTypeDeclaration> typeDeclarations = AST.getTypeDeclarations();
-
-                for (MyTypeDeclaration typeDeclaration : typeDeclarations) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(typeDeclaration.getLocation(), cci, line)) {
-                            result.add(typeDeclaration);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static List<MyAnnotationDeclaration> leftAnnotationDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
-
-        List<MyAnnotationDeclaration> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTLeft) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
-
-                for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (leftHasIntersection(annotationDeclaration.getLocation(), cci, line)) {
-                            result.add(annotationDeclaration);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static List<MyAnnotationDeclaration> rightAnnotationDeclarations(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
-
-        List<MyAnnotationDeclaration> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTRight) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyAnnotationDeclaration> annotationDeclarations = AST.getAnnotationDeclarations();
-
-                for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(annotationDeclaration.getLocation(), cci, line)) {
-                            result.add(annotationDeclaration);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static List<MyAnnotationUsage> leftAnnotationUsages(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTLeft) {
-
-        List<MyAnnotationUsage> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-        List<Operation> operations = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTLeft) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyAnnotationUsage> annotationDeclarations = AST.getAnnotationUsages();
-
-                for (MyAnnotationUsage annotationUsage : annotationDeclarations) {
-                    //repositionBase = cci.getReposition();
-                    //for (int line : repositionBase) {
-                    operations = cci.getOperations();
-                    for (Operation operation : operations) {
-                        int line = operation.getLine();
-                        if (leftHasIntersection(annotationUsage.getLocation(), cci, line)) {
-                            result.add(annotationUsage);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public static List<MyAnnotationUsage> rightAnnotationUsages(String projectPath,
-            ChunkInformation cci, List<ClassLanguageContructs> ASTRight) {
-
-        List<MyAnnotationUsage> result = new ArrayList<>();
-        List<Integer> repositionBase = new ArrayList<>();
-
-        String relativePath;
-
-        if (cci.isRenamed() && cci.getRelativePathLeft() != null) {
-            relativePath = cci.getRelativePathLeft();
-        } else {
-            relativePath = cci.getFilePath().replace(projectPath, "");
-        }
-
-        for (ClassLanguageContructs AST : ASTRight) {
-
-            if (containsPath(AST.getPath(), relativePath)) {
-
-                List<MyAnnotationUsage> annotationUsages = AST.getAnnotationUsages();
-
-                for (MyAnnotationUsage annotationUsage : annotationUsages) {
-                    repositionBase = cci.getReposition();
-                    for (int line : repositionBase) {
-                        if (rightHasIntersection(annotationUsage.getLocation(), cci, line)) {
-                            result.add(annotationUsage);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    //Treating dependency between a annotation declaration its usages
-    public static boolean hasDependencyAnnotationDeclarationUsage(List<MyAnnotationDeclaration> annotationDeclarations, List<MyAnnotationUsage> annotationUsages) {
-
-        for (MyAnnotationDeclaration annotationDeclaration : annotationDeclarations) {
-            for (MyAnnotationUsage annotationUsage : annotationUsages) {
-                if (sameAnnotation(annotationDeclaration, annotationUsage)) {
-                    return true;
-                }
-            }
-
-        }
-
-        return false;
-    }
-
-    public static boolean sameAnnotation(MyAnnotationDeclaration annotationDeclaration, MyAnnotationUsage annotationUsage) {
-
-        ITypeBinding annotationDeclarationBinding = annotationDeclaration.resolveTypeBinding();
-        ITypeBinding annotationUsageBinding = annotationUsage.resolveTypeBinding();
-
-        if (annotationDeclarationBinding != null && annotationUsageBinding != null && annotationDeclarationBinding.equals(annotationUsageBinding)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static boolean containsPath(String path, String relativePath) {

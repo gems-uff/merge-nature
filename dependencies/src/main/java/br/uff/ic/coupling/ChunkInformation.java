@@ -7,10 +7,13 @@ package br.uff.ic.coupling;
 
 import br.uff.ic.gems.resources.operation.Operation;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
+import br.uff.ic.mergeguider.MergeGuider;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -21,38 +24,60 @@ public class ChunkInformation {
     //Information base of any chunk
     private String filePath;
     private List<Operation> operations;
+    private List<Operation> operationsBase;
     private List<Integer> repositionBase;
 
     //Verify whether files were renamed
     private boolean renamed;
     private String relativePathLeft;
     private String relativePathRight;
+    private String relativePathLeftBase;
+    private String relativePathRightBase;
 
-    public ChunkInformation(String filePath, List<Operation> operations) {
+    public ChunkInformation(String filePath, List<Operation> operations, List<Operation> operationsBase) {
         this.filePath = filePath;
         this.operations = operations;
+        this.operationsBase = operationsBase;
 
         //Treating rename
         renamed = false;
         relativePathLeft = null;
         relativePathRight = null;
+        relativePathLeftBase = null;
+        relativePathRightBase = null;
 
     }
 
     public ChunkInformation(ChunkInformation ChunkInformation) {
         this.filePath = ChunkInformation.getFilePath();
         this.operations = ChunkInformation.getOperations();
+        this.operationsBase = ChunkInformation.getOperationsBase();
         this.renamed = ChunkInformation.isRenamed();
         this.relativePathLeft = ChunkInformation.getRelativePathLeft();
         this.relativePathRight = ChunkInformation.getRelativePathRight();
+        this.relativePathLeftBase = ChunkInformation.getRelativePathLeftBase();
+        this.relativePathRightBase = ChunkInformation.getRelativePathRightBase();
     }
 
-    public static List<ChunkInformation> extractChunksInformation(String projectPath, String filePath, String SHAmergeBase, String SHAParent, String branch) throws IOException {
+    public static List<ChunkInformation> extractChunksInformation(String projectPath, String filePath, String SHAmergeBase, String SHAParent, String branch, String sandboxAux) throws IOException {
         List<ChunkInformation> result = new ArrayList<>();
 
-        ChunkInformation ChunkInformation;
+        GitTranslator gitTranslator = new GitTranslator();
 
-        List<String> fileDiff = Git.fileDiff(projectPath, filePath, SHAmergeBase, SHAParent);
+        ChunkInformation ChunkInformation;
+        //Quando o arquivo é renomeado, e por isso, não possui mais o arquivo anterior no projeto, ao fazer
+        //o diff com o filePath do arquivo que não existe mais, dá fileDiff == null
+
+        MergeGuider.clone(projectPath, sandboxAux);
+        Git.reset(sandboxAux);
+        Git.clean(sandboxAux);
+        Git.checkout(sandboxAux, SHAParent);
+
+        List<String> fileDiff = Git.fileDiff(sandboxAux, filePath, SHAmergeBase, SHAParent);
+
+        if (fileDiff == null) {
+            return result;
+        }
 
         List<Chunk> Chunks = FileAnalyzer.getChunks(fileDiff, filePath, branch); //get modified lines
 
@@ -61,21 +86,53 @@ public class ChunkInformation {
         }
         for (Chunk Chunk : Chunks) {
             List<Operation> operations = Chunk.getOperations();
+            List<Operation> operationsBase = Chunk.getOperationsBase();
+            ChunkInformation = new ChunkInformation(filePath, operations, operationsBase);
 
-            ChunkInformation = new ChunkInformation(filePath, operations);
+            String fromFile = "";
+            String toFile = "";
+            //Treating rename
+            for (String line : fileDiff) {
+                if (line.startsWith("---")) {
+                    fromFile = line.substring(line.indexOf("a/") + 1);
+                } else if (line.startsWith("+++")) {
+                    toFile = line.substring(line.indexOf("b/") + 1);
+                }
 
-            //Treating rename Preciso tratar arquivo renomeado?
+            }
+            if (!fromFile.equals(toFile)) { //renamed file or new file
+                List<String> diffList = Git.diff(projectPath, SHAmergeBase, SHAParent);
+                String diffDelta = diffList.toString();
+                List<String> pathFileMerge = gitTranslator.translateRenamed(diffDelta);
+
+                if (pathFileMerge.isEmpty()) { //new file
+                    ChunkInformation.setRelativePathLeftBase(fromFile); 
+                    ChunkInformation.setRelativePathRightBase(toFile);
+
+                } else if (!pathFileMerge.isEmpty()) { //renamed file
+                    ChunkInformation.setRenamed(true);
+                    ChunkInformation.setRelativePathLeftBase(pathFileMerge.get(0)); //renamed from
+                    ChunkInformation.setRelativePathRightBase(pathFileMerge.get(1)); //renamed to
+                }
+
+            } else if (fromFile.equals(toFile)) {
+                ChunkInformation.setRelativePathLeftBase(toFile); //fromFile
+                ChunkInformation.setRelativePathRightBase(fromFile); //toFile
+            }
+
+            ChunkInformation.setRelativePathLeft(toFile); //fromFile
+            ChunkInformation.setRelativePathRight(fromFile); //toFile
+
             result.add(ChunkInformation);
         }
-
         return result;
     }
 
-    public static List<ChunkInformation> extractChunksInformation(String projectPath, List<String> filePaths, String SHAmergeBase, String SHALeft, String branch) throws IOException {
+    public static List<ChunkInformation> extractChunksInformation(String projectPath, List<String> filePaths, String SHAmergeBase, String SHALeft, String branch, String sandboxAux) throws IOException {
         List<ChunkInformation> result = new ArrayList<>();
 
         for (String filePath : filePaths) {
-            List<ChunkInformation> ci = extractChunksInformation(projectPath, filePath, SHAmergeBase, SHALeft, branch);
+            List<ChunkInformation> ci = extractChunksInformation(projectPath, filePath, SHAmergeBase, SHALeft, branch, sandboxAux);
             result.addAll(ci);
         }
 
@@ -110,8 +167,24 @@ public class ChunkInformation {
         this.operations = operations;
     }
 
+    /**
+     * @return the operationsBase
+     */
+    public List<Operation> getOperationsBase() {
+        return operationsBase;
+    }
+
+    /**
+     * @param operationsBase the operations to set
+     */
+    public void setOperationsBase(List<Operation> operationsBase) {
+        this.operationsBase = operationsBase;
+    }
+
     public void reposition(String filePath, String mergeBaseFilePath) {
         Repositioning repositioning = new Repositioning(null);
+
+        GitTranslator gitTranslator = new GitTranslator();
 
         int position;
 
@@ -121,17 +194,8 @@ public class ChunkInformation {
             position = repositioning.repositioning(mergeBaseFilePath, filePath, line);
             repositionBase.add(position);
         }
-        
+
         setReposition(repositionBase);
-        
-       /* Operation operation = GitTranslator.getOperations((operationsCluster.get(i).getType()), (operationsCluster.get(i).getSize()), result);
-
-            repositionOperations.add(operation);
-        
-         operationsCluster = gitTranslator.cluster(operations);*/
-
-        //List<Operation> Op = repositioning.repositioning(baseFilePath, leftFilePath, operations);
-        //setReposition(Op);
     }
 
     /**
@@ -185,6 +249,34 @@ public class ChunkInformation {
      */
     public void setRelativePathRight(String relativePathRight) {
         this.relativePathRight = relativePathRight;
+    }
+
+    /**
+     * @return the relativePathLeftBase
+     */
+    public String getRelativePathLeftBase() {
+        return relativePathLeftBase;
+    }
+
+    /**
+     * @param relativePathLeftBase the relativePathLeft to set
+     */
+    public void setRelativePathLeftBase(String relativePathLeftBase) {
+        this.relativePathLeftBase = relativePathLeftBase;
+    }
+
+    /**
+     * @return the relativePathRightBase
+     */
+    public String getRelativePathRightBase() {
+        return relativePathRightBase;
+    }
+
+    /**
+     * @param relativePathRightBase the relativePathRight to set
+     */
+    public void setRelativePathRightBase(String relativePathRightBase) {
+        this.relativePathRightBase = relativePathRightBase;
     }
 
 }

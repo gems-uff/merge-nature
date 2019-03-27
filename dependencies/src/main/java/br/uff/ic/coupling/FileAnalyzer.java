@@ -14,7 +14,6 @@ import br.uff.ic.gems.resources.operation.OperationType;
 import br.uff.ic.gems.resources.repositioning.Repositioning;
 import br.uff.ic.gems.resources.states.DeveloperDecision;
 import br.uff.ic.gems.resources.utils.Information;
-import br.uff.ic.gems.resources.vcs.Git;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -189,7 +188,6 @@ public class FileAnalyzer {
             } catch (Exception ex) {
                 Logger.getLogger(FileAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            // Chunk.setDeveloperDecision(developerDecision);
 
             try {
 
@@ -213,19 +211,21 @@ public class FileAnalyzer {
 
         GitTranslator gitTranslator = new GitTranslator();
         List<Operation> operations = new ArrayList<>();
-        List<Operation> operationsCluster = new ArrayList<>();
+        List<Operation> operationsBase = new ArrayList<>();
+        //List<Operation> operationsCluster = new ArrayList<>();
 
         String delta = fileDiff.toString();
 
-        operations = gitTranslator.translateDelta(delta);
-        
-        operationsCluster = gitTranslator.cluster(operations);
+        operations = gitTranslator.translateDelta(delta); 
+        operationsBase = gitTranslator.translateDeltaBase(delta);
+        //operationsCluster = gitTranslator.cluster(operations);
 
         Chunk = new Chunk();
         
         chunkID = filePath.substring(filePath.lastIndexOf('/')+ 1, filePath.length()-5);//class name
         
-        Chunk.setOperations(operations); //operationsCluster
+        Chunk.setOperations(operations); 
+        Chunk.setOperationsBase(operationsBase);
         Chunk.setIdentifier(branch + chunkID);
 
         result.add(Chunk);

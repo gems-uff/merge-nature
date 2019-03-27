@@ -26,6 +26,8 @@ public class GitTranslator {
     private static String ADDEDLINE = "+";
     private static String FROMFILE = "---";
     private static String TOFILE = "+++";
+    private static String RENAMEFROM = "rename from";
+    private static String RENAMETO = "rename to";
 
     /**
      * Transforms a Git textual delta into an raw OO structure.
@@ -50,7 +52,69 @@ public class GitTranslator {
 
         if (delta.contains(", ")) {
             deltaLines = delta.split(", ");
-        } else if  (delta.contains("\n")) {
+        } else if (delta.contains("\n")) {
+            deltaLines = delta.split("\n");
+        }
+
+        //--------------------------------------------------------
+        //Reading the delta content to transform into OO structure
+        //--------------------------------------------------------
+        for (String line : deltaLines) {
+
+            //--------------------------------------------------------
+            //Removing whitespace in the begin of the line
+            //--------------------------------------------------------
+//            line = removingWhitespace(line);//work it better
+            if (line.startsWith(LINEINTERVAL)) {
+                //read the interval line
+                initialline = finalLine(line); //initialLine
+                if (initialline == 0) {//it is a added file
+                    initialline = 1;
+                }
+//                iteratorAdd = initialline;
+                iteratorRemove = initialline;
+
+            } else if (isAddedLine(line)) {
+                Operation operation = getOperation(line, OperationType.ADD, iteratorRemove);
+                result.add(operation);
+//                iteratorAdd++;
+                iteratorRemove++;
+
+            } else if (isRemovedLine(line)) {
+                Operation operation = getOperation(line, OperationType.REMOVE, iteratorRemove);
+                result.add(operation);
+                //iteratorRemove++;
+
+            } else {
+
+//                iteratorAdd++;
+                iteratorRemove++;
+
+            }
+        }
+
+        return result;
+    }
+
+    public List<Operation> translateDeltaBase(String delta) {
+        //-----------------------------------------------
+        //Variables used in the method
+        //-----------------------------------------------
+        String filename = "";
+        List<Operation> result = new ArrayList<>();
+        int initialline, iteratorRemove = 0;
+        boolean newFile = false;
+
+        //-----------------------------------------------
+        //Breaking the input string (delta) into lines
+        //-----------------------------------------------
+        String OS = System.getProperty("os.name");
+
+        String[] deltaLines = null;
+
+        if (delta.contains(", ")) {
+            deltaLines = delta.split(", ");
+        } else if (delta.contains("\n")) {
             deltaLines = delta.split("\n");
         }
 
@@ -66,17 +130,23 @@ public class GitTranslator {
             if (line.startsWith(LINEINTERVAL)) {
                 //read the interval line
                 initialline = initialLine(line);
-                if (initialline == 0) {//it is a added file
+                if (initialline == 0) {//it is a added file or renamed file
                     initialline = 1;
+                    newFile = true;
                 }
 //                iteratorAdd = initialline;
                 iteratorRemove = initialline;
 
-            } else if (isAddedLine(line)) {
+            } else if (isAddedLine(line) && (newFile)) {
                 Operation operation = getOperation(line, OperationType.ADD, iteratorRemove);
                 result.add(operation);
 //                iteratorAdd++;
-                  iteratorRemove++; 
+                iteratorRemove++;
+
+            } else if (isAddedLine(line) && (!newFile)) {
+                Operation operation = getOperation(line, OperationType.ADD, iteratorRemove);
+                result.add(operation);
+//                iteratorAdd++;
 
             } else if (isRemovedLine(line)) {
                 Operation operation = getOperation(line, OperationType.REMOVE, iteratorRemove);
@@ -88,6 +158,44 @@ public class GitTranslator {
 //                iteratorAdd++;
                 iteratorRemove++;
 
+            }
+        }
+
+        return result;
+    }
+
+    public List<String> translateRenamed(String delta) {
+        //-----------------------------------------------
+        //Variables used in the method
+        //-----------------------------------------------
+        String filename = "";
+        String oldfilename = "";
+        String newfilename = "";
+        List <String> result = new ArrayList<>();
+
+        //-----------------------------------------------
+        //Breaking the input string (delta) into lines
+        //-----------------------------------------------
+        String OS = System.getProperty("os.name");
+
+        String[] deltaLines = null;
+
+        if (delta.contains(", ")) {
+            deltaLines = delta.split(", ");
+        } else if (delta.contains("\n")) {
+            deltaLines = delta.split("\n");
+        }
+
+        //--------------------------------------------------------
+        //Reading the delta content to transform into OO structure
+        //--------------------------------------------------------
+        for (String line : deltaLines) {
+            if (line.startsWith(RENAMEFROM)) {
+                oldfilename = line.substring(line.indexOf("from") + 5, line.length());
+                result.add(oldfilename);
+            } else if (line.startsWith(RENAMETO)) {
+                newfilename = line.substring(line.indexOf("to") + 3, line.length());
+                result.add(newfilename);
             }
         }
 
@@ -162,6 +270,17 @@ public class GitTranslator {
         return Integer.parseInt(limits[0].replace(" ", ""));
     }
 
+    private int finalLine(String line) {
+
+        //@@ -10,8 10,13 @@ package metodo_atributo;
+        String[] intervals = line.split("\\+");
+
+        //intervals[1] = intervals[1].replaceFirst("+", "");
+        String[] limits = intervals[1].split(",");
+
+        return Integer.parseInt(limits[0].replace(" ", ""));
+    }
+
     private Operation getOperation(String line, OperationType kind, int iterator) {
 
         Operation result = null;
@@ -180,7 +299,7 @@ public class GitTranslator {
 
         return result;
     }
-    
+
     public static Operation getOperations(OperationType kind, int size, int iterator) {
 
         Operation result = null;
@@ -199,6 +318,5 @@ public class GitTranslator {
 
         return result;
     }
-
 
 }

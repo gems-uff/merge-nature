@@ -35,7 +35,10 @@ public class Chunk implements Serializable {
     @Id
     private Long id;
     private String identifier;
+    private int beginLine;
+    private int endLine;
     private List<Operation> operations;
+    private List<Operation> operationsBase;
 
     public Long getId() {
         return id;
@@ -53,11 +56,35 @@ public class Chunk implements Serializable {
         this.operations = operations;
     }
     
+    public List<Operation> getOperationsBase() {
+        return operationsBase;
+    }
+
+    public void setOperationsBase(List<Operation> operationsBase) {
+        this.operationsBase = operationsBase;
+    }
+
+
     public String getIdentifier() {
         return identifier;
     }
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+     public int getBeginLine() {
+        return beginLine;
+    }
+
+    public void setBeginLine(int beginLine) {
+        this.beginLine = beginLine;
+    }
+
+    public int getEndLine() {
+        return endLine;
+    }
+
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
     }
 }
