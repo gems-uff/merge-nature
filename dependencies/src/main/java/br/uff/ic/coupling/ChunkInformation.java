@@ -65,15 +65,8 @@ public class ChunkInformation {
         GitTranslator gitTranslator = new GitTranslator();
 
         ChunkInformation ChunkInformation;
-        //Quando o arquivo é renomeado, e por isso, não possui mais o arquivo anterior no projeto, ao fazer
-        //o diff com o filePath do arquivo que não existe mais, dá fileDiff == null
 
-        MergeGuider.clone(projectPath, sandboxAux);
-        Git.reset(sandboxAux);
-        Git.clean(sandboxAux);
-        Git.checkout(sandboxAux, SHAParent);
-
-        List<String> fileDiff = Git.fileDiff(sandboxAux, filePath, SHAmergeBase, SHAParent);
+        List<String> fileDiff = Git.fileDiff(projectPath, filePath, SHAmergeBase, SHAParent);
 
         if (fileDiff == null) {
             return result;

@@ -42,7 +42,8 @@ public class CouplingChunks {
 
     public static void main(String[] args) {
         List<String> projectsPath = new ArrayList<>();
-        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\metodo_atributo_rename");
+        projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\school_management");
+        //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\metodo_atributo_rename");
         //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\variable");
         //projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\estrutural2");// p testar atributo
         // projectsPath.add("C:\\Cristiane\\mestrado\\repositorios_teste\\variavel");
@@ -119,7 +120,7 @@ public class CouplingChunks {
                                     } else if (depedencyType.equals("VARIABLE_DECLARATION_USAGE")) {
                                         variableQtd++;
                                     }
-                                    //System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
+                                    System.out.println("(" + reference + ", " + dependsOn + ", " + depedencyType + ")");
                                 }
                             }
                             file.write(SHAMerge + ", " + Chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + ", " + variableQtd + "\n");
@@ -162,11 +163,7 @@ public class CouplingChunks {
         if ((changedFilesLeft.isEmpty()) || (changedFilesRight.isEmpty())) {
             return null;
         }
-
-        //Getting chunks tem que armazenar as linhas add e removidas para cada arquivo
-        List<ChunkInformation> cisL = ChunkInformation.extractChunksInformation(projectPath, changedFilesLeft, SHAmergeBase, SHALeft, "Left", sandboxAux);
-        List<ChunkInformation> cisR = ChunkInformation.extractChunksInformation(projectPath, changedFilesRight, SHAmergeBase, SHARight, "Right", sandboxAux);
-
+        
         //Union Left and Right modified files  
         List<String> changedFiles = new ArrayList<String>();
         for (String fileLeft : changedFilesLeft) {
@@ -231,6 +228,11 @@ public class CouplingChunks {
         //Getting modified files AST
         List<ClassLanguageContructs> ASTchangedFilesLeft = generateASTFiles(ASTLeft, changedFilesLeft);
         List<ClassLanguageContructs> ASTchangedFilesRight = generateASTFiles(ASTRight, changedFilesRight);
+        
+        //Getting chunks tem que armazenar as linhas add e removidas para cada arquivo
+        List<ChunkInformation> cisL = ChunkInformation.extractChunksInformation(repositoryLeft, changedFilesLeft, SHAmergeBase, SHALeft, "Left", sandboxAux);
+        List<ChunkInformation> cisR = ChunkInformation.extractChunksInformation(repositoryRight, changedFilesRight, SHAmergeBase, SHARight, "Right", sandboxAux);
+
 
         //Creating depedency matrix
         //System.out.println("Extracting dependency matrix...");
