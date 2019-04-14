@@ -59,7 +59,7 @@ public class ChunkInformation {
         this.relativePathRightBase = ChunkInformation.getRelativePathRightBase();
     }
 
-    public static List<ChunkInformation> extractChunksInformation(String projectPath, String filePath, String SHAmergeBase, String SHAParent, String branch, String sandboxAux) throws IOException {
+    public static List<ChunkInformation> extractChunksInformation(String projectPath, String filePath, String SHAmergeBase, String SHAParent, String branch) throws IOException {
         List<ChunkInformation> result = new ArrayList<>();
 
         GitTranslator gitTranslator = new GitTranslator();
@@ -121,11 +121,11 @@ public class ChunkInformation {
         return result;
     }
 
-    public static List<ChunkInformation> extractChunksInformation(String projectPath, List<String> filePaths, String SHAmergeBase, String SHALeft, String branch, String sandboxAux) throws IOException {
+    public static List<ChunkInformation> extractChunksInformation(String projectPath, List<String> filePaths, String SHAmergeBase, String SHALeft, String branch) throws IOException {
         List<ChunkInformation> result = new ArrayList<>();
 
         for (String filePath : filePaths) {
-            List<ChunkInformation> ci = extractChunksInformation(projectPath, filePath, SHAmergeBase, SHALeft, branch, sandboxAux);
+            List<ChunkInformation> ci = extractChunksInformation(projectPath, filePath, SHAmergeBase, SHALeft, branch);
             result.addAll(ci);
         }
 
