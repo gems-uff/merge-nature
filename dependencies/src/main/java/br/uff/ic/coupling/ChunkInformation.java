@@ -33,6 +33,7 @@ public class ChunkInformation {
     private String relativePathRight;
     private String relativePathLeftBase;
     private String relativePathRightBase;
+    private int chunks;
 
     public ChunkInformation(String filePath, List<Operation> operations, List<Operation> operationsBase) {
         this.filePath = filePath;
@@ -270,6 +271,20 @@ public class ChunkInformation {
      */
     public void setRelativePathRightBase(String relativePathRightBase) {
         this.relativePathRightBase = relativePathRightBase;
+    }
+    
+     /**
+     * @return the chunks
+     */
+    public int getChunks() {
+        return chunks;
+    }
+
+    /**
+     * @param chunks the chunks to set
+     */
+    public void setchunks(int chunks) {
+        this.chunks = chunks;
     }
 
 }

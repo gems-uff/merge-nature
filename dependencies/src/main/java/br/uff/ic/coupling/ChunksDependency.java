@@ -13,15 +13,17 @@ import br.uff.ic.mergeguider.dependency.DependencyType;
  * @author Gleiph, Cristiane
  */
 public class ChunksDependency {
-    
+
     private ChunkInformation reference;
     private ChunkInformation dependsOn;
     private DependencyType type;
+    private String branch;
 
-    public ChunksDependency(ChunkInformation reference, ChunkInformation dependsOn, DependencyType type) {
+    public ChunksDependency(ChunkInformation reference, ChunkInformation dependsOn, DependencyType type, String branch) {
         this.reference = reference;
         this.dependsOn = dependsOn;
         this.type = type;
+        this.branch = branch;
     }
 
     /**
@@ -66,5 +68,11 @@ public class ChunksDependency {
         this.type = type;
     }
     
-}
+    /**
+     * @return the branch
+     */
 
+    public String getBranch() {
+        return branch;
+    }
+}
