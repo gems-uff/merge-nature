@@ -218,22 +218,26 @@ public class CouplingChunks {
         List<String> changedFilesLeft = new ArrayList<String>();
         List<String> changedFilesRight = new ArrayList<String>();
 
-        //to remove files that have extension other than java
-        for (int i = 0; i < changedFilesLeftAux.size(); i++) {
-            if (changedFilesLeftAux.get(i).endsWith("java")) {
-                changedFilesLeft.add(changedFilesLeftAux.get(i));
+        if (!(changedFilesLeftAux == null)) {
+            //to remove files that have extension other than java
+            for (int i = 0; i < changedFilesLeftAux.size(); i++) {
+                if (changedFilesLeftAux.get(i).endsWith("java")) {
+                    changedFilesLeft.add(changedFilesLeftAux.get(i));
+                }
             }
         }
-        for (int i = 0; i < changedFilesRightAux.size(); i++) {
-            if (changedFilesRightAux.get(i).endsWith("java")) {
-                changedFilesRight.add(changedFilesRightAux.get(i));
+        if (!(changedFilesRightAux == null)) {
+            for (int i = 0; i < changedFilesRightAux.size(); i++) {
+                if (changedFilesRightAux.get(i).endsWith("java")) {
+                    changedFilesRight.add(changedFilesRightAux.get(i));
+                }
+            }
+            //If not exist java files, the variable changedFiles can be empty and we can't identify dependencies
+            if ((changedFilesLeft.isEmpty()) || (changedFilesRight.isEmpty())) {
+                return null;
             }
         }
-        //If not exist java files, the variable changedFiles can be empty and we can't identify dependencies
-        if ((changedFilesLeft.isEmpty()) || (changedFilesRight.isEmpty())) {
-            return null;
-        }
-
+/*
         //Union Left and Right modified files  
         List<String> changedFiles = new ArrayList<String>();
         for (String fileLeft : changedFilesLeft) {
@@ -251,6 +255,7 @@ public class CouplingChunks {
                 }
             }
         }
+        */
 
         //Extracting Left AST
         System.out.println("Cloning left repository...");
