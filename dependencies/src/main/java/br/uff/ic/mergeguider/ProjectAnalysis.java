@@ -9,6 +9,7 @@ import br.uff.ic.gems.resources.vcs.Git;
 import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.datastructure.MergeDependency;
 import br.uff.ic.mergeguider.dependency.graph.ShowDependencies;
+import br.uff.ic.mergeguider.metric.Assistance;
 import br.uff.ic.mergeguider.strategy.NodeDependency;
 import br.uff.ic.mergeguider.strategy.PrepareNodes;
 import br.uff.ic.mergeguider.strategy.Strategies;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class ProjectAnalysis {
 
-    public static int merges = 0, mergesNoDependencies = 0, mergesWithDependencies = 0, 
+    public static int merges = 0, mergesNoDependencies = 0, mergesWithDependencies = 0,
             sequentialDCW = 0, moreOneChunk = 0, cleanMerge = 0;
 
     public static void projectAnalysis(String repositoryPath, String sandbox) throws Exception {
@@ -34,7 +35,7 @@ public class ProjectAnalysis {
             merges++;
 
             System.out.println("=================================" + mergeRevision + "(" + mergeRevisions.indexOf(mergeRevision) + "/" + mergeRevisions.size() + ")==================================");
-            
+
             printData();
             mergeAnalysis(repositoryPath, mergeRevision, sandbox);
         }
@@ -42,12 +43,12 @@ public class ProjectAnalysis {
         printData();
     }
 
-    public static void printData(){
+    public static void printData() {
         System.out.println("Merges: " + merges + " \nNo dependencies:" + mergesNoDependencies
                 + " \nWith dependencies: " + mergesWithDependencies + " \nSequential different of Context Aware: " + sequentialDCW
-                + "\n More than one chunk: " + moreOneChunk+ "\n Clean merge: " + moreOneChunk);
+                + "\n More than one chunk: " + moreOneChunk + "\n Clean merge: " + moreOneChunk);
     }
-    
+
     public static void mergeAnalysis(String repositoryPath, String mergeSHA, String sandbox) throws Exception {
         ShowDependencies showDependencies = new ShowDependencies();
 
@@ -71,7 +72,7 @@ public class ProjectAnalysis {
                 mergesNoDependencies++;
                 cleanMerge++;
                 System.out.println("Merge has no dependencies...");
-                
+
                 return;
             }
             if (dependencies.getConflictingChunksAmount() < 2) {
@@ -119,6 +120,13 @@ public class ProjectAnalysis {
                 System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
             }
 
+            for (ConflictingChunkInformation chunk : contextAware) {
+                System.out.println("CC" + dependencies.getCcis().indexOf(chunk)+" "+Assistance.chunkAssistance(chunk, contextAware, dependencies));
+                
+            }
+            
+            System.out.println("Assistance " + Assistance.assistance(sequencial, dependencies));
+            
             if (contextAware.size() > 1) {
                 moreOneChunk++;
             }
@@ -134,17 +142,28 @@ public class ProjectAnalysis {
 
     public static void main(String[] args) {
 
-        String projectRepository = "/Users/gleiph/repositories/ATK";
+//        String projectRepository = "/Users/gleiph/repositories/ATK";
+//        String projectRepository = "/Users/gleiph/repositories/netty";
+//                String projectRepository = "/Users/gleiph/repositories/izpack";
+                String projectRepository = "/Users/gleiph/repositories/spring-data-neo4j";
+
+
 //                String projectRepository = "/Users/gleiph/repositories/twitter4j";
 //                String projectRepository = "/Users/gleiph/repositories/antlr4";
 //                String projectRepository = "/Users/gleiph/repositories/voldemort";
 //        String projectRepository = "/Users/gleiph/repositories/wro4j";
-
-        String mergeSHA = "5f510840636176b75a5339188c1b3f342f76584c";;
+        
+        //Netty spring-data-neo4j
+        String mergeSHA = "042b1d";
+        
+        //Nuxeo revision
+//        String mergeSHA = "5b45fc";
+        
         String sandbox = "/Users/gleiph/repositories/icse2";
 
         try {
-            ProjectAnalysis.projectAnalysis(projectRepository, sandbox);
+//            ProjectAnalysis.projectAnalysis(projectRepository, sandbox);
+            mergeAnalysis(projectRepository, mergeSHA, sandbox);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

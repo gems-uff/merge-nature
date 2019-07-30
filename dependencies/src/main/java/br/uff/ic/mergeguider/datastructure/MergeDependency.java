@@ -24,6 +24,16 @@ public class MergeDependency {
         ccis = new ArrayList<>();
     }
 
+    public List<ConflictingChunkInformation> getDependencies(ConflictingChunkInformation chunk){
+        List<ConflictingChunkInformation> result = new ArrayList<>();
+        for (ConflictingChunksDependency conflictingChunksDependency : conflictingChunksDependencies) {
+            if(conflictingChunksDependency.getReference().equals(chunk)){
+                result.add(conflictingChunksDependency.getDependsOn());
+            }
+        }
+        
+        return result;
+    }
     
     
     /**
