@@ -40,6 +40,8 @@ public class ConflictingChunkInformation {
     private String relativePathLeft;
     private String relativePathRight;
 
+    private String label;
+    
     public ConflictingChunkInformation(String filePath, int begin, int separator, int end) {
         this.filePath = filePath;
         this.begin = begin;
@@ -65,6 +67,7 @@ public class ConflictingChunkInformation {
         this.renamed = conflictingChunkInformation.isRenamed();
         this.relativePathLeft = conflictingChunkInformation.getRelativePathLeft();
         this.relativePathRight = conflictingChunkInformation.getRelativePathRight();
+        this.label = conflictingChunkInformation.label;
     }
 
     
@@ -394,6 +397,20 @@ public class ConflictingChunkInformation {
         hash = 47 * hash + Objects.hashCode(this.relativePathLeft);
         hash = 47 * hash + Objects.hashCode(this.relativePathRight);
         return hash;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
     
     

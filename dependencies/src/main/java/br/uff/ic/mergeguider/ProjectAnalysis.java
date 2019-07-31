@@ -10,6 +10,7 @@ import br.uff.ic.mergeguider.datastructure.ConflictingChunkInformation;
 import br.uff.ic.mergeguider.datastructure.MergeDependency;
 import br.uff.ic.mergeguider.dependency.graph.ShowDependencies;
 import br.uff.ic.mergeguider.metric.Assistance;
+import br.uff.ic.mergeguider.metric.Noise;
 import br.uff.ic.mergeguider.strategy.NodeDependency;
 import br.uff.ic.mergeguider.strategy.PrepareNodes;
 import br.uff.ic.mergeguider.strategy.Strategies;
@@ -86,7 +87,8 @@ public class ProjectAnalysis {
             List<NodeDependency> prepare = PrepareNodes.prepare(dependencies);
 
             for (ConflictingChunkInformation cci : dependencies.getCcis()) {
-                System.out.println("CC" + dependencies.getCcis().indexOf(cci));
+                cci.setLabel("CC" + dependencies.getCcis().indexOf(cci));
+                System.out.println(cci.getLabel());
                 System.out.println(cci);
             }
 
@@ -95,38 +97,44 @@ public class ProjectAnalysis {
             List<ConflictingChunkInformation> random = Strategies.random(dependencies, prepare);
 
             for (ConflictingChunkInformation chunk : random) {
-                int indexOf = dependencies.getCcis().indexOf(chunk);
-                System.out.println("CC" + indexOf);
+
+                System.out.println(chunk.getLabel());
             }
 
             System.out.println("Sequencial");
             List<ConflictingChunkInformation> sequencial = Strategies.sequencial(dependencies, prepare);
 
             for (ConflictingChunkInformation chunk : sequencial) {
-                System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
+                System.out.println(chunk.getLabel());
             }
 
             System.out.println("Greedy");
             List<ConflictingChunkInformation> greed = Strategies.greedy(dependencies, prepare);
 
             for (ConflictingChunkInformation chunk : greed) {
-                System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
+                System.out.println(chunk.getLabel());
             }
 
             System.out.println("Context aware");
             List<ConflictingChunkInformation> contextAware = Strategies.contextAware(dependencies, prepare);
 
             for (ConflictingChunkInformation chunk : contextAware) {
-                System.out.println("CC" + dependencies.getCcis().indexOf(chunk));
+                System.out.println(chunk.getLabel());
             }
 
             for (ConflictingChunkInformation chunk : contextAware) {
-                System.out.println("CC" + dependencies.getCcis().indexOf(chunk)+" "+Assistance.chunkAssistance(chunk, contextAware, dependencies));
-                
+                System.out.println(chunk.getLabel() + " " + Assistance.chunkAssistance(chunk, contextAware, dependencies));
+
             }
-            
+
+            System.out.println("Sequencial");
             System.out.println("Assistance " + Assistance.assistance(sequencial, dependencies));
-            
+            System.out.println("Noise: " + Noise.noise(sequencial, dependencies));
+
+            System.out.println("Context aware");
+            System.out.println("Assistance " + Assistance.assistance(contextAware, dependencies));
+            System.out.println("Noise: " + Noise.noise(contextAware, dependencies));
+
             if (contextAware.size() > 1) {
                 moreOneChunk++;
             }
@@ -145,20 +153,17 @@ public class ProjectAnalysis {
 //        String projectRepository = "/Users/gleiph/repositories/ATK";
 //        String projectRepository = "/Users/gleiph/repositories/netty";
 //                String projectRepository = "/Users/gleiph/repositories/izpack";
-                String projectRepository = "/Users/gleiph/repositories/spring-data-neo4j";
-
+        String projectRepository = "/Users/gleiph/repositories/spring-data-neo4j";
 
 //                String projectRepository = "/Users/gleiph/repositories/twitter4j";
 //                String projectRepository = "/Users/gleiph/repositories/antlr4";
 //                String projectRepository = "/Users/gleiph/repositories/voldemort";
 //        String projectRepository = "/Users/gleiph/repositories/wro4j";
-        
         //Netty spring-data-neo4j
         String mergeSHA = "042b1d";
-        
+
         //Nuxeo revision
 //        String mergeSHA = "5b45fc";
-        
         String sandbox = "/Users/gleiph/repositories/icse2";
 
         try {

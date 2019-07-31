@@ -24,7 +24,7 @@ public class Assistance {
        if(chunksDependencies.isEmpty())
            return 0;
         
-        for (ConflictingChunkInformation chunksDependency : chunksDependencies) {
+        for (ConflictingChunkInformation chunksDependency : sequence) {
             if (chunksDependency.equals(chunk)) {
                 break;
             } else if (chunksDependencies.contains(chunksDependency)) {
