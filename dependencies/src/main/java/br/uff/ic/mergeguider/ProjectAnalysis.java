@@ -28,7 +28,7 @@ public class ProjectAnalysis {
     public static int merges = 0, mergesNoDependencies = 0, mergesWithDependencies = 0,
             sequentialDCW = 0, moreOneChunk = 0, cleanMerge = 0;
 
-    public static void projectAnalysis(String repositoryPath, String sandbox) throws Exception {
+    public static void projectAnalysis(String repositoryPath, String sandbox, boolean verbose) throws Exception {
         Git git = new Git(repositoryPath);
         List<String> mergeRevisions = Git.getMergeRevisions(repositoryPath);
 
@@ -38,7 +38,7 @@ public class ProjectAnalysis {
             System.out.println("=================================" + mergeRevision + "(" + mergeRevisions.indexOf(mergeRevision) + "/" + mergeRevisions.size() + ")==================================");
 
             printData();
-            mergeAnalysis(repositoryPath, mergeRevision, sandbox);
+            mergeAnalysis(repositoryPath, mergeRevision, sandbox, verbose);
         }
 
         printData();
@@ -50,7 +50,7 @@ public class ProjectAnalysis {
                 + "\n More than one chunk: " + moreOneChunk + "\n Clean merge: " + moreOneChunk);
     }
 
-    public static void mergeAnalysis(String repositoryPath, String mergeSHA, String sandbox) throws Exception {
+    public static void mergeAnalysis(String repositoryPath, String mergeSHA, String sandbox, boolean verbose) throws Exception {
         ShowDependencies showDependencies = new ShowDependencies();
 
         Git git = new Git(repositoryPath);
@@ -72,13 +72,17 @@ public class ProjectAnalysis {
             if (dependencies == null) {
                 mergesNoDependencies++;
                 cleanMerge++;
-                System.out.println("Merge has no dependencies...");
+                if (verbose) {
+                    System.out.println("Merge has no dependencies...");
+                }
 
                 return;
             }
             if (dependencies.getConflictingChunksAmount() < 2) {
                 mergesNoDependencies++;
-                System.out.println("Merge has no dependencies...");
+                if (verbose) {
+                    System.out.println("Merge has no dependencies...");
+                }
                 return;
             }
 
@@ -86,45 +90,67 @@ public class ProjectAnalysis {
 
             List<NodeDependency> prepare = PrepareNodes.prepare(dependencies);
 
-            for (ConflictingChunkInformation cci : dependencies.getCcis()) {
-                cci.setLabel("CC" + dependencies.getCcis().indexOf(cci));
-                System.out.println(cci.getLabel());
-                System.out.println(cci);
+            if (verbose) {
+                for (ConflictingChunkInformation cci : dependencies.getCcis()) {
+                    cci.setLabel("CC" + dependencies.getCcis().indexOf(cci));
+                    System.out.println(cci.getLabel());
+                    System.out.println(cci);
+                }
             }
 
             //Random strategy 
-            System.out.println("Random");
+            if (verbose) {
+                System.out.println("Random");
+            }
             List<ConflictingChunkInformation> random = Strategies.random(dependencies, prepare);
 
-            for (ConflictingChunkInformation chunk : random) {
+            if (verbose) {
+                for (ConflictingChunkInformation chunk : random) {
 
-                System.out.println(chunk.getLabel());
+                    System.out.println(chunk.getLabel());
+                }
             }
 
-            System.out.println("Sequencial");
+            if (verbose) {
+                System.out.println("Sequencial");
+            }
             List<ConflictingChunkInformation> sequencial = Strategies.sequencial(dependencies, prepare);
 
-            for (ConflictingChunkInformation chunk : sequencial) {
-                System.out.println(chunk.getLabel());
+            if (verbose) {
+                for (ConflictingChunkInformation chunk : sequencial) {
+                    System.out.println(chunk.getLabel());
+                }
             }
 
-            System.out.println("Greedy");
+            if (verbose) {
+                System.out.println("Greedy");
+            }
+
             List<ConflictingChunkInformation> greed = Strategies.greedy(dependencies, prepare);
 
-            for (ConflictingChunkInformation chunk : greed) {
-                System.out.println(chunk.getLabel());
+            if (verbose) {
+                for (ConflictingChunkInformation chunk : greed) {
+                    System.out.println(chunk.getLabel());
+                }
             }
 
-            System.out.println("Context aware");
+            if (verbose) {
+                System.out.println("Context aware");
+            }
+
             List<ConflictingChunkInformation> contextAware = Strategies.contextAware(dependencies, prepare);
 
-            for (ConflictingChunkInformation chunk : contextAware) {
-                System.out.println(chunk.getLabel());
+            if (verbose) {
+                for (ConflictingChunkInformation chunk : contextAware) {
+                    System.out.println(chunk.getLabel());
+                }
             }
 
-            for (ConflictingChunkInformation chunk : contextAware) {
-                System.out.println(chunk.getLabel() + " " + Assistance.chunkAssistance(chunk, contextAware, dependencies));
+            if (verbose) {
+                for (ConflictingChunkInformation chunk : contextAware) {
+                    System.out.println(chunk.getLabel() + " " + Assistance.chunkAssistance(chunk, contextAware, dependencies));
 
+                }
             }
 
             System.out.println("Sequencial");
@@ -168,7 +194,7 @@ public class ProjectAnalysis {
 
         try {
 //            ProjectAnalysis.projectAnalysis(projectRepository, sandbox);
-            mergeAnalysis(projectRepository, mergeSHA, sandbox);
+            mergeAnalysis(projectRepository, mergeSHA, sandbox, true);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

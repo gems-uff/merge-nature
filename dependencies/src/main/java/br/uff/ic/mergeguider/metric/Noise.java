@@ -26,7 +26,7 @@ public class Noise {
             if(Assistance.chunkAssistance(chunk, sequence, dependencies) == 0)
                 continue;
             
-            int noiseChunk = noiseChunks(chunk, sequence, dependencies);
+            double noiseChunk = noiseChunks(chunk, sequence, dependencies);
             if(noiseChunk != INVALID){
                 noise += noiseChunk;
                 counter += 1;
@@ -66,15 +66,18 @@ public class Noise {
         return sequence.indexOf(chunk);
     }
  
-    private static int noiseChunks(ConflictingChunkInformation chunk,
+    private static double noiseChunks(ConflictingChunkInformation chunk,
             List<ConflictingChunkInformation> sequence, MergeDependency dependencies){
         int result = 0;
         
-        for (int i = positionFirstChunk(chunk, sequence, dependencies); i < chunkPosition(chunk, sequence); i++) {
+        int positionFirstChunk = positionFirstChunk(chunk, sequence, dependencies);
+        int chunkPosition = chunkPosition(chunk, sequence);
+        
+        for (int i = positionFirstChunk; i < chunkPosition; i++) {
             if(!dependencies.getDependencies(chunk).contains(sequence.get(i)))
                 result++;
         }
-        return result;
+        return (double)result/(chunkPosition-positionFirstChunk);
     }
     
 }
