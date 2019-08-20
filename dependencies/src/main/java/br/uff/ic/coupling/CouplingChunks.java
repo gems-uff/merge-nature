@@ -47,6 +47,9 @@ import org.apache.commons.cli.ParseException;
 public class CouplingChunks {
 
     public static void main(String[] args) {
+
+        /*String input = "C:\\Users\\Carlos\\gitProjects";
+        String output = "C:\\Users\\Carlos\\projects";*/
         List<String> projectsPath = new ArrayList<>();
 
         final Options options = new Options();
@@ -74,7 +77,6 @@ public class CouplingChunks {
             Logger.getLogger(CouplingChunks.class.getName()).log(Level.SEVERE, null, ex);
 
         }
-
         File directory = new File(input + File.separator);
         File files[] = directory.listFiles();
 
@@ -125,62 +127,63 @@ public class CouplingChunks {
 
             for (String mergeRevision : mergeRevisions) {
                 SHAMerge = mergeRevision;
-                List<String> parents = Git.getParents(projectPath, mergeRevision);
+                List<String> parents = Git.getParents(projectPath, SHAMerge);
                 if (parents.size() == 2) {
                     SHALeft = parents.get(0);
                     SHARight = parents.get(1);
                     SHAmergeBase = Git.getMergeBase(projectPath, SHALeft, SHARight);
                     //Check if is a fast-forward merge*/
-                    if ((!(SHAmergeBase.equals(SHALeft))) && (!(SHAmergeBase.equals(SHARight)))) {
+                    if (!(SHAmergeBase == null)) {
+                        if ((!(SHAmergeBase.equals(SHALeft))) && (!(SHAmergeBase.equals(SHARight)))) {
 
-                        try {
-                            mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox, sandboxAux);
+                            try {
+                                mergeDependency = performMerge(projectPath, SHALeft, SHARight, SHAmergeBase, sandbox, sandboxAux);
 
-                            //Treating dependencies 
-                            if (mergeDependency == null) {
-                                chunks = 0;
-                                dependencies = 0;
-                                couplings = 0;
-                                attributeQtd = 0;
-                                leftBranch = 0;
-                                rightBranch = 0;
-                            } else {
-                                couplings = 0;
-                                attributeQtd = 0;
-                                variableQtd = 0;
-                                leftBranch = 0;
-                                rightBranch = 0;
-                                chunks = mergeDependency.getChunksAmount();
-                                dependencies = mergeDependency.getChunksDependencies().size();
+                                //Treating dependencies 
+                                if (mergeDependency == null) {
+                                    chunks = 0;
+                                    dependencies = 0;
+                                    couplings = 0;
+                                    attributeQtd = 0;
+                                    leftBranch = 0;
+                                    rightBranch = 0;
+                                } else {
+                                    couplings = 0;
+                                    attributeQtd = 0;
+                                    variableQtd = 0;
+                                    leftBranch = 0;
+                                    rightBranch = 0;
+                                    chunks = mergeDependency.getChunksAmount();
+                                    dependencies = mergeDependency.getChunksDependencies().size();
 
-                                List<ChunkInformation> cis = mergeDependency.getCis();
-                                for (ChunksDependency chunksDependency : mergeDependency.getChunksDependencies()) {
-                                    int reference = cis.indexOf(chunksDependency.getReference());
-                                    int dependsOn = cis.indexOf(chunksDependency.getDependsOn());
-                                    String depedencyType = chunksDependency.getType().toString();
-                                    String branch = chunksDependency.getBranch();
-                                    if (depedencyType.equals("METHOD_DECLARATION_INVOCATION")) {
-                                        couplings++;
-                                        if (branch.equals("Left")) {
-                                            leftBranch++;
-                                        } else if (branch.equals("Right")) {
-                                            rightBranch++;
+                                    List<ChunkInformation> cis = mergeDependency.getCis();
+                                    for (ChunksDependency chunksDependency : mergeDependency.getChunksDependencies()) {
+                                        int reference = cis.indexOf(chunksDependency.getReference());
+                                        int dependsOn = cis.indexOf(chunksDependency.getDependsOn());
+                                        String depedencyType = chunksDependency.getType().toString();
+                                        String branch = chunksDependency.getBranch();
+                                        if (depedencyType.equals("METHOD_DECLARATION_INVOCATION")) {
+                                            couplings++;
+                                            if (branch.equals("Left")) {
+                                                leftBranch++;
+                                            } else if (branch.equals("Right")) {
+                                                rightBranch++;
+                                            }
+                                        } else if (depedencyType.equals("ATTRIBUTE_DECLARATION_USAGE")) {
+                                            attributeQtd++;
+                                        } else if (depedencyType.equals("VARIABLE_DECLARATION_USAGE")) {
+                                            variableQtd++;
                                         }
-                                    } else if (depedencyType.equals("ATTRIBUTE_DECLARATION_USAGE")) {
-                                        attributeQtd++;
-                                    } else if (depedencyType.equals("VARIABLE_DECLARATION_USAGE")) {
-                                        variableQtd++;
                                     }
                                 }
-                            }
 
-                            total_coupling = (leftBranch + rightBranch) / 2;
+                                total_coupling = (leftBranch + rightBranch) / 2;
 
-                            if (chunks > 0) {
-                                normalized_coupling = total_coupling / chunks;
-                            }
+                                if (chunks > 0) {
+                                    normalized_coupling = total_coupling / chunks;
+                                }
 
-                            /*if (couplings > 0){
+                                /*if (couplings > 0){
                         third = total_coupling / couplings;
                     }*/
  /*if ((leftBranch >= 1) && (rightBranch >= 1)) {
@@ -190,13 +193,14 @@ public class CouplingChunks {
                     } else if ((leftBranch < 1) && (rightBranch >= 1)) {
                         harmonica_media = (floatValue(methodQtd) / (leftBranch + 1.0 / rightBranch));
                     }*/
-                            //file.write(SHAMerge + ", " + chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + ", " + variableQtd + "\n");
-                            file.write(SHAMerge + ", " + chunks + ", " + leftBranch + ", " + rightBranch + ", " + total_coupling + ", "
-                                    + normalized_coupling + "\n");
-                            //System.out.println(SHAMerge + " chunks: " + chunks + ", Dependencies: " + dependencies + ", Method: " + methodQtd + ", Attribute: " + attributeQtd + ", Variable: " + variableQtd);
-                            System.out.println(SHAMerge + " chunks: " + chunks + ", Dependencies: " + dependencies + ", Method: " + chunks + ", Left: " + leftBranch + ", Right: " + rightBranch);
-                        } catch (IOException ex) {
-                            System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+                                //file.write(SHAMerge + ", " + chunks + ", " + dependencies + ", " + methodQtd + ", " + attributeQtd + ", " + variableQtd + "\n");
+                                file.write(SHAMerge + ", " + chunks + ", " + leftBranch + ", " + rightBranch + ", " + total_coupling + ", "
+                                        + normalized_coupling + "\n");
+                                //System.out.println(SHAMerge + " chunks: " + chunks + ", Dependencies: " + dependencies + ", Method: " + methodQtd + ", Attribute: " + attributeQtd + ", Variable: " + variableQtd);
+                                System.out.println(SHAMerge + " chunks: " + chunks + ", Dependencies: " + dependencies + ", Method: " + chunks + ", Left: " + leftBranch + ", Right: " + rightBranch);
+                            } catch (IOException ex) {
+                                System.out.println("Merge between revisions " + SHALeft + " and " + SHARight + " was not performed.");
+                            }
                         }
                     }
                 }
@@ -233,29 +237,10 @@ public class CouplingChunks {
                 }
             }
             //If not exist java files, the variable changedFiles can be empty and we can't identify dependencies
-            if ((changedFilesLeft.isEmpty()) || (changedFilesRight.isEmpty())) {
+            if ((changedFilesLeft.isEmpty()) && (changedFilesRight.isEmpty())) {
                 return null;
             }
         }
-/*
-        //Union Left and Right modified files  
-        List<String> changedFiles = new ArrayList<String>();
-        for (String fileLeft : changedFilesLeft) {
-            changedFiles.add(fileLeft);
-        }
-
-        for (String fileRight : changedFilesRight) {
-            changedFiles.add(fileRight);
-        }
-
-        for (int i = 0; i < changedFiles.size(); i++) {
-            for (int j = i + 1; j < changedFiles.size(); j++) {
-                if (changedFiles.get(i).equals(changedFiles.get(j))) {
-                    changedFiles.remove(changedFiles.get(j));
-                }
-            }
-        }
-        */
 
         //Extracting Left AST
         System.out.println("Cloning left repository...");
@@ -398,6 +383,7 @@ public class CouplingChunks {
         MergeDependency mergeDependency = new MergeDependency();
         int chunksLeft = 0;
         int chunksRight = 0;
+        int cartesian_product = 0;
 
         for (ChunkInformation ci : cisL) {
 
@@ -406,7 +392,7 @@ public class CouplingChunks {
             List<MyMethodInvocation> leftMethodInvocations = leftCCMethodInvocations(projectPath, ci, ASTLeft);
 
             List<MyMethodDeclaration> leftBaseMethodDeclarations = leftBaseCCMethodDeclarations(projectPath, ci, ASTmergeBase);
-
+            /*
             //Find attribute declarations
             List<MyAttributeDeclaration> leftAttributeDeclarations = leftAttributes(projectPath, ci, ASTLeft);
             List<MyAttributeCall> leftAttributeCalls = leftAttributeCalls(projectPath, ci, ASTLeft);
@@ -418,23 +404,53 @@ public class CouplingChunks {
             List<MyVariableCall> leftVariableCalls = leftVariableCalls(projectPath, ci, ASTLeft);
 
             List<MyVariableDeclaration> leftBaseVariableDeclarations = leftBaseVariableDeclarations(projectPath, ci, ASTmergeBase);
-
+             */
             //count number of modified methods
-            List<MyMethodDeclaration> MethodDeclarationsLeftAux = leftMethodDeclarations;
-            //List<MyMethodInvocation> MethodInvocationsLeftAux = leftMethodInvocations;
+            List<MyMethodDeclaration> MethodDeclarationsLeftAux = new ArrayList<>();
+            List<MyMethodDeclaration> MethodDeclarationsBaseLeftAux = new ArrayList<>();
 
-            for (int i = MethodDeclarationsLeftAux.size() - 1; i > 0; i--) {
-                if (MethodDeclarationsLeftAux.get(i).equals(MethodDeclarationsLeftAux.get(i - 1))) {
-                    MethodDeclarationsLeftAux.remove(MethodDeclarationsLeftAux.get(i));
+            //preenchendo uma lista auxiliar com os metodos declarations
+            if (leftMethodDeclarations.size() > 0) {
+                for (MyMethodDeclaration leftMethodDeclaration1 : leftMethodDeclarations) {
+                    MethodDeclarationsLeftAux.add(leftMethodDeclaration1);
+                }
+                //remove metodos repetidos
+                for (int i = MethodDeclarationsLeftAux.size() - 1; i > 0; i--) {
+                    if (MethodDeclarationsLeftAux.get(i).equals(MethodDeclarationsLeftAux.get(i - 1))) {
+                        MethodDeclarationsLeftAux.remove(MethodDeclarationsLeftAux.get(i));
+                    }
+                }
+            }
+            /* //preenchendo uma lista auxiliar com os metodos declarations da base
+            if (leftBaseMethodDeclarations.size() > 0) {
+                for (MyMethodDeclaration leftMethodBaseDeclaration1 : leftBaseMethodDeclarations) {
+                    MethodDeclarationsBaseLeftAux.add(leftMethodBaseDeclaration1);
+                }
+
+                //remove metodos repetidos
+                for (int i = MethodDeclarationsBaseLeftAux.size() - 1; i > 0; i--) {
+                    if (MethodDeclarationsBaseLeftAux.get(i).equals(MethodDeclarationsBaseLeftAux.get(i - 1))) {
+                        MethodDeclarationsBaseLeftAux.remove(MethodDeclarationsBaseLeftAux.get(i));
+                    }
                 }
             }
 
-            /*for (int i = MethodInvocationsLeftAux.size() - 1; i > 0; i--) {
-                if (MethodInvocationsLeftAux.get(i).equals(MethodInvocationsLeftAux.get(i - 1))) {
-                    MethodInvocationsLeftAux.remove(MethodInvocationsLeftAux.get(i));
+            if ((MethodDeclarationsLeftAux.size() > 0) && (MethodDeclarationsBaseLeftAux.size() > 0)) {
+                for (int i = 0; i < MethodDeclarationsBaseLeftAux.size(); i++) {
+                    for (int j = MethodDeclarationsLeftAux.size() - 1; j >= 0; j--) {
+                        IMethodBinding methodDeclarationBase1 = MethodDeclarationsBaseLeftAux.get(i).getMethodDeclaration().resolveBinding();
+                        IMethodBinding methodDeclaration2 = MethodDeclarationsLeftAux.get(j).getMethodDeclaration().resolveBinding();
+
+                        if (methodDeclarationBase1 != null && methodDeclaration2 != null && methodDeclarationBase1.isEqualTo(methodDeclaration2)) {
+                            MethodDeclarationsLeftAux.remove(MethodDeclarationsLeftAux.get(j));
+                        }
+                    }
+                }
+                for (MyMethodDeclaration MethodDeclaration : MethodDeclarationsLeftAux) {
+                    MethodDeclarationsBaseLeftAux.add(MethodDeclaration);
                 }
             }*/
-            // ci.setchunks(MethodDeclarationsLeftAux.size() + MethodInvocationsLeftAux.size());
+            //ci.setchunks(MethodDeclarationsBaseLeftAux.size());
             ci.setchunks(MethodDeclarationsLeftAux.size());
 
             //int rowNumber = cisL.indexOf(ci);
@@ -446,6 +462,7 @@ public class CouplingChunks {
 
                 List<MyMethodDeclaration> rightBaseMethodDeclarations = rightBaseCCMethodDeclaration(projectPath, ciAux, ASTmergeBase);
 
+                /*
                 List<MyAttributeDeclaration> rightAttributeDeclarations = rightAttributes(projectPath, ciAux, ASTRight);
                 List<MyAttributeCall> rightAttributeCalls = rightAttributeCalls(projectPath, ciAux, ASTRight);
 
@@ -455,7 +472,7 @@ public class CouplingChunks {
                 List<MyVariableCall> rightVariableCalls = rightVariableCalls(projectPath, ciAux, ASTRight);
 
                 List<MyVariableDeclaration> rightBaseVariableDeclarations = rightBaseVariableDeclarations(projectPath, ciAux, ASTmergeBase);
-
+                 */
                 boolean hasMethodDependency1 = hasMethodDependency(rightBaseMethodDeclarations, leftMethodInvocations);
                 boolean hasMethodDependency2 = hasMethodDependency(leftBaseMethodDeclarations, rightMethodInvocations);
 
@@ -469,7 +486,7 @@ public class CouplingChunks {
                             = new ChunksDependency(ci, ciAux, DependencyType.METHOD_DECLARATION_INVOCATION, "Right");
                     mergeDependency.getChunksDependencies().add(ChunksDependency);
                 }
-
+                /*
                 boolean hasAttributeDepedency1 = hasAttributeDependency(rightBaseAttributeDeclarations, leftAttributeCalls);
                 boolean hasAttributeDepedency2 = hasAttributeDependency(leftBaseAttributeDeclarations, rightAttributeCalls);
 
@@ -502,35 +519,72 @@ public class CouplingChunks {
                             = new ChunksDependency(ci, ciAux, DependencyType.VARIABLE_DECLARATION_USAGE, "Right");
                     mergeDependency.getChunksDependencies().add(ChunksDependency);
                 }
-
+                 */
                 //count number of modified methods
-                List<MyMethodDeclaration> MethodDeclarationsRightAux = rightMethodDeclarations;
-                //List<MyMethodInvocation> MethodInvocationsRightAux = rightMethodInvocations;
+                List<MyMethodDeclaration> MethodDeclarationsRightAux = new ArrayList<>();
+                List<MyMethodDeclaration> MethodDeclarationsBaseRightAux = new ArrayList<>();
 
-                for (int i = MethodDeclarationsRightAux.size() - 1; i > 0; i--) {
-                    if (MethodDeclarationsRightAux.get(i).equals(MethodDeclarationsRightAux.get(i - 1))) {
-                        MethodDeclarationsRightAux.remove(MethodDeclarationsRightAux.get(i));
+                //preenchendo uma lista auxiliar com os metodos declarations
+                if (rightMethodDeclarations.size() > 0) {
+                    for (MyMethodDeclaration rightMethodDeclaration1 : rightMethodDeclarations) {
+                        MethodDeclarationsRightAux.add(rightMethodDeclaration1);
+                    }
+                    //remove metodos repetidos
+                    for (int i = MethodDeclarationsRightAux.size() - 1; i > 0; i--) {
+                        if (MethodDeclarationsRightAux.get(i).equals(MethodDeclarationsRightAux.get(i - 1))) {
+                            MethodDeclarationsRightAux.remove(MethodDeclarationsRightAux.get(i));
+                        }
+                    }
+                }
+                /* //preenchendo uma lista auxiliar com os metodos declarations da base
+                if (rightBaseMethodDeclarations.size() > 0) {
+                    for (MyMethodDeclaration rightBaseMethodDeclaration1 : rightBaseMethodDeclarations) {
+                        MethodDeclarationsBaseRightAux.add(rightBaseMethodDeclaration1);
+                    }
+
+                    //remove metodos repetidos
+                    for (int i = MethodDeclarationsBaseRightAux.size() - 1; i > 0; i--) {
+                        if (MethodDeclarationsBaseRightAux.get(i).equals(MethodDeclarationsBaseRightAux.get(i - 1))) {
+                            MethodDeclarationsBaseRightAux.remove(MethodDeclarationsBaseRightAux.get(i));
+                        }
                     }
                 }
 
-                /* for (int i = MethodInvocationsRightAux.size() - 1; i > 0; i--) {
-                    if (MethodInvocationsRightAux.get(i).equals(MethodInvocationsRightAux.get(i - 1))) {
-                        MethodInvocationsRightAux.remove(MethodInvocationsRightAux.get(i));
+                if ((MethodDeclarationsRightAux.size() > 0) && (MethodDeclarationsBaseRightAux.size() > 0)) {
+                    for (int i = 0; i < MethodDeclarationsBaseRightAux.size(); i++) {
+                        for (int j = MethodDeclarationsRightAux.size() - 1; j >= 0; j--) {
+                            IMethodBinding methodDeclarationBase1 = MethodDeclarationsBaseRightAux.get(i).getMethodDeclaration().resolveBinding();
+                            IMethodBinding methodDeclaration2 = MethodDeclarationsRightAux.get(j).getMethodDeclaration().resolveBinding();
+
+                            if (methodDeclarationBase1 != null && methodDeclaration2 != null && methodDeclarationBase1.isEqualTo(methodDeclaration2)) {
+                                MethodDeclarationsRightAux.remove(MethodDeclarationsRightAux.get(j));
+                            }
+                        }
+                    }
+                    for (MyMethodDeclaration MethodDeclarationRight : MethodDeclarationsRightAux) {
+                        MethodDeclarationsBaseRightAux.add(MethodDeclarationRight);
                     }
                 }*/
-                //ciAux.setchunks(MethodDeclarationsRightAux.size() + MethodInvocationsRightAux.size());
+
+                //ciAux.setchunks(MethodDeclarationsBaseRightAux.size());
                 ciAux.setchunks(MethodDeclarationsRightAux.size());
 
             }
-        }
+        } //Para obter a quantidade de métodos modificados no ramo da esquerda
         for (ChunkInformation ciLeft : cisL) {
             chunksLeft = chunksLeft + ciLeft.getChunks();
         }
-
+        //Para obter a quantidade de métodos modificados no ramo da direita
         for (ChunkInformation ciRight : cisR) {
             chunksRight = chunksRight + ciRight.getChunks();
         }
-        mergeDependency.setChunksAmount(chunksLeft + chunksRight);
+        //Para obter o numero de pares do produto cartesiano (LXR) para a metrica Normalized_Coupling 
+        for (int i=0; i < chunksRight; i++){
+            for (int j=0; j < chunksLeft; j++){
+                cartesian_product ++;
+            }
+        }
+        mergeDependency.setChunksAmount(cartesian_product);
         return mergeDependency;
     }
 

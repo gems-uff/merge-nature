@@ -171,7 +171,7 @@ public class GitTranslator {
         String filename = "";
         String oldfilename = "";
         String newfilename = "";
-        List <String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
 
         //-----------------------------------------------
         //Breaking the input string (delta) into lines
@@ -274,11 +274,19 @@ public class GitTranslator {
 
         //@@ -10,8 10,13 @@ package metodo_atributo;
         String[] intervals = line.split("\\+");
+        String[] limits;
 
         //intervals[1] = intervals[1].replaceFirst("+", "");
-        String[] limits = intervals[1].split(",");
+        if (intervals.length > 1) {
+            limits = intervals[1].split(",");
+        } else {
+            line = line.replaceFirst("@@ -", "");
+            intervals = line.split("\\+");
+            limits = intervals[0].split(",");
+        }
 
         return Integer.parseInt(limits[0].replace(" ", ""));
+
     }
 
     private Operation getOperation(String line, OperationType kind, int iterator) {
