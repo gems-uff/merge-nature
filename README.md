@@ -23,10 +23,11 @@ André van der Hoek (UC Irvine, USA)
 
 # Raw Data for the Automatic Analysis
 
-[Overview](http://merge-nature.netlify.com) (click in the projects to see the details)
+[Overview](http://merge-nature.netlify.app) (click in the projects to see the details)
 
 # Publications
-[On the Nature of Merge Conflicts: a Study of 2,731 Open Source Java Projects Hosted by GitHub (Early Access Version)](https://ieeexplore.ieee.org/document/8468085/)
+
+[G. G. L. Menezes, L. G. P. Murta, M. O. Barros and A. Van Der Hoek, "On the Nature of Merge Conflicts: a Study of 2,731 Open Source Java Projects Hosted by GitHub," in IEEE Transactions on Software Engineering.](https://doi.org/10.1109/TSE.2018.2871083)
 
 # Acknowledgements
 
